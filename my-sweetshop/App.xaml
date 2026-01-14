@@ -1,14 +1,105 @@
-﻿<Application
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Application
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:conv="clr-namespace:my_sweetshop.UIHelpers"
-    x:Class="my_sweetshop.App"
-    >
+    x:Class="my_sweetshop.App">
 
     <Application.Resources>
         <ResourceDictionary>
-            <conv:InverseBoolConverter x:Key="InverseBoolConverter" />
+
+            <!-- Colors -->
+            <Color x:Key="PageBackground">#F6F6F6</Color>
+            <Color x:Key="CardBackground">White</Color>
+            <Color x:Key="PrimaryText">Black</Color>
+
+            <!-- Action Card -->
+            <Style x:Key="ActionCardStyle" TargetType="Border">
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBackground}" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 14" />
+                <Setter Property="Padding" Value="16,0" />
+                <Setter Property="HeightRequest" Value="52" />
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="Shadow">
+                    <Setter.Value>
+                        <Shadow
+                            Brush="#000000"
+                            Offset="0,2"
+                            Radius="6"
+                            Opacity="0.12" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Action Card Text -->
+            <Style x:Key="ActionCardTextStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="TextColor" Value="{StaticResource PrimaryText}" />
+                <Setter Property="VerticalOptions" Value="Center" />
+            </Style>
+
+            <!-- Large Card -->
+            <Style x:Key="LargeActionCardStyle" TargetType="Border">
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBackground}" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 14" />
+                <Setter Property="HeightRequest" Value="140" />
+                <Setter Property="Shadow">
+                    <Setter.Value>
+                        <Shadow
+                            Brush="#000000"
+                            Offset="0,2"
+                            Radius="6"
+                            Opacity="0.12" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="ActionButtonStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="TextColor" Value="Black" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="CornerRadius" Value="14" />
+                <Setter Property="HeightRequest" Value="52" />
+                <Setter Property="Padding" Value="16,0" />
+                <Setter Property="Shadow">
+                    <Setter.Value>
+                        <Shadow
+                Brush="#000000"
+                Offset="0,2"
+                Radius="6"
+                Opacity="0.12" />
+                    </Setter.Value>
+                </Setter>
+
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="Scale" Value="1" />
+                                    <Setter Property="Opacity" Value="1" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="Scale" Value="0.97" />
+                                    <Setter Property="Opacity" Value="0.85" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.5" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+
+
         </ResourceDictionary>
     </Application.Resources>
-
 </Application>

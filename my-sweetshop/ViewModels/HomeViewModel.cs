@@ -1,36 +1,17 @@
-﻿using my_sweetshop.Models;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 namespace my_sweetshop.ViewModels;
 
 public class HomeViewModel : BaseViewModel
 {
-    public ObservableCollection<PurchaseHistoryItem> PurchaseHistory { get; } =
-        new();
-
-    private bool _isHistoryExpanded;
-    public bool IsHistoryExpanded
-    {
-        get => _isHistoryExpanded;
-        set => SetProperty(ref _isHistoryExpanded, value);
-    }
-
-    public string HistoryToggleText =>
-        IsHistoryExpanded ? "Свернуть" : "Развернуть";
-
-    public ICommand ToggleHistoryCommand { get; }
     public ICommand OpenStoresCommand { get; }
     public ICommand OrderDeliveryCommand { get; }
+    public ICommand OpenVkCommand { get; }
+    public ICommand OpenTelegramCommand { get; }
 
     public HomeViewModel()
     {
-        ToggleHistoryCommand = new Command(() =>
-        {
-            IsHistoryExpanded = !IsHistoryExpanded;
-            OnPropertyChanged(nameof(HistoryToggleText));
-        });
-
         OpenStoresCommand = new Command(() =>
         {
             // позже: навигация к карте
@@ -38,20 +19,30 @@ public class HomeViewModel : BaseViewModel
 
         OrderDeliveryCommand = new Command(() =>
         {
-            // позже: переход к доставке
+            Launcher.OpenAsync("https://t.me/MoyaKonditerakaya");
         });
 
-        // временные данные
-        PurchaseHistory.Add(new PurchaseHistoryItem("Торт Наполеон", "1200 ₽"));
-        PurchaseHistory.Add(new PurchaseHistoryItem("Эклеры (4 шт)", "480 ₽"));
-
-        UpdateIsLastFlags();
+        OpenTelegramCommand = new Command(async () => await SafeOpenUrl("https://t.me/MoyaKonditerakaya"));
+        OpenVkCommand = new Command(async () => await SafeOpenUrl("https://vk.com/id196324878"));
     }
 
-    //функция, для того, чтобы не ставить в конце разделитель
-    private void UpdateIsLastFlags()
+    private async Task SafeOpenUrl(string url)
     {
-        for (int i = 0; i < PurchaseHistory.Count; i++)
-            PurchaseHistory[i].IsLast = i == PurchaseHistory.Count - 1;
-    }
+        try
+        {
+            // 1. Пытаемся открыть через системный Launcher (откроет приложение, если есть)
+            bool opened = await Launcher.Default.OpenAsync(url);
+
+            // 2. Если Launcher не справился, принудительно открываем в браузере
+            if (!opened)
+            {
+                await Browser.Default.OpenAsync(url, BrowserLaunchMode.SystemPreferred);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Ошибка при открытии ссылки: {ex.Message}");
+            // Здесь можно добавить DisplayAlert, если нужно оповестить пользователя
+        }
+    }   
 }

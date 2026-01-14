@@ -4,93 +4,119 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:my_sweetshop.ViewModels"
-    BackgroundColor="#F6F6F6"
-    x:DataType="vm:HomeViewModel">
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    x:DataType="vm:HomeViewModel"
+    BackgroundColor="#F6F6F6">
 
+    <!-- Ресурсы страницы для переиспользуемых стилей -->
+    <ContentPage.Resources>
+        <!-- Стиль для карточек социальных сетей -->
+        <Style x:Key="SocialCardStyle" TargetType="Border">
+            <Setter Property="StrokeShape" Value="RoundRectangle 14" />
+            <Setter Property="HeightRequest" Value="140" />
+            <Setter Property="BackgroundColor" Value="White" />
+        </Style>
+    </ContentPage.Resources>
+
+    <!-- Установка контекста данных (ViewModel) для страницы -->
     <ContentPage.BindingContext>
         <vm:HomeViewModel />
     </ContentPage.BindingContext>
 
+    <!-- Основной контейнер с возможностью прокрутки -->
     <ScrollView>
         <VerticalStackLayout Padding="16" Spacing="16">
 
-            <!-- Магазины -->
-            <Frame
-                CornerRadius="14"
-                Padding="14"
-                BackgroundColor="White"
-                HasShadow="True">
+            <!-- Кнопка для открытия информации о магазинах -->
+            <Button Text="Узнать, где находятся наши магазины" 
+                    Style="{StaticResource ActionButtonStyle}" 
+                    Command="{Binding OpenStoresCommand}" />
 
-                <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+            <!-- Заголовок раздела -->
+            <Label Text="Получайте максимум выгоды" 
+                   FontSize="20" 
+                   TextColor="Black" />
 
-                    <Grid.GestureRecognizers>
-                        <TapGestureRecognizer
-                            Command="{Binding OpenStoresCommand}" />
-                    </Grid.GestureRecognizers>
-
-                    <Label
-                        Text="Узнать, где находятся наши магазины"
-                        FontSize="17"
-                        TextColor="Black"
-                         VerticalOptions="Center" />
-
-                    <!-- Иконка-перехода -->
-                    <Image
-                        Grid.Column="1"
-                        Source="page_transition.png"
-                        WidthRequest="20"
-                        HeightRequest="20"
-                        VerticalOptions="Center"
-                        HorizontalOptions="End"
-                        Margin="12,0,0,0" />
-                </Grid>
-            </Frame>
-
-
-            <!-- QR -->
-            <Frame
-                CornerRadius="16"
-                Padding="16"
-                BackgroundColor="White"
-                HasShadow="True">
-
+            <!-- Карточка с QR-кодом для скидок -->
+            <Frame CornerRadius="16" Padding="16" BackgroundColor="White" HasShadow="True">
                 <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
-
-                    <Label
-                        Text="Скидочный QR-код"
-                        FontAttributes="Bold" />
-
-                    <!-- Заглушка QR -->
-                    <BoxView
-                        WidthRequest="120"
-                        HeightRequest="120"
-                        CornerRadius="12"
-                        Color="#E0E0E0" />
-
-                    <Label
-                        Text="Покажите кассиру для начисления или списания баллов"
-                        FontSize="12"
-                        TextColor="Gray"
-                        HorizontalTextAlignment="Center" />
+                    <Label Text="Скидочный QR-код" FontAttributes="Bold" />
+                    <!-- Заглушка для QR-кода (в реальном приложении здесь будет изображение) -->
+                    <BoxView WidthRequest="120" HeightRequest="120" CornerRadius="12" Color="#E0E0E0" />
+                    <Label Text="Покажите кассиру для начисления или списания баллов" 
+                           FontSize="12" 
+                           TextColor="Gray" 
+                           HorizontalTextAlignment="Center" />
                 </VerticalStackLayout>
             </Frame>
 
-            <!-- Выгода -->
-            <Label
-                Text="Получайте максимум выгоды"
-                FontSize="20"
-                TextColor="Black" />
+            <!-- Кнопка заказа доставки через Telegram -->
+            <Button Text="Заказать доставку" 
+                    ImageSource="telegram.png" 
+                    ContentLayout="Left,12" 
+                    Style="{StaticResource ActionButtonStyle}" 
+                    Command="{Binding OrderDeliveryCommand}" />
 
-            <!-- Доставка -->
-            <Button
-                Text="Заказать доставку"
-                Command="{Binding OrderDeliveryCommand}"
-                BackgroundColor="#D32F2F"
-                FontAttributes="Bold"
-                FontSize="18"
-                TextColor="White"
-                CornerRadius="14"
-                HeightRequest="56" />
+            <!-- Сетка для карточек социальных сетей (2 колонки) -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+
+                <!-- Карточка ВКонтакте -->
+                <Border Grid.Column="0" Style="{StaticResource SocialCardStyle}">
+                    <!-- Поведение для анимации нажатия -->
+                    <Border.Behaviors>
+                        <toolkit:TouchBehavior 
+                            Command="{Binding OpenVkCommand}" 
+                            PressedScale="0.95"            
+                            PressedOpacity="0.7"           
+                            DefaultAnimationDuration="100"/>
+                    </Border.Behaviors>
+
+                    <!-- Тень для карточки -->
+                    <Border.Shadow>
+                        <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                    </Border.Shadow>
+
+                    <!-- Содержимое карточки ВК -->
+                    <Grid>
+                        <Image Source="vk_bg.png" Aspect="AspectFill" Opacity="0.9" />
+                        <Label Text="Наш блог ВКонтакте" 
+                               FontSize="16" 
+                               FontAttributes="Bold" 
+                               TextColor="Black" 
+                               Margin="14" 
+                               VerticalOptions="End" />
+                    </Grid>
+                </Border>
+
+                <!-- Карточка Telegram -->
+                <Border Grid.Column="1" Style="{StaticResource SocialCardStyle}">
+                    <!-- Поведение для анимации нажатия -->
+                    <Border.Behaviors>
+                        <toolkit:TouchBehavior 
+                            Command="{Binding OpenTelegramCommand}"
+                            PressedScale="0.95" 
+                            PressedOpacity="0.7" 
+                            DefaultAnimationDuration="100" />
+                    </Border.Behaviors>
+
+                    <!-- Тень для карточки -->
+                    <Border.Shadow>
+                        <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                    </Border.Shadow>
+
+                    <!-- Содержимое карточки Telegram -->
+                    <Grid>
+                        <Image Source="telegram_bg.png" Aspect="AspectFill" Opacity="0.9" />
+                        <Label Text="Хочу сотрудничать" 
+                               FontSize="16" 
+                               FontAttributes="Bold" 
+                               TextColor="Black" 
+                               Margin="14" 
+                               VerticalOptions="End" />
+                    </Grid>
+                </Border>
+
+            </Grid>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

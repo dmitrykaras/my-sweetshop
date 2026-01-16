@@ -4,7 +4,6 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:my_sweetshop.ViewModels"
-    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     x:DataType="vm:HomeViewModel"
     BackgroundColor="#F6F6F6">
 
@@ -61,58 +60,53 @@
             <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
 
                 <!-- Карточка ВКонтакте -->
-                <Border Grid.Column="0" Style="{StaticResource SocialCardStyle}">
-                    <!-- Поведение для анимации нажатия -->
-                    <Border.Behaviors>
-                        <toolkit:TouchBehavior 
-                            Command="{Binding OpenVkCommand}" 
-                            PressedScale="0.95"            
-                            PressedOpacity="0.7"           
-                            DefaultAnimationDuration="100"/>
-                    </Border.Behaviors>
+                <Border Grid.Column="0"
+                        Style="{StaticResource SocialCardStyle}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer
+                            Command="{Binding OpenVkCommand}"
+                            Tapped="OnCardTapped"/>
+                    </Border.GestureRecognizers>
 
                     <!-- Тень для карточки -->
                     <Border.Shadow>
                         <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
                     </Border.Shadow>
 
-                    <!-- Содержимое карточки ВК -->
                     <Grid>
-                        <Image Source="vk_bg.png" Aspect="AspectFill" Opacity="0.9" />
-                        <Label Text="Наш блог ВКонтакте" 
-                               FontSize="16" 
-                               FontAttributes="Bold" 
-                               TextColor="Black" 
-                               Margin="14" 
-                               VerticalOptions="End" />
+                        <Image Source="vk_bg.png" Aspect="AspectFill" />
+                        <Label Text="Наш блог ВКонтакте"
+                            TextColor="Black"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            Margin="14"
+                            VerticalOptions="End" />
                     </Grid>
                 </Border>
 
+
                 <!-- Карточка Telegram -->
-                <Border Grid.Column="1" Style="{StaticResource SocialCardStyle}">
-                    <!-- Поведение для анимации нажатия -->
-                    <Border.Behaviors>
-                        <toolkit:TouchBehavior 
-                            Command="{Binding OpenTelegramCommand}"
-                            PressedScale="0.95" 
-                            PressedOpacity="0.7" 
-                            DefaultAnimationDuration="100" />
-                    </Border.Behaviors>
+                <Border Grid.Column="1"
+                        Style="{StaticResource SocialCardStyle}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer
+                            Command="{Binding OpenTgCommand}"
+                            Tapped="OnCardTapped"/>
+                    </Border.GestureRecognizers>
 
                     <!-- Тень для карточки -->
                     <Border.Shadow>
                         <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
                     </Border.Shadow>
 
-                    <!-- Содержимое карточки Telegram -->
                     <Grid>
-                        <Image Source="telegram_bg.png" Aspect="AspectFill" Opacity="0.9" />
-                        <Label Text="Хочу сотрудничать" 
-                               FontSize="16" 
-                               FontAttributes="Bold" 
-                               TextColor="Black" 
-                               Margin="14" 
-                               VerticalOptions="End" />
+                        <Image Source="telegram_bg.png" Aspect="AspectFill" />
+                        <Label Text="Хочу сотрудничать"
+                            TextColor="Black"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            Margin="14"
+                            VerticalOptions="End" />
                     </Grid>
                 </Border>
 

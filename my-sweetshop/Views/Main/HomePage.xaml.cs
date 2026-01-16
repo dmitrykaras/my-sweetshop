@@ -7,16 +7,13 @@ public partial class HomePage : ContentPage
         InitializeComponent();
     }
 
-    private async void OnCardPressed(object sender, PointerEventArgs e)
-    {
-        if (sender is VisualElement view)
-            await view.ScaleTo(0.96, 80, Easing.CubicOut);
-    }
 
-    private async void OnCardReleased(object sender, PointerEventArgs e)
+    private async void OnCardTapped(object sender, EventArgs e)
     {
-        if (sender is VisualElement view)
-            await view.ScaleTo(1, 80, Easing.CubicOut);
+        if (sender is VisualElement v)
+        {
+            await v.ScaleTo(0.95, 80);
+            await v.ScaleTo(1, 80);
+        }
     }
-
 }

@@ -8,7 +8,7 @@ public class HomeViewModel : BaseViewModel
     public ICommand OpenStoresCommand { get; }
     public ICommand OrderDeliveryCommand { get; }
     public ICommand OpenVkCommand { get; }
-    public ICommand OpenTelegramCommand { get; }
+    public ICommand OpenTgCommand { get; }
 
     public HomeViewModel()
     {
@@ -22,7 +22,7 @@ public class HomeViewModel : BaseViewModel
             Launcher.OpenAsync("https://t.me/MoyaKonditerakaya");
         });
 
-        OpenTelegramCommand = new Command(async () => await SafeOpenUrl("https://t.me/MoyaKonditerakaya"));
+        OpenTgCommand = new Command(async () => await SafeOpenUrl("https://t.me/MoyaKonditerakaya"));
         OpenVkCommand = new Command(async () => await SafeOpenUrl("https://vk.com/id196324878"));
     }
 
@@ -44,5 +44,5 @@ public class HomeViewModel : BaseViewModel
             System.Diagnostics.Debug.WriteLine($"Ошибка при открытии ссылки: {ex.Message}");
             // Здесь можно добавить DisplayAlert, если нужно оповестить пользователя
         }
-    }   
+    }
 }

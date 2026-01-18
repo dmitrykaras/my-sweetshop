@@ -5,17 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:my_sweetshop.ViewModels"
     x:DataType="vm:HomeViewModel"
-    BackgroundColor="#F6F6F6">
-
-    <!-- Ресурсы страницы для переиспользуемых стилей -->
-    <ContentPage.Resources>
-        <!-- Стиль для карточек социальных сетей -->
-        <Style x:Key="SocialCardStyle" TargetType="Border">
-            <Setter Property="StrokeShape" Value="RoundRectangle 14" />
-            <Setter Property="HeightRequest" Value="140" />
-            <Setter Property="BackgroundColor" Value="White" />
-        </Style>
-    </ContentPage.Resources>
+    BackgroundColor="{StaticResource PageBackgroundLight}">
 
     <!-- Установка контекста данных (ViewModel) для страницы -->
     <ContentPage.BindingContext>
@@ -61,7 +51,7 @@
 
                 <!-- Карточка ВКонтакте -->
                 <Border Grid.Column="0"
-                        Style="{StaticResource SocialCardStyle}">
+                        Style="{StaticResource CardStyle}">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer
                             Command="{Binding OpenVkCommand}"
@@ -87,7 +77,7 @@
 
                 <!-- Карточка Telegram -->
                 <Border Grid.Column="1"
-                        Style="{StaticResource SocialCardStyle}">
+                        Style="{StaticResource CardStyle}">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer
                             Command="{Binding OpenTgCommand}"

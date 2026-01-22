@@ -9,6 +9,7 @@
     <!-- Colors -->
     <Color x:Key="PageBackgroundLight">#F6F6F6</Color>
     <Color x:Key="PageBackgroundDark">#1E1E1E</Color>
+    <Color x:Key="ProductionColor">#f6ed46</Color>
 
     
     <Color x:Key="Primary">#512BD4</Color>

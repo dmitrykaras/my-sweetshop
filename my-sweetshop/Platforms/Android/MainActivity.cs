@@ -1,22 +1,11 @@
 ﻿using Android.App;
+using Android.Content.PM;
 using Android.OS;
-using Android.Views;
 
-namespace my_sweetshop;
-
-[Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true)]
-public class MainActivity : MauiAppCompatActivity
+namespace my_sweetshop
 {
-    protected override void OnCreate(Bundle? savedInstanceState)
+    [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleTop, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
+    public class MainActivity : MauiAppCompatActivity
     {
-        base.OnCreate(savedInstanceState);
-
-        if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
-        {
-            Window.SetStatusBarColor(Android.Graphics.Color.White);
-
-            Window.DecorView.SystemUiVisibility =
-                (StatusBarVisibility)SystemUiFlags.LightStatusBar;
-        }
     }
 }

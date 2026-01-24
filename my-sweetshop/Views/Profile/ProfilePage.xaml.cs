@@ -1,9 +1,10 @@
-namespace my_sweetshop.Views.Profile;
-
-public partial class ProfilePage : ContentPage
+namespace my_sweetshop.Views.Profile
 {
-	public ProfilePage()
-	{
-		InitializeComponent();
-	}
+    public partial class ProfilePage : ContentPage
+    {
+        public ProfilePage()
+        {
+            InitializeComponent();
+        }
+    }
 }

@@ -3,77 +3,78 @@ using System.Windows.Input;
 using my_sweetshop.Models;
 using my_sweetshop.Views.Catalog;
 
-namespace my_sweetshop.ViewModels;
-
-[QueryProperty(nameof(CategoryKey), "Category")]
-public class CategoryViewModel
+namespace my_sweetshop.ViewModels
 {
-    public ObservableCollection<Product> Products { get; } = new();
-
-    public ICommand OpenProductCommand { get; }
-
-    private string _categoryKey;
-    public string CategoryKey
+    [QueryProperty(nameof(CategoryKey), "Category")]
+    public class CategoryViewModel
     {
-        get => _categoryKey;
-        set
+        public ObservableCollection<Product> Products { get; } = new();
+
+        public ICommand OpenProductCommand { get; }
+
+        private string _categoryKey;
+        public string CategoryKey
         {
-            _categoryKey = value;
-            LoadProducts();
+            get => _categoryKey;
+            set
+            {
+                _categoryKey = value;
+                LoadProducts();
+            }
         }
-    }
 
-    public string Title => GetCategoryTitle(CategoryKey);
+        public string Title => GetCategoryTitle(CategoryKey);
 
-    public CategoryViewModel()
-    {
-        OpenProductCommand = new Command<Product>(OpenProduct);
-    }
-
-    void LoadProducts()
-    {
-        Products.Clear();
-
-        // mock-данные, потом будет сервис / API
-        if (CategoryKey == "Desserts")
+        public CategoryViewModel()
         {
-            Products.Add(new Product
-            {
-                Id = "1",
-                Name = "Шоколадный торт",
-                Image = "cake1.png",
-                Description = "Насыщенный шоколадный вкус"
-            });
-
-            Products.Add(new Product
-            {
-                Id = "2",
-                Name = "Эклер",
-                Image = "eclair.png",
-                Description = "Классический французский десерт"
-            });
+            OpenProductCommand = new Command<Product>(OpenProduct);
         }
-    }
 
-    async void OpenProduct(Product product)
-    {
-        await Shell.Current.GoToAsync(
-            nameof(ProductPage),
-            new Dictionary<string, object>
+        void LoadProducts()
+        {
+            Products.Clear();
+
+            // mock-данные, потом будет сервис / API
+            if (CategoryKey == "Desserts")
             {
-                ["Product"] = product
-            });
-    }
+                Products.Add(new Product
+                {
+                    Id = "1",
+                    Name = "Шоколадный торт",
+                    Image = "cake1.png",
+                    Description = "Насыщенный шоколадный вкус"
+                });
 
-    string GetCategoryTitle(string key) => key switch
-    {
-        "Desserts" => "ДЕСЕРТЫ",
-        "MaleCakes" => "МУЖСКИЕ ТОРТЫ",
-        "FemaleCakes" => "ЖЕНСКИЕ ТОРТЫ",
-        "KidsCakes" => "ДЕТСКИЕ ТОРТЫ",
-        "WeddingCakes" => "СВАДЕБНЫЕ ТОРТЫ",
-        "Sets" => "НАБОРЫ",
-        "Drinks" => "НАПИТКИ",
-        _ => key
-    };
+                Products.Add(new Product
+                {
+                    Id = "2",
+                    Name = "Эклер",
+                    Image = "eclair.png",
+                    Description = "Классический французский десерт"
+                });
+            }
+        }
+
+        async void OpenProduct(Product product)
+        {
+            await Shell.Current.GoToAsync(
+                nameof(ProductPage),
+                new Dictionary<string, object>
+                {
+                    ["Product"] = product
+                });
+        }
+
+        string GetCategoryTitle(string key) => key switch
+        {
+            "Desserts" => "ДЕСЕРТЫ",
+            "MaleCakes" => "МУЖСКИЕ ТОРТЫ",
+            "FemaleCakes" => "ЖЕНСКИЕ ТОРТЫ",
+            "KidsCakes" => "ДЕТСКИЕ ТОРТЫ",
+            "WeddingCakes" => "СВАДЕБНЫЕ ТОРТЫ",
+            "Sets" => "НАБОРЫ",
+            "Drinks" => "НАПИТКИ",
+            _ => key
+        };
+    }
 }

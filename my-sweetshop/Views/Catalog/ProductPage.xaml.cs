@@ -1,23 +1,24 @@
 using my_sweetshop.Models;
 
-namespace my_sweetshop.Views.Catalog;
-
-[QueryProperty(nameof(Product), "Product")]
-public partial class ProductPage : ContentPage
+namespace my_sweetshop.Views.Catalog
 {
-    public ProductPage()
+    [QueryProperty(nameof(Product), "Product")]
+    public partial class ProductPage : ContentPage
     {
-        InitializeComponent();
-    }
-
-    private Product _product;
-    public Product Product
-    {
-        get => _product;
-        set
+        public ProductPage()
         {
-            _product = value;
-            BindingContext = value;
+            InitializeComponent();
+        }
+
+        private Product _product;
+        public Product Product
+        {
+            get => _product;
+            set
+            {
+                _product = value;
+                BindingContext = value;
+            }
         }
     }
 }

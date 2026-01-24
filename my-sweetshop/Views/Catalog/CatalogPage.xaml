@@ -40,7 +40,7 @@
 
                                         <Image
                                             Source="{Binding Image}"
-                                            HeightRequest="160"
+                                            HeightRequest="300"
                                             Aspect="AspectFill" />
 
                                         <Label
@@ -48,12 +48,26 @@
                                             HorizontalOptions="Center"
                                             FontAttributes="Bold" />
 
-                                        <Button
-                                            Text="Описание"
-                                            HorizontalOptions="Center"
-                                            Command="{Binding BindingContext.OpenProductCommand,
-                                                      Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                            CommandParameter="{Binding .}" />
+                                        <Frame
+                                            BorderColor="LightGray"
+                                            CornerRadius="5"
+                                            Padding="0"
+                                            Margin="0"
+                                            HasShadow="False"
+                                            BackgroundColor="Transparent">
+
+                                            <Button
+                                                Text="Описание"
+                                                BackgroundColor="White"
+                                                TextColor="Black"
+                                                HorizontalOptions="Center"
+                                                FontAttributes="Bold"
+                                                FontSize="15"
+                                                Margin="0"
+                                                Command="{Binding BindingContext.OpenProductCommand,
+                                                          Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                CommandParameter="{Binding .}" />
+                                        </Frame>
                                     </VerticalStackLayout>
 
                                 </Border>
@@ -99,12 +113,26 @@
                                             HorizontalOptions="Center"
                                             FontAttributes="Bold" />
 
-                                        <Button
-                                            Text="Описание"
-                                            HorizontalOptions="Center"
-                                            Command="{Binding BindingContext.OpenProductCommand,
-                                                      Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                            CommandParameter="{Binding .}" />
+                                        <Frame
+                                            BorderColor="LightGray"
+                                            CornerRadius="5"
+                                            Padding="0"
+                                            Margin="0"
+                                            HasShadow="False"
+                                            BackgroundColor="Transparent">
+
+                                            <Button
+                                                Text="Описание"
+                                                BackgroundColor="White"
+                                                TextColor="Black"
+                                                HorizontalOptions="Center"
+                                                FontAttributes="Bold"
+                                                FontSize="15"
+                                                Margin="0"
+                                                Command="{Binding BindingContext.OpenProductCommand,
+                                                          Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                CommandParameter="{Binding .}" />
+                                        </Frame>
                                     </VerticalStackLayout>
 
                                 </Border>
@@ -150,12 +178,26 @@
                                             HorizontalOptions="Center"
                                             FontAttributes="Bold" />
 
-                                        <Button
-                                            Text="Описание"
-                                            HorizontalOptions="Center"
-                                            Command="{Binding BindingContext.OpenProductCommand,
-                                                      Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                            CommandParameter="{Binding .}" />
+                                        <Frame
+                                            BorderColor="LightGray"
+                                            CornerRadius="5"
+                                            Padding="0"
+                                            Margin="0"
+                                            HasShadow="False"
+                                            BackgroundColor="Transparent">
+
+                                            <Button
+                                                Text="Описание"
+                                                BackgroundColor="White"
+                                                TextColor="Black"
+                                                HorizontalOptions="Center"
+                                                FontAttributes="Bold"
+                                                FontSize="15"
+                                                Margin="0"
+                                                Command="{Binding BindingContext.OpenProductCommand,
+                                                          Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                CommandParameter="{Binding .}" />
+                                        </Frame>
                                     </VerticalStackLayout>
 
                                 </Border>
@@ -201,12 +243,26 @@
                                             HorizontalOptions="Center"
                                             FontAttributes="Bold" />
 
-                                        <Button
-                                            Text="Описание"
-                                            HorizontalOptions="Center"
-                                            Command="{Binding BindingContext.OpenProductCommand,
-                                                      Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                            CommandParameter="{Binding .}" />
+                                        <Frame
+                                            BorderColor="LightGray"
+                                            CornerRadius="5"
+                                            Padding="0"
+                                            Margin="0"
+                                            HasShadow="False"
+                                            BackgroundColor="Transparent">
+
+                                            <Button
+                                                Text="Описание"
+                                                BackgroundColor="White"
+                                                TextColor="Black"
+                                                HorizontalOptions="Center"
+                                                FontAttributes="Bold"
+                                                FontSize="15"
+                                                Margin="0"
+                                                Command="{Binding BindingContext.OpenProductCommand,
+                                                          Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                CommandParameter="{Binding .}" />
+                                        </Frame>
                                     </VerticalStackLayout>
 
                                 </Border>
@@ -244,7 +300,7 @@
 
                                         <Image
                                             Source="{Binding Image}"
-                                            HeightRequest="160"
+                                            HeightRequest="300"
                                             Aspect="AspectFill" />
 
                                         <Label
@@ -252,12 +308,26 @@
                                             HorizontalOptions="Center"
                                             FontAttributes="Bold" />
 
-                                        <Button
-                                            Text="Описание"
-                                            HorizontalOptions="Center"
-                                            Command="{Binding BindingContext.OpenProductCommand,
-                                                      Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                            CommandParameter="{Binding .}" />
+                                        <Frame
+                                            BorderColor="LightGray"
+                                            CornerRadius="5"
+                                            Padding="0"
+                                            Margin="0"
+                                            HasShadow="False"
+                                            BackgroundColor="Transparent">
+
+                                            <Button
+                                                Text="Описание"
+                                                BackgroundColor="White"
+                                                TextColor="Black"
+                                                HorizontalOptions="Center"
+                                                FontAttributes="Bold"
+                                                FontSize="15"
+                                                Margin="0"
+                                                Command="{Binding BindingContext.OpenProductCommand,
+                                                          Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                CommandParameter="{Binding .}" />
+                                        </Frame>
                                     </VerticalStackLayout>
 
                                 </Border>
@@ -303,12 +373,26 @@
                                             HorizontalOptions="Center"
                                             FontAttributes="Bold" />
 
-                                        <Button
-                                            Text="Описание"
-                                            HorizontalOptions="Center"
-                                            Command="{Binding BindingContext.OpenProductCommand,
-                                                      Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                            CommandParameter="{Binding .}" />
+                                        <Frame
+                                            BorderColor="LightGray"
+                                            CornerRadius="5"
+                                            Padding="0"
+                                            Margin="0"
+                                            HasShadow="False"
+                                            BackgroundColor="Transparent">
+
+                                            <Button
+                                                Text="Описание"
+                                                BackgroundColor="White"
+                                                TextColor="Black"
+                                                HorizontalOptions="Center"
+                                                FontAttributes="Bold"
+                                                FontSize="15"
+                                                Margin="0"
+                                                Command="{Binding BindingContext.OpenProductCommand,
+                                                          Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                CommandParameter="{Binding .}" />
+                                        </Frame>
                                     </VerticalStackLayout>
 
                                 </Border>
@@ -346,7 +430,7 @@
 
                                         <Image
                                             Source="{Binding Image}"
-                                            HeightRequest="160"
+                                            HeightRequest="250"
                                             Aspect="AspectFill" />
 
                                         <Label
@@ -354,12 +438,26 @@
                                             HorizontalOptions="Center"
                                             FontAttributes="Bold" />
 
-                                        <Button
-                                            Text="Описание"
-                                            HorizontalOptions="Center"
-                                            Command="{Binding BindingContext.OpenProductCommand,
-                                                      Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                            CommandParameter="{Binding .}" />
+                                        <Frame
+                                            BorderColor="LightGray"
+                                            CornerRadius="5"
+                                            Padding="0"
+                                            Margin="0"
+                                            HasShadow="False"
+                                            BackgroundColor="Transparent">
+
+                                            <Button
+                                                Text="Описание"
+                                                BackgroundColor="White"
+                                                TextColor="Black"
+                                                HorizontalOptions="Center"
+                                                FontAttributes="Bold"
+                                                FontSize="15"
+                                                Margin="0"
+                                                Command="{Binding BindingContext.OpenProductCommand,
+                                                          Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                CommandParameter="{Binding .}" />
+                                        </Frame>
                                     </VerticalStackLayout>
 
                                 </Border>

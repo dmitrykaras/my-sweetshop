@@ -5,6 +5,10 @@ using MyCandyShop.Api.Contracts;
 using MyCandyShop.Api.Data;
 using MyCandyShop.Api.Entities;
 using MyCandyShop.Api.Services;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+
+
 namespace MyCandyShop.Api.Controllers;
 
 [ApiController]
@@ -12,8 +16,13 @@ namespace MyCandyShop.Api.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly AppDbContext _db;
+    private readonly JwtService _jwt;
 
-    public AuthController(AppDbContext db) => _db = db;
+    public AuthController(AppDbContext db, JwtService jwt)
+    {
+        _db = db;
+        _jwt = jwt;
+    }
 
     [HttpPost("request-code")]
     public async Task<IActionResult> RequestCode([FromBody] AuthRequestCodeRequest request)
@@ -101,7 +110,74 @@ public class AuthController : ControllerBase
         entity.IsUsed = true;
         await _db.SaveChangesAsync();
 
-        // TODO: тут позже будет JWT
-        return Ok(new { success = true });
+        // 1) найти или создать пользователя
+        var user = await _db.Users.FirstOrDefaultAsync(x => x.Email == email);
+
+        if (user == null)
+        {
+            user = new User
+            {
+                Id = Guid.NewGuid(),
+                Email = email,
+                CreatedAt = DateTimeOffset.UtcNow,
+                Points = 0,
+                FirstName = null,
+                LastName = null
+            };
+
+            _db.Users.Add(user);
+            await _db.SaveChangesAsync();
+        }
+
+        // 2) выпустить токен
+        var token = _jwt.CreateToken(user);
+
+        var needsProfile = string.IsNullOrWhiteSpace(user.FirstName) || string.IsNullOrWhiteSpace(user.LastName);
+
+        return Ok(new
+        {
+            token,
+            user = new
+            {
+                user.Id,
+                user.Email,
+                user.FirstName,
+                user.LastName,
+                user.Points
+            },
+            needsProfile
+        });
+    }
+
+    [Authorize]
+    [HttpPost("profile")]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
+    {
+        var userIdStr = User.FindFirstValue("uid"); // из токена
+        if (!Guid.TryParse(userIdStr, out var userId))
+            return Unauthorized("Invalid token");
+
+        var firstName = request.FirstName.Trim();
+        var lastName = request.LastName.Trim();
+
+        if (firstName.Length < 2 || lastName.Length < 2)
+            return BadRequest("FirstName/LastName must be at least 2 characters");
+
+        var user = await _db.Users.FirstOrDefaultAsync(x => x.Id == userId);
+        if (user == null)
+            return NotFound("User not found");
+
+        user.FirstName = firstName;
+        user.LastName = lastName;
+
+        await _db.SaveChangesAsync();
+
+        return Ok(new
+        {
+            user.Id,
+            user.Email,
+            user.FirstName,
+            user.LastName
+        });
     }
 }

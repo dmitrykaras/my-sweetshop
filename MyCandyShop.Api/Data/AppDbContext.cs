@@ -8,6 +8,8 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     public DbSet<User> Users => Set<User>();
+    public DbSet<EmailVerificationCode> EmailVerificationCodes => Set<EmailVerificationCode>();
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -20,6 +22,15 @@ public class AppDbContext : DbContext
             e.Property(x => x.Email).IsRequired().HasMaxLength(256);
             e.Property(x => x.FirstName).HasMaxLength(100);
             e.Property(x => x.LastName).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<EmailVerificationCode>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Email).IsRequired().HasMaxLength(256);
+            e.Property(x => x.CodeHash).IsRequired().HasMaxLength(256);
+
+            e.HasIndex(x => x.Email);
         });
     }
 }

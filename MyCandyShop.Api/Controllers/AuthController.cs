@@ -372,4 +372,65 @@ public class AuthController : ControllerBase
             }
         });
     }
+
+    [Authorize]
+    [HttpGet("favorites")]
+    public async Task<IActionResult> GetFavorites()
+    {
+        var userIdStr = User.FindFirstValue("uid");
+        if (!Guid.TryParse(userIdStr, out var userId))
+            return Unauthorized("Invalid token");
+
+        var favorites = await _db.UserFavorites
+            .Where(f => f.UserId == userId)
+            .Include(f => f.Product)
+            .Select(f => new
+            {
+                f.Product.Id,
+                f.Product.Name,
+                f.Product.Price,
+                f.Product.ImageUrl
+            })
+            .ToListAsync();
+
+        return Ok(favorites);
+    }
+
+    [Authorize]
+    [HttpPost("favorites/{productId}")]
+    public async Task<IActionResult> AddFavorite(Guid productId)
+    {
+        var userIdStr = User.FindFirstValue("uid");
+        if (!Guid.TryParse(userIdStr, out var userId))
+            return Unauthorized("Invalid token");
+
+        if (await _db.UserFavorites.AnyAsync(f => f.UserId == userId && f.ProductId == productId))
+            return BadRequest("Already in favorites");
+
+        _db.UserFavorites.Add(new UserFavorite
+        {
+            UserId = userId,
+            ProductId = productId
+        });
+
+        await _db.SaveChangesAsync();
+        return Ok();
+    }
+
+    [Authorize]
+    [HttpDelete("favorites/{productId}")]
+    public async Task<IActionResult> RemoveFavorite(Guid productId)
+    {
+        var userIdStr = User.FindFirstValue("uid");
+        if (!Guid.TryParse(userIdStr, out var userId))
+            return Unauthorized("Invalid token");
+
+        var favorite = await _db.UserFavorites.FirstOrDefaultAsync(f => f.UserId == userId && f.ProductId == productId);
+        if (favorite == null)
+            return NotFound();
+
+        _db.UserFavorites.Remove(favorite);
+        await _db.SaveChangesAsync();
+        return Ok();
+    }
 }

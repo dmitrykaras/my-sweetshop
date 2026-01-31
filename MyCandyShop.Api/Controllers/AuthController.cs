@@ -388,8 +388,10 @@ public class AuthController : ControllerBase
             {
                 f.Product.Id,
                 f.Product.Name,
+                f.Product.Description,
                 f.Product.Price,
-                f.Product.ImageUrl
+                f.Product.ImageUrl,
+                CategoryId = f.Product.CategoryId
             })
             .ToListAsync();
 
@@ -433,4 +435,6 @@ public class AuthController : ControllerBase
         await _db.SaveChangesAsync();
         return Ok();
     }
+
+
 }

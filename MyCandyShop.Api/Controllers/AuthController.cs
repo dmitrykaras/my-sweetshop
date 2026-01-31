@@ -203,4 +203,43 @@ public class AuthController : ControllerBase
             user.Points
         });
     }
+
+    [Authorize]
+    [HttpPatch("profile")]
+    public async Task<IActionResult> PatchProfile([FromBody] PatchProfileRequest request)
+    {
+        var userIdStr = User.FindFirstValue("uid");
+        if (!Guid.TryParse(userIdStr, out var userId))
+            return Unauthorized("Invalid token");
+
+        var user = await _db.Users.FirstOrDefaultAsync(x => x.Id == userId);
+        if (user == null)
+            return NotFound("User not found");
+
+        // обновляем только те поля, что пришли
+        if (!string.IsNullOrWhiteSpace(request.FirstName))
+        {
+            if (request.FirstName.Trim().Length < 2)
+                return BadRequest("FirstName must be at least 2 characters");
+            user.FirstName = request.FirstName.Trim();
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.LastName))
+        {
+            if (request.LastName.Trim().Length < 2)
+                return BadRequest("LastName must be at least 2 characters");
+            user.LastName = request.LastName.Trim();
+        }
+
+        await _db.SaveChangesAsync();
+
+        return Ok(new
+        {
+            user.Id,
+            user.Email,
+            user.FirstName,
+            user.LastName,
+            user.Points
+        });
+    }
 }

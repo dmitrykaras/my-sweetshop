@@ -6,10 +6,9 @@ namespace MyCandyShop.Api.Data;
 public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
     public DbSet<User> Users => Set<User>();
     public DbSet<EmailVerificationCode> EmailVerificationCodes => Set<EmailVerificationCode>();
-
+    public DbSet<EmailChangeCode> EmailChangeCodes => Set<EmailChangeCode>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

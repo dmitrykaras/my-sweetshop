@@ -242,4 +242,134 @@ public class AuthController : ControllerBase
             user.Points
         });
     }
+
+    [Authorize]
+    [HttpPost("request-change-email")]
+    public async Task<IActionResult> RequestChangeEmail([FromBody] AuthRequestChangeEmailRequest request)
+    {
+        var userIdStr = User.FindFirstValue("uid");
+        if (!Guid.TryParse(userIdStr, out var userId))
+            return Unauthorized("Invalid token");
+
+        var newEmail = request.NewEmail.Trim().ToLower();
+
+        if (string.IsNullOrWhiteSpace(newEmail) || !newEmail.Contains("@"))
+            return BadRequest("Invalid email");
+
+        //нельзя поставить email, который уже занят
+        var exists = await _db.Users.AnyAsync(X => X.Email == newEmail);
+        if (exists)
+            return BadRequest("Email elredy used");
+
+        //cooldown (например 2 минуты на один email)
+        var last = await _db.EmailChangeCodes
+             .Where(x => x.UserId == userId && x.NewEmail == newEmail)
+        .OrderByDescending(x => x.CreatedAt)
+        .FirstOrDefaultAsync();
+
+        if (last != null)
+        {
+            var seconds = (int)(DateTimeOffset.UtcNow - last.CreatedAt).TotalSeconds;
+            if (seconds < 120)
+                return BadRequest($"Wait {120 - seconds} seconds");
+        }
+
+        var code = CodeGenerator.Generate4Digits();
+        var hash = HashService.Sha256($"{userId}:{newEmail}:{code}");
+
+        var entity = new EmailChangeCode
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            NewEmail = newEmail,
+            CodeHash = hash,
+            CreatedAt = DateTimeOffset.UtcNow,
+            ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(10),
+            Attempts = 0,
+            IsUsed = false
+        };
+
+        _db.EmailChangeCodes.Add(entity);
+        await _db.SaveChangesAsync();
+
+        // временно: выводим код в консоль
+        Console.WriteLine($"[CHANGE EMAIL CODE] user={userId} => {newEmail} => {code}");
+
+        return Ok(new { cooldownSeconds = 120 });
+    }
+
+    [Authorize]
+    [HttpPost("confirm-change-email")]
+    public async Task<IActionResult> ConfirmChangeEmail([FromBody] AuthConfirmChangeEmailRequest request)
+    {
+        var userIdStr = User.FindFirstValue("uid");
+        if (!Guid.TryParse(userIdStr, out var userId))
+            return Unauthorized("Invalid token");
+
+        var newEmail = request.NewEmail.Trim().ToLower();
+        var code = request.Code.Trim();
+
+        if (string.IsNullOrWhiteSpace(newEmail) || !newEmail.Contains("@"))
+            return BadRequest("Invalid email");
+
+        if (code.Length != 4 || !code.All(char.IsDigit))
+            return BadRequest("Invalid code");
+
+        var entity = await _db.EmailChangeCodes
+            .Where(x => x.UserId == userId && x.NewEmail == newEmail)
+            .OrderByDescending(x => x.CreatedAt)
+            .FirstOrDefaultAsync();
+
+        if (entity == null)
+            return BadRequest("Code not found");
+
+        if (entity.IsUsed)
+            return BadRequest("Code already used");
+
+        if (DateTimeOffset.UtcNow > entity.ExpiresAt)
+            return BadRequest("Code expired");
+
+        if (entity.Attempts >= 5)
+            return BadRequest("Too many attempts");
+
+        entity.Attempts++;
+
+        var inputHash = HashService.Sha256($"{userId}:{newEmail}:{code}");
+        if (entity.CodeHash != inputHash)
+        {
+            await _db.SaveChangesAsync();
+            return BadRequest("Invalid code");
+        }
+
+        entity.IsUsed = true;
+
+        // проверяем что email не заняли пока мы подтверждали
+        var taken = await _db.Users.AnyAsync(x => x.Email == newEmail);
+        if (taken)
+            return BadRequest("Email already used");
+
+        var user = await _db.Users.FirstOrDefaultAsync(x => x.Id == userId);
+        if (user == null)
+            return NotFound("User not found");
+
+        user.Email = newEmail;
+
+        await _db.SaveChangesAsync();
+
+        // важно: после смены email лучше выдать новый токен
+        var token = _jwt.CreateToken(user);
+
+        return Ok(new
+        {
+            token,
+            user = new
+            {
+                user.Id,
+                user.Email,
+                user.FirstName,
+                user.LastName,
+                user.Points
+            }
+        });
+    }
 }

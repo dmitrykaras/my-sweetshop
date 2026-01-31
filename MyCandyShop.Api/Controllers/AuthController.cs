@@ -180,4 +180,27 @@ public class AuthController : ControllerBase
             user.LastName
         });
     }
+
+    [Authorize]
+    [HttpGet("me")]
+    public async Task<IActionResult> GetProfile()
+    {
+        // берём userId из токена
+        var userIdStr = User.FindFirstValue("uid");
+        if (!Guid.TryParse(userIdStr, out var userId))
+            return Unauthorized("Invalid token");
+
+        var user = await _db.Users.FirstOrDefaultAsync(x => x.Id == userId);
+        if (user == null)
+            return NotFound("User not found");
+
+        return Ok(new
+        {
+            user.Id,
+            user.Email,
+            user.FirstName,
+            user.LastName,
+            user.Points
+        });
+    }
 }

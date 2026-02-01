@@ -1,5 +1,5 @@
 ﻿using System.Text;
-
+using System.Net.Http.Headers;
 
 namespace my_sweetshop.Services
 {
@@ -8,21 +8,17 @@ namespace my_sweetshop.Services
         private readonly HttpClient _http;
         private readonly AuthSession _session;
 
-        public ApiClient(AuthSession session)
+        public ApiClient(HttpClient http, AuthSession session)
         {
+            _http = http;
             _session = session;
-
-            _http = new HttpClient
-            {
-                BaseAddress = new Uri("http://10.0.2.2:5107/api/")
-            };
         }
 
         public async Task<HttpResponseMessage> PostAsync(string path, object body, bool auth = false)
         {
             if (auth && _session.IsAuthorized)
                 _http.DefaultRequestHeaders.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _session.Token);
+                    new AuthenticationHeaderValue("Bearer", _session.Token);
 
             var json = System.Text.Json.JsonSerializer.Serialize(body);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -34,7 +30,7 @@ namespace my_sweetshop.Services
         {
             if (auth && _session.IsAuthorized)
                 _http.DefaultRequestHeaders.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _session.Token);
+                    new AuthenticationHeaderValue("Bearer", _session.Token);
 
             return await _http.GetAsync(path);
         }

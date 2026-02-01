@@ -5,11 +5,13 @@ namespace my_sweetshop.Views.Auth;
 public partial class EmailPage : ContentPage
 {
     private readonly AuthApi _authApi;
+    private readonly CodePageFactory _codePageFactory;
 
-    public EmailPage(AuthApi authApi)
+    public EmailPage(AuthApi authApi, CodePageFactory codePageFactory)
     {
         InitializeComponent();
         _authApi = authApi;
+        _codePageFactory = codePageFactory;
     }
 
     private async void OnClose(object sender, EventArgs e)
@@ -34,13 +36,16 @@ public partial class EmailPage : ContentPage
             // отправляем код на почту
             await _authApi.RequestCodeAsync(email);
 
-            // переходим на страницу ввода кода
-            var codePage = new CodePage(
-                MauiProgram.ServiceProvider.GetService<AuthApi>()!,
-                MauiProgram.ServiceProvider.GetService<AuthSession>()!,
-                email
-            );
+            var authApi = MauiProgram.ServiceProvider.GetService<AuthApi>();
+            var session = MauiProgram.ServiceProvider.GetService<AuthSession>();
 
+            if (authApi == null || session == null || string.IsNullOrWhiteSpace(email))
+            {
+                await DisplayAlert("Ошибка", "Невозможно продолжить: сервис не найден или email пустой", "Ок");
+                return;
+            }
+
+            var codePage = new CodePage(authApi, session, email);
             await Navigation.PushAsync(codePage);
         }
         catch (Exception ex)

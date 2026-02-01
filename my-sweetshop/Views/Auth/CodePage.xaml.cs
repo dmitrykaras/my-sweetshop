@@ -22,7 +22,6 @@ public partial class CodePage : ContentPage
         HintLabel.Text = $"На почту {_email} отправлено письмо с кодом подтверждения";
 
         StartCooldown();
-        D1.Focus();
     }
 
     private async void OnBack(object sender, EventArgs e) => await Navigation.PopAsync();
@@ -114,7 +113,7 @@ public partial class CodePage : ContentPage
         ResendLabel.Opacity = 0.4;
         CooldownLabel.Text = $"Повторная отправка через {_cooldownSeconds} сек.";
 
-        Dispatcher.StartTimer(TimeSpan.FromSeconds(1), () =>
+        this.Dispatcher.StartTimer(TimeSpan.FromSeconds(1), () =>
         {
             _cooldownSeconds--;
             CooldownLabel.Text = $"Повторная отправка через {_cooldownSeconds} сек.";
@@ -130,4 +129,11 @@ public partial class CodePage : ContentPage
             return true;
         });
     }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        D1.Focus();
+    }
+
 }

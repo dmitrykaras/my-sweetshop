@@ -19,9 +19,12 @@ namespace my_sweetshop
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            builder.Services.AddSingleton(new HttpClient
+            builder.Services.AddSingleton<HttpClient>(sp =>
             {
-                BaseAddress = new Uri("http://10.0.2.2:5107/api/")
+                return new HttpClient
+                {
+                    BaseAddress = new Uri("http://10.0.2.2:5107/")
+                };
             });
 
             builder.Services.AddSingleton<AuthSession>();
@@ -32,6 +35,7 @@ namespace my_sweetshop
             builder.Services.AddTransient<EmailPage>();
             builder.Services.AddTransient<CodePage>();
             builder.Services.AddTransient<ProfilePage>();
+            builder.Services.AddSingleton<CodePageFactory>();
 
             var app = builder.Build();
             ServiceProvider = app.Services;

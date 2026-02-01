@@ -83,6 +83,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
+app.Urls.Add("http://0.0.0.0:5107");
 app.UseAuthentication();
 app.UseAuthorization();
 

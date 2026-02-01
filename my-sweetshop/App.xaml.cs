@@ -1,12 +1,18 @@
-﻿namespace my_sweetshop
+﻿using my_sweetshop.Views.Auth;
+
+namespace my_sweetshop;
+
+public partial class App : Application
 {
-    public partial class App : Application
+    public App()
     {
-        public App()
-        {
-            InitializeComponent();
-            MainPage = new AppShell();
-        }
+        InitializeComponent();
     }
 
+    protected override Window CreateWindow(IActivationState activationState)
+    {
+        var navPage = new NavigationPage(MauiProgram.ServiceProvider.GetService<AuthStartPage>()!);
+
+        return new Window(navPage);
+    }
 }

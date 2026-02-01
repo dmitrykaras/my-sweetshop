@@ -1,9 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
+using my_sweetshop.Services;
+using my_sweetshop.Views.Auth;
 
 namespace my_sweetshop
 {
     public static class MauiProgram
     {
+        public static IServiceProvider ServiceProvider { get; private set; } = null!;
+
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
@@ -15,11 +19,24 @@ namespace my_sweetshop
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-#if DEBUG
-    		builder.Logging.AddDebug();
-#endif
+            builder.Services.AddSingleton(new HttpClient
+            {
+                BaseAddress = new Uri("http://10.0.2.2:5107/api/")
+            });
 
-            return builder.Build();
+            builder.Services.AddSingleton<AuthSession>();
+            builder.Services.AddSingleton<ApiClient>();
+            builder.Services.AddSingleton<AuthApi>();
+
+            builder.Services.AddTransient<AuthStartPage>();
+            builder.Services.AddTransient<EmailPage>();
+            builder.Services.AddTransient<CodePage>();
+            builder.Services.AddTransient<ProfilePage>();
+
+            var app = builder.Build();
+            ServiceProvider = app.Services;
+
+            return app;
         }
     }
 }

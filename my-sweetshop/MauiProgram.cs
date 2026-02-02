@@ -34,7 +34,7 @@ namespace my_sweetshop
             builder.Services.AddTransient<AuthStartPage>();
             builder.Services.AddTransient<EmailPage>();
             builder.Services.AddTransient<CodePage>();
-            builder.Services.AddTransient<ProfilePage>();
+            builder.Services.AddTransient<CompletionProfilePage>();
             builder.Services.AddSingleton<CodePageFactory>();
 
             var app = builder.Build();

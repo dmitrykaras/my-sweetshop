@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace my_sweetshop.ViewModels.Dtos
+﻿namespace my_sweetshop.ViewModels.Dtos
 {
-    internal class AuthVerifyCodeRequest
+    public class AuthVerifyCodeRequest
     {
+        public string Email { get; set; } = "";
+        public string Code { get; set; } = "";
     }
 }

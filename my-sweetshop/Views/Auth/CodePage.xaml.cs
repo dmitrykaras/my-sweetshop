@@ -7,6 +7,7 @@ public partial class CodePage : ContentPage
     private readonly AuthApi _authApi;
     private readonly AuthSession _session;
     private readonly string _email;
+    private bool _isClearing;
 
     // resend cooldown
     private int _cooldownSeconds = 120;
@@ -48,6 +49,8 @@ public partial class CodePage : ContentPage
 
     private void OnDigitChanged(object sender, TextChangedEventArgs e)
     {
+        if (_isClearing) return;
+
         if (_verifyCooldownActive)
         {
             ((Entry)sender).Text = "";
@@ -144,16 +147,13 @@ public partial class CodePage : ContentPage
     {
         ErrorLabel.Text = text;
         ErrorLabel.IsVisible = true;
-
-        Dispatcher.DispatchDelayed(TimeSpan.FromSeconds(2), () =>
-        {
-            ErrorLabel.IsVisible = false;
-        });
     }
 
     private void ClearCode()
     {
+        _isClearing = true;
         D1.Text = D2.Text = D3.Text = D4.Text = "";
+        _isClearing = false;
     }
 
     private void SetInputsEnabled(bool enabled)
@@ -161,9 +161,6 @@ public partial class CodePage : ContentPage
         D1.IsEnabled = D2.IsEnabled = D3.IsEnabled = D4.IsEnabled = enabled;
     }
 
-    // ===============================
-    // RESEND COOLDOWN (уже было)
-    // ===============================
     private void StartResendCooldown()
     {
         _cooldownActive = true;
@@ -189,9 +186,6 @@ public partial class CodePage : ContentPage
         });
     }
 
-    // ===============================
-    // VERIFY COOLDOWN (новое)
-    // ===============================
     private void StartVerifyCooldown(int seconds)
     {
         if (seconds <= 0)

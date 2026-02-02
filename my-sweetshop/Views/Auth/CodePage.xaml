@@ -2,8 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="my_sweetshop.Views.Auth.CodePage"
-             Title="CodePage">
-    <Grid Padding="24" RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+             Title="Ввод кода">
+    <Grid Padding="24" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto">
 
         <ImageButton Source="page_transition.png"
                      WidthRequest="26"
@@ -12,7 +12,7 @@
                      Clicked="OnBack"/>
 
         <Label Grid.Row="1"
-               Text="Введите код"
+               Text="Введите код:"
                FontSize="22"
                FontAttributes="Bold"
                Margin="0,18,0,0"/>
@@ -45,7 +45,7 @@
                TextColor="Red"
                Margin="0,10,0,0"/>
 
-        <Label Grid.Row="4"
+        <Label Grid.Row="5"
                x:Name="VerifyCooldownLabel"
                IsVisible="False"
                TextColor="#888"
@@ -53,7 +53,7 @@
                Margin="0,32,0,0"/>
 
 
-        <VerticalStackLayout Grid.Row="5" Spacing="10">
+        <VerticalStackLayout Grid.Row="6" Spacing="10">
             <Label x:Name="ResendLabel"
                    Text="Отправить код повторно"
                    TextColor="Black"

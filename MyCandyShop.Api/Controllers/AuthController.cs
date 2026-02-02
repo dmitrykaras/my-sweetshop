@@ -71,14 +71,22 @@ public class AuthController : ControllerBase
     [HttpPost("verify-code")]
     public async Task<IActionResult> VerifyCode([FromBody] AuthVerifyCodeRequest request)
     {
-        var email = request.Email.Trim().ToLower();
-        var code = request.Code.Trim();
+        var email = request.Email?.Trim().ToLower();
+        var code = request.Code?.Trim();
 
         if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
-            return BadRequest("Invalid email");
+            return BadRequest(new ApiErrorResponse
+            {
+                Error = "invalid_email",
+                Message = "Invalid email"
+            });
 
-        if (code.Length != 4 || !code.All(char.IsDigit))
-            return BadRequest("Invalid code");
+        if (string.IsNullOrWhiteSpace(code) || code.Length != 4 || !code.All(char.IsDigit))
+            return BadRequest(new ApiErrorResponse
+            {
+                Error = "invalid_code_format",
+                Message = "Invalid code format"
+            });
 
         var entity = await _db.EmailVerificationCodes
             .Where(x => x.Email == email)
@@ -86,33 +94,78 @@ public class AuthController : ControllerBase
             .FirstOrDefaultAsync();
 
         if (entity == null)
-            return BadRequest("Code not found");
+            return BadRequest(new ApiErrorResponse
+            {
+                Error = "code_not_found",
+                Message = "Code not found"
+            });
 
         if (entity.IsUsed)
-            return BadRequest("Code already used");
+            return BadRequest(new ApiErrorResponse
+            {
+                Error = "code_already_used",
+                Message = "Code already used"
+            });
 
         if (DateTimeOffset.UtcNow > entity.ExpiresAt)
-            return BadRequest("Code expired");
+            return BadRequest(new ApiErrorResponse
+            {
+                Error = "code_expired",
+                Message = "Code expired"
+            });
 
-        if (entity.Attempts >= 5)
-            return BadRequest("Too many attempts");
+        const int maxAttempts = 5;
+        const int blockSeconds = 120; // 2 минуты блокировки
 
+        // Проверка блокировки
+        if (entity.BlockedUntil.HasValue && DateTimeOffset.UtcNow < entity.BlockedUntil.Value)
+        {
+            var retry = (int)(entity.BlockedUntil.Value - DateTimeOffset.UtcNow).TotalSeconds;
+            return BadRequest(new ApiErrorResponse
+            {
+                Error = "too_many_attempts",
+                Message = "Too many attempts",
+                AttemptsLeft = 0,
+                RetryAfterSeconds = retry
+            });
+        }
+
+        // Проверка кода
         entity.Attempts++;
-
         var inputHash = HashService.Sha256($"{email}:{code}");
 
         if (entity.CodeHash != inputHash)
         {
+            if (entity.Attempts >= maxAttempts)
+            {
+                entity.BlockedUntil = DateTimeOffset.UtcNow.AddSeconds(blockSeconds);
+                await _db.SaveChangesAsync();
+
+                return BadRequest(new ApiErrorResponse
+                {
+                    Error = "too_many_attempts",
+                    Message = "Too many attempts",
+                    AttemptsLeft = 0,
+                    RetryAfterSeconds = blockSeconds
+                });
+            }
+
             await _db.SaveChangesAsync();
-            return BadRequest("Invalid code");
+
+            return BadRequest(new ApiErrorResponse
+            {
+                Error = "invalid_code",
+                Message = "Invalid code",
+                AttemptsLeft = maxAttempts - entity.Attempts
+            });
         }
 
+        // Если код верный
         entity.IsUsed = true;
         await _db.SaveChangesAsync();
 
-        // 1) найти или создать пользователя
+        // Найти или создать пользователя
         var user = await _db.Users.FirstOrDefaultAsync(x => x.Email == email);
-
         if (user == null)
         {
             user = new User
@@ -124,14 +177,12 @@ public class AuthController : ControllerBase
                 FirstName = null,
                 LastName = null
             };
-
             _db.Users.Add(user);
             await _db.SaveChangesAsync();
         }
 
-        // 2) выпустить токен
+        // Создать JWT
         var token = _jwt.CreateToken(user);
-
         var needsProfile = string.IsNullOrWhiteSpace(user.FirstName) || string.IsNullOrWhiteSpace(user.LastName);
 
         return Ok(new

@@ -11,5 +11,6 @@ public class EmailVerificationCode
     public DateTimeOffset ExpiresAt { get; set; }
 
     public int Attempts { get; set; }
+    public DateTimeOffset? BlockedUntil { get; set; } = null;
     public bool IsUsed { get; set; }
 }

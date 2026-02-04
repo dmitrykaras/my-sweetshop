@@ -87,11 +87,16 @@ public partial class CodePage : ContentPage
             var resp = await _authApi.VerifyCodeAsync(_email, code);
 
             await _session.SetTokenAsync(resp.Token);
+            await SecureStorage.SetAsync("access_token", resp.Token);
 
-            if (resp.NeedsProfile)
-                Application.Current.Windows[0].Page = new NavigationPage(new CompletionProfilePage());
-            else
-                Application.Current.Windows[0].Page = MauiProgram.ServiceProvider.GetService<MainPage>()!;
+            var window = Application.Current?.Windows.FirstOrDefault();
+            if (window != null)
+            {
+                if (resp.NeedsProfile)
+                    window.Page = new NavigationPage(new CompletionProfilePage());
+                else
+                    window.Page = MauiProgram.ServiceProvider.GetRequiredService<MainPage>();
+            }
         }
         catch (ApiException apiEx)
         {

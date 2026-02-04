@@ -89,7 +89,7 @@ public partial class CodePage : ContentPage
             await _session.SetTokenAsync(resp.Token);
 
             if (resp.NeedsProfile)
-                await Navigation.PushAsync(new CompletionProfilePage());
+                Application.Current.Windows[0].Page = new NavigationPage(new CompletionProfilePage());
             else
                 Application.Current.Windows[0].Page = MauiProgram.ServiceProvider.GetService<MainPage>()!;
         }

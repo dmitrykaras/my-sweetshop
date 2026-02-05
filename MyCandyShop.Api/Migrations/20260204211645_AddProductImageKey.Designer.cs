@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyCandyShop.Api.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MyCandyShop.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260204211645_AddProductImageKey")]
+    partial class AddProductImageKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -161,6 +164,10 @@ namespace MyCandyShop.Api.Migrations
                     b.Property<string>("ImageKey")
                         .HasColumnType("text");
 
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -180,356 +187,464 @@ namespace MyCandyShop.Api.Migrations
                             Id = new Guid("aaaa1111-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Миндальный бисквит + хрустящий слой + начинка из вишни и малины + фисташковый мусс",
-                            Name = "Вишня-фисташка"
+                            ImageUrl = "/SeedImages/Desserts/cherry_pistachio.jpeg",
+                            Name = "Вишня-фисташка",
+                            Price = 500m
                         },
                         new
                         {
                             Id = new Guid("aaaa1112-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Шоколадный бисквит + хрустящий слой + ганаш + шоколадный мусс",
-                            Name = "Два шоколада"
+                            ImageUrl = "/SeedImages/Desserts/two_chocolates.jpeg",
+                            Name = "Два шоколада",
+                            Price = 480m
                         },
                         new
                         {
                             Id = new Guid("aaaa1113-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Бисквит из грецкого ореха + крем с сыром дорблю + начинка из груши + мусс с белым шоколадом",
-                            Name = "Дорблю-грецкий орех"
+                            ImageUrl = "/SeedImages/Desserts/door_blue_walnut.jpeg",
+                            Name = "Дорблю-грецкий орех",
+                            Price = 520m
                         },
                         new
                         {
                             Id = new Guid("aaaa1114-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Шоколадный брауни + креме с молочным шоколадом + мусс с манго и маракуйей",
-                            Name = "Манго-шоколад-маракуйя"
+                            ImageUrl = "/SeedImages/Desserts/mango_chocolate_passion_fruit.jpeg",
+                            Name = "Манго-шоколад-маракуйя",
+                            Price = 550m
                         },
                         new
                         {
                             Id = new Guid("aaaa1115-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Авторский Наполеон с нежным сливочным кремом на белом бельгийском шоколаде",
-                            Name = "Наполеон"
+                            ImageUrl = "/SeedImages/Desserts/napoleon.jpg",
+                            Name = "Наполеон",
+                            Price = 400m
                         },
                         new
                         {
                             Id = new Guid("aaaa1116-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Основа из песочного печенья + крем чиз с добавлением смородины + смородина в украшении сверху",
-                            Name = "Чизкейк чёрная смородина"
+                            ImageUrl = "/SeedImages/Desserts/blackcurrant_cheesecake.jpg",
+                            Name = "Чизкейк чёрная смородина",
+                            Price = 450m
                         },
                         new
                         {
                             Id = new Guid("aaaa1117-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Бисквит красный бархат + хрустящий слой + йогуртовый мусс",
-                            Name = "Красный бархат"
+                            ImageUrl = "/SeedImages/Desserts/red_velvet.jpeg",
+                            Name = "Красный бархат",
+                            Price = 470m
                         },
                         new
                         {
                             Id = new Guid("aaaa1118-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Нежнейшее безе + взбитые сливки + ягоды по сезону",
-                            Name = "Павлова"
+                            ImageUrl = "/SeedImages/Desserts/pavlova.jpg",
+                            Name = "Павлова",
+                            Price = 490m
                         },
                         new
                         {
                             Id = new Guid("aaaa1119-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Миндальный тарт + солёная карамель + микс орехов",
-                            Name = "Тарт с орехами"
+                            ImageUrl = "/SeedImages/Desserts/cake_with_nuts.jpg",
+                            Name = "Тарт с орехами",
+                            Price = 460m
                         },
                         new
                         {
                             Id = new Guid("aaaa1120-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Миндальный тарт + крем чиз + ягоды",
-                            Name = "Тарт с ягодами"
+                            ImageUrl = "/SeedImages/Desserts/cake_with_berries.jpg",
+                            Name = "Тарт с ягодами",
+                            Price = 460m
                         },
                         new
                         {
                             Id = new Guid("aaaa1121-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Хрустящая трубочка + нежный крем с солёной карамелью",
-                            Name = "Трубочка"
+                            ImageUrl = "/SeedImages/Desserts/straw.jpg",
+                            Name = "Трубочка",
+                            Price = 320m
                         },
                         new
                         {
                             Id = new Guid("aaaa1122-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Вкус: Ванильная, Шоколадкая, Фисташковая",
-                            Name = "Картошка в ассортименте"
+                            ImageUrl = "/SeedImages/Desserts/potatoes.jpg",
+                            Name = "Картошка в ассортименте",
+                            Price = 280m
                         },
                         new
                         {
                             Id = new Guid("aaaa1123-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Нежнейший эклер с заварным кремом. Вкус: Ванильный, Шоколадный, Карамельный, Фисташковый",
-                            Name = "Эклер в ассортименте"
+                            ImageUrl = "/SeedImages/Desserts/eclair.jpg",
+                            Name = "Эклер в ассортименте",
+                            Price = 300m
                         },
                         new
                         {
                             Id = new Guid("aaaa1124-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Три вида орехов с воздушными рисовыми шариками, хрустящей вафлей в бельгийском шоколаде",
-                            Name = "Батончик ореховый"
+                            ImageUrl = "/SeedImages/Desserts/no_image.png",
+                            Name = "Батончик ореховый",
+                            Price = 200m
                         },
                         new
                         {
                             Id = new Guid("aaaa1125-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
-                            Name = "Макарон в ассортименте"
+                            ImageUrl = "/SeedImages/Desserts/macaron.jpeg",
+                            Name = "Макарон в ассортименте",
+                            Price = 250m
                         },
                         new
                         {
                             Id = new Guid("aaaa1126-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
-                            Name = "Ириска"
+                            ImageUrl = "/SeedImages/Desserts/no_image.png",
+                            Name = "Ириска",
+                            Price = 150m
                         },
                         new
                         {
                             Id = new Guid("aaaa1127-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
-                            Name = "Пончик"
+                            ImageUrl = "/SeedImages/Desserts/donut.jpg",
+                            Name = "Пончик",
+                            Price = 120m
                         },
                         new
                         {
                             Id = new Guid("aaaa1128-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
-                            Name = "Эстерхази"
+                            ImageUrl = "/SeedImages/Desserts/esterhazy.jpg",
+                            Name = "Эстерхази",
+                            Price = 480m
                         },
                         new
                         {
                             Id = new Guid("bbbb1111-bbbb-1111-bbbb-bbbbbbbbbbbb"),
                             CategoryId = new Guid("22222222-2222-2222-2222-222222222222"),
                             Description = "Начинки муссовых тортов: Зайкина радость, Новый медовик, Бейлиз, Два шоколада, Шоколад-манго-маракуйя, Клубника-персик-сливки, Груша-карамель, Фундук-карамель, Вишнёвый или клубничный йогурт",
-                            Name = "Муссовый торт"
+                            ImageUrl = "/SeedImages/MaleCakes/m_mousse_cake.jpg",
+                            Name = "Муссовый торт",
+                            Price = 2500m
                         },
                         new
                         {
                             Id = new Guid("bbbb1112-bbbb-1111-bbbb-bbbbbbbbbbbb"),
                             CategoryId = new Guid("22222222-2222-2222-2222-222222222222"),
                             Description = "Начинки бисквитных тортов: Фруктовый, Красный бархат, Сникерс, Рафаэлло",
-                            Name = "Бисквитный торт"
+                            ImageUrl = "/SeedImages/MaleCakes/m_sponge_cake.jpg",
+                            Name = "Бисквитный торт",
+                            Price = 2000m
                         },
                         new
                         {
                             Id = new Guid("cccc1111-cccc-1111-cccc-cccccccccccc"),
                             CategoryId = new Guid("33333333-3333-3333-3333-333333333333"),
                             Description = "Начинки муссовых тортов: Зайкина радость, Новый медовик, Бейлиз, Два шоколада, Шоколад-манго-маракуйя, Клубника-персик-сливки, Груша-карамель, Фундук-карамель, Вишнёвый или клубничный йогурт",
-                            Name = "Муссовый торт"
+                            ImageUrl = "/SeedImages/FemaleCakes/w_mousse_cake.jpg",
+                            Name = "Муссовый торт",
+                            Price = 2500m
                         },
                         new
                         {
                             Id = new Guid("cccc1112-cccc-1111-cccc-cccccccccccc"),
                             CategoryId = new Guid("33333333-3333-3333-3333-333333333333"),
                             Description = "Начинки бисквитных тортов: Фруктовый, Красный бархат, Сникерс, Рафаэлло",
-                            Name = "Бисквитный торт"
+                            ImageUrl = "/SeedImages/FemaleCakes/w_sponge_cake.jpg",
+                            Name = "Бисквитный торт",
+                            Price = 2000m
                         },
                         new
                         {
                             Id = new Guid("dddd1111-dddd-1111-dddd-dddddddddddd"),
                             CategoryId = new Guid("44444444-4444-4444-4444-444444444444"),
                             Description = "Начинки муссовых тортов: Зайкина радость, Новый медовик, Бейлиз, Два шоколада, Шоколад-манго-маракуйя, Клубника-персик-сливки, Груша-карамель, Фундук-карамель, Вишнёвый или клубничный йогурт",
-                            Name = "Муссовый торт"
+                            ImageUrl = "/SeedImages/KidsCakes/c_mousse_cake.jpg",
+                            Name = "Муссовый торт",
+                            Price = 2500m
                         },
                         new
                         {
                             Id = new Guid("dddd1112-dddd-1111-dddd-dddddddddddd"),
                             CategoryId = new Guid("44444444-4444-4444-4444-444444444444"),
                             Description = "Начинки бисквитных тортов: Фруктовый, Красный бархат, Сникерс, Рафаэлло",
-                            Name = "Бисквитный торт"
+                            ImageUrl = "/SeedImages/KidsCakes/c_sponge_cake.jpg",
+                            Name = "Бисквитный торт",
+                            Price = 2000m
                         },
                         new
                         {
                             Id = new Guid("eeee1111-eeee-1111-eeee-eeeeeeeeeeee"),
                             CategoryId = new Guid("55555555-5555-5555-5555-555555555555"),
                             Description = "Начинки бисквитных тортов: Фруктовый, Красный бархат, Сникерс, Рафаэлло",
-                            Name = "Свадебный торт 2 яруса"
+                            ImageUrl = "/SeedImages/WeddingCakes/wedding_cake_with_two_tiers.jpeg",
+                            Name = "Свадебный торт 2 яруса",
+                            Price = 6000m
                         },
                         new
                         {
                             Id = new Guid("eeee1112-eeee-1111-eeee-eeeeeeeeeeee"),
                             CategoryId = new Guid("55555555-5555-5555-5555-555555555555"),
                             Description = "Начинки бисквитных тортов: Фруктовый, Красный бархат, Сникерс, Рафаэлло",
-                            Name = "Свадебный торт 3 яруса"
+                            ImageUrl = "/SeedImages/WeddingCakes/wedding_cake_has_three_tiers.jpeg",
+                            Name = "Свадебный торт 3 яруса",
+                            Price = 7500m
                         },
                         new
                         {
                             Id = new Guid("eeee1113-eeee-1111-eeee-eeeeeeeeeeee"),
                             CategoryId = new Guid("55555555-5555-5555-5555-555555555555"),
                             Description = "Начинки бисквитных тортов: Фруктовый, Красный бархат, Сникерс, Рафаэлло",
-                            Name = "Свадебный торт + капкейки"
+                            ImageUrl = "/SeedImages/WeddingCakes/wedding_cake_cupcakes.jpeg",
+                            Name = "Свадебный торт + капкейки",
+                            Price = 8000m
                         },
                         new
                         {
                             Id = new Guid("ffff1111-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
-                            Name = "Трюфель 9шт"
+                            ImageUrl = "/SeedImages/Sets/truffle_9pcs.jpg",
+                            Name = "Трюфель 9шт",
+                            Price = 1200m
                         },
                         new
                         {
                             Id = new Guid("ffff1112-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
                             Description = "4 любых пирожных на ваш выбор в одном наборе",
-                            Name = "Ассорти из 4-х пирожных"
+                            ImageUrl = "/SeedImages/Sets/assorted_4_cakes.jpg",
+                            Name = "Ассорти из 4-х пирожных",
+                            Price = 1000m
                         },
                         new
                         {
                             Id = new Guid("ffff1113-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
                             Description = "Макарон в ассортименте и свежие цветы",
-                            Name = "Макарон 4шт + цветы"
+                            ImageUrl = "/SeedImages/Sets/pieces_4_of_pasta_flowers.jpeg",
+                            Name = "Макарон 4шт + цветы",
+                            Price = 900m
                         },
                         new
                         {
                             Id = new Guid("ffff1114-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
                             Description = "Макарон 6шт в ассортименте и свежайшие цветы",
-                            Name = "Макарон 6шт + цветы"
+                            ImageUrl = "/SeedImages/Sets/pieces_6_of_pasta_flowers.jpg",
+                            Name = "Макарон 6шт + цветы",
+                            Price = 1300m
                         },
                         new
                         {
                             Id = new Guid("ffff1115-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
                             Description = "Макарон и зефир в ассортименте и цветы на выбор",
-                            Name = "Макарон 6шт + зефир 9шт + цветы"
+                            ImageUrl = "/SeedImages/Sets/pcs6_macaroni_9pcs_marshmallows_flowers.jpg",
+                            Name = "Макарон 6шт + зефир 9шт + цветы",
+                            Price = 1500m
                         },
                         new
                         {
                             Id = new Guid("ffff1116-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
                             Description = "Макарон в ассортименте + вкуснейший зефир + цветы",
-                            Name = "Макарон 8шт + зефир 8шт + цветы"
+                            ImageUrl = "/SeedImages/Sets/pcs8_macaroni_8pcs_marshmallows_flowers.jpeg",
+                            Name = "Макарон 8шт + зефир 8шт + цветы",
+                            Price = 1600m
                         },
                         new
                         {
                             Id = new Guid("ffff1117-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
                             Description = "Внешний вид может отличаться",
-                            Name = "Капкейк 4шт"
+                            ImageUrl = "/SeedImages/Sets/pcs_4_cupcake.jpg",
+                            Name = "Капкейк 4шт",
+                            Price = 800m
                         },
                         new
                         {
                             Id = new Guid("ffff1118-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
-                            Name = "Капкейки 6шт"
+                            ImageUrl = "/SeedImages/Sets/pcs6_cupcakes.jpg",
+                            Name = "Капкейки 6шт",
+                            Price = 1200m
                         },
                         new
                         {
                             Id = new Guid("ffff1119-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
                             Description = "Внешний вид может отличаться",
-                            Name = "Капкейки 9шт + макарон 6шт"
+                            ImageUrl = "/SeedImages/Sets/pcs9_cupcakes_6pcs_pasta.jpg",
+                            Name = "Капкейки 9шт + макарон 6шт",
+                            Price = 1800m
                         },
                         new
                         {
                             Id = new Guid("ffff1120-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
                             Description = "Внешний вид может отличаться",
-                            Name = "Капкейк 12шт"
+                            ImageUrl = "/SeedImages/Sets/cupcake_12pcs.jpg",
+                            Name = "Капкейк 12шт",
+                            Price = 2400m
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111111"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            Name = "Эспрессо 30 мл."
+                            ImageUrl = "/SeedImages/Drinks/espresso.jpg",
+                            Name = "Эспрессо 30 мл.",
+                            Price = 150m
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111112"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            Name = "Двойной эспрессо"
+                            ImageUrl = "/SeedImages/Drinks/espresso.jpg",
+                            Name = "Двойной эспрессо",
+                            Price = 200m
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111113"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            Name = "Американо 130 мл."
+                            ImageUrl = "/SeedImages/Drinks/latte.jpg",
+                            Name = "Американо 130 мл.",
+                            Price = 180m
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111114"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            Name = "Капучино 250/300 мл."
+                            ImageUrl = "/SeedImages/Drinks/americano.jpg",
+                            Name = "Капучино 250/300 мл.",
+                            Price = 250m
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111115"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            Name = "Латте 250/300 мл."
+                            ImageUrl = "/SeedImages/Drinks/americano.jpg",
+                            Name = "Латте 250/300 мл.",
+                            Price = 270m
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111116"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            Name = "Латте макиато 250/300 мл."
+                            ImageUrl = "/SeedImages/Drinks/americano.jpg",
+                            Name = "Латте макиато 250/300 мл.",
+                            Price = 150m
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111117"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            Name = "Флэт Уайт 250/300 мл."
+                            ImageUrl = "/SeedImages/Drinks/americano.jpg",
+                            Name = "Флэт Уайт 250/300 мл.",
+                            Price = 200m
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111118"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            Name = "Чай в ассортименте 350 мл."
+                            ImageUrl = "/SeedImages/Drinks/americano.jpg",
+                            Name = "Чай в ассортименте 350 мл.",
+                            Price = 180m
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111119"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
                             Description = "Свежевыжатый сок апельсина или грейпфрута",
-                            Name = "Фреш 300 мл."
+                            ImageUrl = "/SeedImages/Drinks/fresh.jpeg",
+                            Name = "Фреш 300 мл.",
+                            Price = 250m
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111120"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            Name = "Молочный коктейль 350 мл."
+                            ImageUrl = "/SeedImages/Drinks/milkshake.jpeg",
+                            Name = "Молочный коктейль 350 мл.",
+                            Price = 270m
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111121"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            Name = "Горячий шоколад 250 мл."
+                            ImageUrl = "/SeedImages/Drinks/hot_chocolate.png",
+                            Name = "Горячий шоколад 250 мл.",
+                            Price = 270m
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111122"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            Name = "Сок с трубочкой 300 мл."
+                            ImageUrl = "/SeedImages/Drinks/juice.jpeg",
+                            Name = "Сок с трубочкой 300 мл.",
+                            Price = 150m
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111123"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            Name = "Добрый апельсин 300 мл."
+                            ImageUrl = "/SeedImages/Drinks/good_orange.jpeg",
+                            Name = "Добрый апельсин 300 мл.",
+                            Price = 200m
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111124"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            Name = "Добрый кола 300 мл."
+                            ImageUrl = "/SeedImages/Drinks/good_cola.jpeg",
+                            Name = "Добрый кола 300 мл.",
+                            Price = 180m
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111125"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            Name = "Спрайт 500 мл."
+                            ImageUrl = "/SeedImages/Drinks/sprite.jpg",
+                            Name = "Спрайт 500 мл.",
+                            Price = 250m
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111126"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            Name = "Pulpy 500 мл."
+                            ImageUrl = "/SeedImages/Drinks/pulpy.png",
+                            Name = "Pulpy 500 мл.",
+                            Price = 270m
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111127"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            Name = "BonAqua 500 мл."
+                            ImageUrl = "/SeedImages/Drinks/bonaqua.jpeg",
+                            Name = "BonAqua 500 мл.",
+                            Price = 270m
                         });
                 });
 

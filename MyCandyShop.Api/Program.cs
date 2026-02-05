@@ -6,6 +6,7 @@ using MyCandyShop.Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using MyCandyShop.Api.Data;
+using MyCandyShop.Api.IScript;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,9 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddScoped<JwtService>();
+
+builder.Services.Configure<BucketSettings>(builder.Configuration.GetSection("BucketSettings"));
+builder.Services.AddSingleton<IObjectStorage, BucketStorage>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
@@ -88,5 +92,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+if (args.Contains("--seed-images"))
+{
+    await ISeedProductImages.SeedProductImages(app);
+    Console.WriteLine("Done!");
+    return;
+}
 
 app.Run();

@@ -1,11 +1,13 @@
-﻿using MyCandyShop.Api.Data;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using MyCandyShop.Api.Data;
 using MyCandyShop.Api.Services;
 
 namespace MyCandyShop.Api.IScript
 {
-    public class ISeedProductImages
+    public static class ISeedProductImages
     {
-        public static async Task SeedProductImages(IHost host)
+        public static async Task SeedAsync(IHost host)
         {
             using var scope = host.Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -14,7 +16,7 @@ namespace MyCandyShop.Api.IScript
 
             // Список ваших данных (я добавил несколько для примера, вставьте сюда все остальные)
             var seedData = new List<(Guid Id, string Path)>
-        {
+            {
             // Десерты
             (Guid.Parse("aaaa1111-aaaa-1111-aaaa-aaaaaaaaaaaa"), "SeedImages/dessert/cherry_pistachio.jpeg"),
             (Guid.Parse("aaaa1112-aaaa-1111-aaaa-aaaaaaaaaaaa"), "SeedImages/dessert/two_chocolates.jpeg"),
@@ -78,28 +80,59 @@ namespace MyCandyShop.Api.IScript
             (Guid.Parse("88888888-1111-1111-8888-111111111127"), "SeedImages/Drinks/bonaqua.jpeg")
         };
 
-            Console.WriteLine("Начинаю автоматическую загрузку изображений...");
+            Console.WriteLine("== Seed изображений начат ==");
 
-            foreach (var (id, path) in seedData)
+            foreach (var item in seedData)
             {
-                var product = await db.Products.FindAsync(id);
-                if (product == null) continue;
+                var product = await db.Products.FindAsync(item.Id);
+                if (product == null)
+                    continue;
 
-                var fullPath = Path.Combine(env.ContentRootPath, path);
-                if (!File.Exists(fullPath)) continue;
+                var fullPath = Path.Combine(env.ContentRootPath, item.Path); // ✅ Path
+                if (!File.Exists(fullPath))
+                    continue;
 
-                using var stream = File.OpenRead(fullPath);
-                var formFile = new FormFile(stream, 0, stream.Length, "file", Path.GetFileName(fullPath))
+                // не перезатираем существующие ключи
+                if (!string.IsNullOrEmpty(product.ImageKey))
+                    continue;
+
+                await using var stream = File.OpenRead(fullPath);
+
+                var formFile = new FormFile(
+                    stream,
+                    0,
+                    stream.Length,
+                    "file",
+                    Path.GetFileName(fullPath)
+                )
                 {
                     Headers = new HeaderDictionary(),
-                    ContentType = "image/jpeg"
+                    ContentType = GetContentType(fullPath)
                 };
 
-                var (key, _) = await storage.UploadAsync(formFile, $"products/{id}");
-                product.ImageKey = key;
+                // upload в storage
+                var (imageKey, _) = await storage.UploadAsync(formFile, $"products/{item.Id}");
+
+                // запись в БД
+                product.ImageKey = imageKey;
             }
 
             await db.SaveChangesAsync();
+
+            Console.WriteLine("== Seed изображений завершён ==");
+        }
+
+        private static string GetContentType(string path)
+        {
+            var ext = Path.GetExtension(path).ToLower();
+            return ext switch
+            {
+                ".png" => "image/png",
+                ".jpg" => "image/jpeg",
+                ".jpeg" => "image/jpeg",
+                ".webp" => "image/webp",
+                _ => "application/octet-stream"
+            };
         }
     }
 }

@@ -1,12 +1,14 @@
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using MyCandyShop.Api.Options;
-using MyCandyShop.Api.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MyCandyShop.Api.Data;
+using MyCandyShop.Api.Entities;
 using MyCandyShop.Api.IScript;
+using MyCandyShop.Api.Options;
+using MyCandyShop.Api.Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -93,11 +95,29 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Прекрепление изображений к продуктам
 if (args.Contains("--seed-images"))
 {
-    await ISeedProductImages.SeedProductImages(app);
+    await ISeedProductImages.SeedAsync(app);
     Console.WriteLine("Done!");
     return;
+}
+
+// Очистка ImageUrl
+if (args.Contains("--clear-images"))
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    var products = await db.Products.ToListAsync();
+
+    foreach (var p in products)
+        p.ImageKey = null;
+
+    await db.SaveChangesAsync();
+
+    Console.WriteLine("IMAGE KEYS CLEARED");
+    return; // сервер не стартует
 }
 
 app.Run();

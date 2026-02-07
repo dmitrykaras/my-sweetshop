@@ -30,6 +30,7 @@ public class BucketStorage : IObjectStorage
         );
     }
 
+    // Метод генерации имени файла
     public async Task<(string Key, string Url)> UploadAsync(IFormFile file, string folder, CancellationToken ct = default)
     {
         var extension = Path.GetExtension(file.FileName);
@@ -44,35 +45,25 @@ public class BucketStorage : IObjectStorage
             Key = key,
             InputStream = stream,
             ContentType = file.ContentType,
-            DisablePayloadSigning = true //отключает подпись чанков, что убирает заголовок aws-chunked
+            DisablePayloadSigning = true // Отключает подпись чанков, что убирает заголовок aws-chunked
         };
 
-        //оставляем на всякий случай, это хороший тон
         request.Headers.ContentLength = file.Length;
 
         await _client.PutObjectAsync(request, ct);
 
         return (key, GetPublicUrl(key));
     }
-    public async Task DeleteAsync(string key, CancellationToken ct = default)
+
+    public async Task DeleteAsync(string key)
     {
         if (string.IsNullOrEmpty(key)) return;
 
-        var request = new Amazon.S3.Model.DeleteObjectRequest
+        await _client.DeleteObjectAsync(new Amazon.S3.Model.DeleteObjectRequest
         {
             BucketName = _bucket,
             Key = key
-        };
-
-        try
-        {
-            await _client.DeleteObjectAsync(request, ct);
-        }
-        catch (AmazonS3Exception ex)
-        {
-            //файла уже нет — не критично, можно просто залогировать
-            Console.WriteLine($"Ошибка при удалении ключа {key}: {ex.Message}");
-        }
+        });
     }
 
     public string GetPublicUrl(string key) => $"{_publicBaseUrl}/{key}";

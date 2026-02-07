@@ -6,5 +6,6 @@ namespace my_sweetshop.ViewModels
     public class ProductViewModel
     {
         public Product? Product { get; set; }
+        public string? ImageUrl { get; set; }
     }
 }

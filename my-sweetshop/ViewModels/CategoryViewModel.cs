@@ -41,7 +41,7 @@ namespace my_sweetshop.ViewModels
                 {
                     Id = "1",
                     Name = "Шоколадный торт",
-                    Image = "cake1.png",
+                    ImageUrl = "cake1.png",
                     Description = "Насыщенный шоколадный вкус"
                 });
 
@@ -49,7 +49,7 @@ namespace my_sweetshop.ViewModels
                 {
                     Id = "2",
                     Name = "Эклер",
-                    Image = "eclair.png",
+                    ImageUrl = "eclair.png",
                     Description = "Классический французский десерт"
                 });
             }

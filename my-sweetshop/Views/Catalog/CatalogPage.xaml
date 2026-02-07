@@ -39,7 +39,7 @@
                                     <VerticalStackLayout Padding="10" Spacing="8">
 
                                         <Image
-                                            Source="{Binding Image}"
+                                            Source="{Binding ImageUrl}"
                                             HeightRequest="300"
                                             Aspect="AspectFill" />
 
@@ -104,7 +104,7 @@
                                     <VerticalStackLayout Padding="10" Spacing="8">
 
                                         <Image
-                                            Source="{Binding Image}"
+                                            Source="{Binding ImageUrl}"
                                             HeightRequest="160"
                                             Aspect="AspectFill" />
 
@@ -169,7 +169,7 @@
                                     <VerticalStackLayout Padding="10" Spacing="8">
 
                                         <Image
-                                            Source="{Binding Image}"
+                                            Source="{Binding ImageUrl}"
                                             HeightRequest="160"
                                             Aspect="AspectFill" />
 
@@ -234,7 +234,7 @@
                                     <VerticalStackLayout Padding="10" Spacing="8">
 
                                         <Image
-                                            Source="{Binding Image}"
+                                            Source="{Binding ImageUrl}"
                                             HeightRequest="160"
                                             Aspect="AspectFill" />
 
@@ -299,7 +299,7 @@
                                     <VerticalStackLayout Padding="10" Spacing="8">
 
                                         <Image
-                                            Source="{Binding Image}"
+                                            Source="{Binding ImageUrl}"
                                             HeightRequest="300"
                                             Aspect="AspectFill" />
 
@@ -364,7 +364,7 @@
                                     <VerticalStackLayout Padding="10" Spacing="8">
 
                                         <Image
-                                            Source="{Binding Image}"
+                                            Source="{Binding ImageUrl}"
                                             HeightRequest="160"
                                             Aspect="AspectFill" />
 
@@ -429,7 +429,7 @@
                                     <VerticalStackLayout Padding="10" Spacing="8">
 
                                         <Image
-                                            Source="{Binding Image}"
+                                            Source="{Binding ImageUrl}"
                                             HeightRequest="250"
                                             Aspect="AspectFill" />
 

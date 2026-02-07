@@ -95,7 +95,7 @@ public partial class CodePage : ContentPage
                 if (resp.NeedsProfile)
                     window.Page = new NavigationPage(new CompletionProfilePage());
                 else
-                    window.Page = MauiProgram.ServiceProvider.GetRequiredService<MainPage>();
+                    window.Page = MauiProgram.ServiceProvider.GetRequiredService<AppShell>();
             }
         }
         catch (ApiException apiEx)

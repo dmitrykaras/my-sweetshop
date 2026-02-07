@@ -2,16 +2,11 @@
 {
     public class Product
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
-
+        public string Id { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
-
-        // Имя файла из Resources/Images или URL
-        public string Image { get; set; } = string.Empty;
-
+        public string ImageUrl { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-
-        // К какой категории относится товар
+        public decimal Price { get; set; }
         public string CategoryId { get; set; } = string.Empty;
     }
 }

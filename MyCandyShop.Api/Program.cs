@@ -103,7 +103,7 @@ if (args.Contains("--seed-images"))
     return;
 }
 
-// Очистка ImageUrl
+// Очистка всех ImageUrl
 if (args.Contains("--clear-images"))
 {
     using var scope = app.Services.CreateScope();
@@ -118,6 +118,16 @@ if (args.Contains("--clear-images"))
 
     Console.WriteLine("IMAGE KEYS CLEARED");
     return; // сервер не стартует
+}
+
+// Метод удаляет все изображения и их ключи
+if (args.Contains("--delete-all-images"))
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var host = scope.ServiceProvider.GetRequiredService<IHost>();
+        await IClearAllProductImages.ClearAsync(host);
+    }
 }
 
 app.Run();

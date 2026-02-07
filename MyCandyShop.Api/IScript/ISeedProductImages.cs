@@ -31,9 +31,9 @@ namespace MyCandyShop.Api.IScript
             (Guid.Parse("aaaa1121-aaaa-1111-aaaa-aaaaaaaaaaaa"), "SeedImages/dessert/straw.jpg"),
             (Guid.Parse("aaaa1122-aaaa-1111-aaaa-aaaaaaaaaaaa"), "SeedImages/dessert/potatoes.jpg"),
             (Guid.Parse("aaaa1123-aaaa-1111-aaaa-aaaaaaaaaaaa"), "SeedImages/dessert/eclair.jpg"),
-            (Guid.Parse("aaaa1124-aaaa-1111-aaaa-aaaaaaaaaaaa"), "SeedImages/dessert/no_image.png"),
+            (Guid.Parse("aaaa1124-aaaa-1111-aaaa-aaaaaaaaaaaa"), "SeedImages/no_image.png"),
             (Guid.Parse("aaaa1125-aaaa-1111-aaaa-aaaaaaaaaaaa"), "SeedImages/dessert/macaron.jpeg"),
-            (Guid.Parse("aaaa1126-aaaa-1111-aaaa-aaaaaaaaaaaa"), "SeedImages/dessert/no_image.png"),
+            (Guid.Parse("aaaa1126-aaaa-1111-aaaa-aaaaaaaaaaaa"), "SeedImages/no_image.png"),
             (Guid.Parse("aaaa1127-aaaa-1111-aaaa-aaaaaaaaaaaa"), "SeedImages/dessert/donut.jpg"),
             (Guid.Parse("aaaa1128-aaaa-1111-aaaa-aaaaaaaaaaaa"), "SeedImages/dessert/esterhazy.jpg"),
 

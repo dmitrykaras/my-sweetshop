@@ -21,10 +21,9 @@ public class JwtService
     {
         var claims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new(JwtRegisteredClaimNames.Email, user.Email),
-            new("uid", user.Id.ToString()),
-            new("email", user.Email),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()), // ID пользователя
+            new Claim("uid", user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email), // Email
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_opt.Key));

@@ -26,6 +26,8 @@ namespace my_sweetshop
                     BaseAddress = new Uri("http://10.0.2.2:5107/")
                 };
             });
+            builder.Services.AddSingleton<AppShell>();
+
 
             builder.Services.AddSingleton<AuthSession>();
             builder.Services.AddSingleton<ApiClient>();

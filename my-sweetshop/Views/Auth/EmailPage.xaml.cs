@@ -25,7 +25,7 @@ public partial class EmailPage : ContentPage
 
         if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
         {
-            await DisplayAlert("Ошибка", "Введите корректный email", "Ок");
+            await DisplayAlertAsync("Ошибка", "Введите корректный email", "Ок");
             return;
         }
 
@@ -41,7 +41,7 @@ public partial class EmailPage : ContentPage
 
             if (authApi == null || session == null || string.IsNullOrWhiteSpace(email))
             {
-                await DisplayAlert("Ошибка", "Невозможно продолжить: сервис не найден или email пустой", "Ок");
+                await DisplayAlertAsync("Ошибка", "Невозможно продолжить: сервис не найден или email пустой", "Ок");
                 return;
             }
 
@@ -50,7 +50,7 @@ public partial class EmailPage : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Ошибка", ex.Message, "Ок");
+            await DisplayAlertAsync("Ошибка", ex.Message, "Ок");
         }
         finally
         {

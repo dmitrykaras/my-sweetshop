@@ -9,7 +9,7 @@
         <VerticalStackLayout Padding="16" Spacing="16">
 
             <Image
-                Source="{Binding Image}"
+                Source="{Binding ImageUrl}"
                 HeightRequest="600"
                 Aspect="AspectFill" />
 

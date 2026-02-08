@@ -38,12 +38,12 @@ public partial class CodePage : ContentPage
         try
         {
             await _authApi.RequestCodeAsync(_email);
-            await DisplayAlert("Готово", "Код отправлен повторно. Проверьте “Спам”.", "Ок");
+            await DisplayAlertAsync("Готово", "Код отправлен повторно. Проверьте “Спам”.", "Ок");
             StartResendCooldown();
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Ошибка", ex.Message, "Ок");
+            await DisplayAlertAsync("Ошибка", ex.Message, "Ок");
         }
     }
 
@@ -93,7 +93,7 @@ public partial class CodePage : ContentPage
             if (window != null)
             {
                 if (resp.NeedsProfile)
-                    window.Page = new NavigationPage(new CompletionProfilePage());
+                    window.Page = new NavigationPage(new CompletionProfilePage(_email));
                 else
                     window.Page = MauiProgram.ServiceProvider.GetRequiredService<AppShell>();
             }

@@ -13,7 +13,7 @@
 
         <VerticalStackLayout Grid.Row="1" Spacing="18" VerticalOptions="Center">
             <Image Source="logo_1.png"
-                HeightRequest="140"
+                HeightRequest="300"
                 HorizontalOptions="Center"/>
 
             <Label Text="Десерты и скидки в одном месте"
@@ -24,8 +24,7 @@
 
         <Button Grid.Row="2"
             Text="Вход / Регистрация"
-            BackgroundColor="#f6ed46"
-            TextColor="Black"
+            TextColor="White"
             CornerRadius="16"
             HeightRequest="52"
             Clicked="OnStartClicked"/>

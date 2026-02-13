@@ -2,14 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="my_sweetshop.Views.Auth.AuthStartPage"
-             Title="Моя Кондитерская">
+             Title="Добро пожаловать">
     <Grid Padding="24" RowDefinitions="Auto,*,Auto">
-
-        <Label Text="Добро пожаловать"
-            FontSize="24"
-            FontAttributes="Bold"
-            TextColor="Black"
-            Margin="0,12,0,0"/>
 
         <VerticalStackLayout Grid.Row="1" Spacing="18" VerticalOptions="Center">
             <Image Source="logo_1.png"

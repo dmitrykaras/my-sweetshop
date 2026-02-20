@@ -85,7 +85,10 @@ public partial class CompletionProfilePage : ContentPage
                 await DisplayAlertAsync("Готово", "Профиль сохранён", "Ок");
 
                 var shell = MauiProgram.ServiceProvider.GetService<AppShell>();
-                Application.Current.MainPage = shell!;
+                if (Application.Current?.Windows.Count > 0)
+                {
+                    Application.Current.Windows[0].Page = new AppShell();
+                }
             }
             else
             {

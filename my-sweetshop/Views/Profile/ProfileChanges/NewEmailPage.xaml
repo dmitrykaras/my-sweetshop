@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="my_sweetshop.Views.Profile.ProfileChanges.NewEmailPage"
+             Title="NewEmailPage">
+    <VerticalStackLayout Padding="20" Spacing="14">
+
+        <Label Text="Подтверждение почты" FontSize="20" FontAttributes="Bold"/>
+
+        <Label Text="Новая почта:"/>
+        <Entry Text="{Binding Email}" IsReadOnly="True"/>
+
+        <Button Text="Подтвердить"
+                Command="{Binding ConfirmCommand}"/>
+
+    </VerticalStackLayout>
+</ContentPage>

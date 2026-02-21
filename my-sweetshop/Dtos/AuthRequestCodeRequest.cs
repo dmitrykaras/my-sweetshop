@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace my_sweetshop.ViewModels.Dtos
+namespace my_sweetshop.Dtos
 {
     internal class AuthRequestCodeRequest
     {

@@ -1,5 +1,5 @@
 ﻿using my_sweetshop.Models;
-using my_sweetshop.Services;
+using my_sweetshop.Services.Api;
 using my_sweetshop.Views.Catalog;
 using System.Collections.ObjectModel;
 using System.Windows.Input;

@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
-using my_sweetshop.ViewModels.Dtos;
+using my_sweetshop.Dtos;
 
-namespace my_sweetshop.Services
+namespace my_sweetshop.Services.Api
 {
     public class AuthApi
     {

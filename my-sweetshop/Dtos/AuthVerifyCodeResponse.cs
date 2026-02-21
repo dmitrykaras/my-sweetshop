@@ -1,6 +1,4 @@
-﻿
-
-namespace my_sweetshop.ViewModels.Dtos
+﻿namespace my_sweetshop.Dtos
 {
     public class AuthVerifyCodeResponse
     {

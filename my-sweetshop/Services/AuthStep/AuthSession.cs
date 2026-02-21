@@ -1,6 +1,4 @@
-﻿
-
-namespace my_sweetshop.Services
+﻿namespace my_sweetshop.Services.AuthStep
 {
     public class AuthSession
     {

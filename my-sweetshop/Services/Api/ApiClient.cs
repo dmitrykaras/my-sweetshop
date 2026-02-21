@@ -1,7 +1,10 @@
-﻿using System.Text;
+﻿using my_sweetshop.Services.AuthStep;
 using System.Net.Http.Headers;
+using System.Text;
+using my_sweetshop.Dtos;
+using System.Net.Http.Json;
 
-namespace my_sweetshop.Services
+namespace my_sweetshop.Services.Api
 {
     public class ApiClient
     {
@@ -13,6 +16,8 @@ namespace my_sweetshop.Services
             _http = http;
             _session = session;
         }
+
+
 
         public async Task<HttpResponseMessage> PostAsync(string path, object body, bool auth = false)
         {

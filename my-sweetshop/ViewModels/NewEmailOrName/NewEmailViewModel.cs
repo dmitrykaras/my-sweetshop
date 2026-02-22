@@ -1,31 +1,128 @@
-﻿using my_sweetshop.Services.Domain;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+using my_sweetshop.Services.Api;
+using my_sweetshop.Services.AuthStep;
 using System.Windows.Input;
+using my_sweetshop.Dtos;
 
-namespace my_sweetshop.ViewModels.NewEmailOrName
+namespace my_sweetshop.ViewModels.NewEmailOrName;
+
+public class NewEmailViewModel : BaseViewModel
 {
-    public class NewEmailViewModel : BaseViewModel
+    // Сервис для API
+    private readonly AuthApi _authApi;
+    private readonly ChangeEmail _changeEmail;
+    private readonly AuthSession _session;
+
+    private readonly EmailCache _emailCache;
+
+    // Почта, на которую отправлен код
+    public string Email { get; }
+
+    // Кулдаун на повторный ввод кода
+    public bool VerifyCooldownActive { get; private set; }
+
+    // Команды для кнопок в XAML
+    public ICommand ConfirmCodeCommand { get; }
+    public ICommand ResendCommand { get; }
+
+    public NewEmailViewModel(ChangeEmail changeEmail, AuthSession session, AuthApi authApi, EmailCache emailCache)
     {
-        public string Email { get; set; }
+        _session = session;
+        _changeEmail = changeEmail;
+        _authApi = authApi;
+        _emailCache = emailCache;
 
-        public ICommand ConfirmCommand { get; }
+        // Берём временную почту из кеша
+        Email = _session.Email!;
 
-        private readonly IUserService _userService;
+        // Сообщение пользователю о том, что код отправлен
+        ShowToast($"На почту {Email} отправлено письмо с кодом подтверждения");
+        
+    }
 
-        public NewEmailViewModel(IUserService userService)
+    // Логика проверки кода
+    public async Task<VerifyResult> VerifyCodeAsync(string code)
+    {
+        try
         {
-            _userService = userService;
+            // проверяем код по СТАРОЙ почте
+            await _changeEmail.VerifyCodeAsync(Email, code);
 
-            Email = EmailCache.TempEmail;
+            // меняем почту на НОВУЮ
+            await _changeEmail.ChangeEmailAsync(_emailCache.TempEmail!, _session.Token);
 
-            ConfirmCommand = new Command(async () => await ConfirmAsync());
+            // обновляем сессию
+            await _session.SetSessionAsync(_session.Token!, _emailCache.TempEmail!);
+
+            _emailCache.TempEmail = null;
+
+            await Shell.Current.GoToAsync("//AppShell");
+
+            return VerifyResult.Successful();
         }
-
-        private async Task ConfirmAsync()
+        catch (ApiException apiEx)
         {
-            await _userService.ChangeEmailAsync(Email);
-            EmailCache.TempEmail = null;
-
-            await Shell.Current.GoToAsync("..");
+            return HandleVerifyError(apiEx);
+        }
+        catch
+        {
+            return VerifyResult.Fail("Неверный код");
         }
     }
+
+    // Логика повторной отправки
+    public async Task<bool> ResendCodeAsync()
+    {
+        try
+        {
+            await _authApi.RequestCodeAsync(Email);
+            ShowToast("Код отправлен повторно. Проверьте “Спам”.");
+            return true;
+        }
+        catch
+        {
+            ShowToast("Ошибка повторной отправки");
+            return false;
+        }
+    }
+
+    // Обработка ошибок API
+    private VerifyResult HandleVerifyError(ApiException apiEx)
+    {
+        var err = apiEx.Error;
+
+        if (err == null)
+            return VerifyResult.Fail(apiEx.Message);
+
+        // Неверный код
+        if (err.Error == "invalid_code")
+        {
+            var attemptsLeft = err.AttemptsLeft ?? 0;
+            return VerifyResult.Fail($"Неверный код. Осталось попыток: {attemptsLeft}");
+        }
+
+        // Слишком много попыток
+        if (err.Error == "too_many_attempts")
+        {
+            VerifyCooldownActive = true;
+            return VerifyResult.Fail("Попытки закончились. Попробуйте позже.");
+        }
+
+        return VerifyResult.Fail(err.Message);
+    }
+
+    // Вспомогательная функция для toast
+    private void ShowToast(string text)
+    {
+        var toast = Toast.Make(text, ToastDuration.Short);
+        toast.Show();
+    }
+}
+
+// Результат проверки кода
+public record VerifyResult(bool Success, string ErrorMessage)
+{
+    public static VerifyResult Successful() => new(true, "");
+    public static VerifyResult Fail(string msg) => new(false, msg);
 }

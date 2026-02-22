@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using my_sweetshop.Dtos;
 using my_sweetshop.Services.Api;
 using my_sweetshop.Services.AuthStep;
 using my_sweetshop.Services.Domain;
@@ -54,6 +55,8 @@ namespace my_sweetshop
             // AuthStep
             builder.Services.AddSingleton<AuthSession>();
             builder.Services.AddSingleton<CodePageFactory>();
+            builder.Services.AddSingleton<ChangeEmail>();
+            builder.Services.AddSingleton<EmailCache>();
 
             // Pages
             builder.Services.AddTransient<HomePage>();

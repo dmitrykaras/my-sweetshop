@@ -2,16 +2,72 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="my_sweetshop.Views.Profile.ProfileChanges.NewEmailPage"
-             Title="NewEmailPage">
-    <VerticalStackLayout Padding="20" Spacing="14">
+             Title="Подтверждение почты">
 
-        <Label Text="Подтверждение почты" FontSize="20" FontAttributes="Bold"/>
+    <Grid Padding="24" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto">
 
-        <Label Text="Новая почта:"/>
-        <Entry Text="{Binding Email}" IsReadOnly="True"/>
+        <ImageButton Source="page_transition.png"
+                     WidthRequest="26"
+                     HeightRequest="26"
+                     HorizontalOptions="Start"
+                     Clicked="OnBack"/>
 
-        <Button Text="Подтвердить"
-                Command="{Binding ConfirmCommand}"/>
+        <Label Grid.Row="1"
+               Text="Введите код подтверждения"
+               FontSize="22"
+               FontAttributes="Bold"
+               Margin="0,18,0,0"/>
 
-    </VerticalStackLayout>
+        <Label Grid.Row="2"
+               Text="Код отправлен на текущую почту"
+               TextColor="#888"
+               FontSize="13"
+               Margin="0,8,0,0"/>
+
+        <!-- Код -->
+        <Grid Grid.Row="3"
+              Margin="0,18,0,0"
+              ColumnDefinitions="*,*,*,*"
+              ColumnSpacing="12">
+
+            <Entry x:Name="D1" MaxLength="1" Keyboard="Numeric" HorizontalTextAlignment="Center"
+                   FontSize="22" TextChanged="OnDigitChanged"/>
+            <Entry x:Name="D2" Grid.Column="1" MaxLength="1" Keyboard="Numeric" HorizontalTextAlignment="Center"
+                   FontSize="22" TextChanged="OnDigitChanged"/>
+            <Entry x:Name="D3" Grid.Column="2" MaxLength="1" Keyboard="Numeric" HorizontalTextAlignment="Center"
+                   FontSize="22" TextChanged="OnDigitChanged"/>
+            <Entry x:Name="D4" Grid.Column="3" MaxLength="1" Keyboard="Numeric" HorizontalTextAlignment="Center"
+                   FontSize="22" TextChanged="OnDigitChanged"/>
+        </Grid>
+
+        <Label Grid.Row="4"
+               x:Name="ErrorLabel"
+               Text="Неверный код"
+               IsVisible="False"
+               TextColor="Red"
+               Margin="0,10,0,0"/>
+
+        <Label Grid.Row="5"
+               x:Name="VerifyCooldownLabel"
+               IsVisible="False"
+               TextColor="#888"
+               FontSize="12"
+               Margin="0,32,0,0"/>
+
+        <VerticalStackLayout Grid.Row="6" Spacing="10">
+            <Label x:Name="ResendLabel"
+                   Text="Отправить код повторно"
+                   TextColor="Black"
+                   HorizontalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnResendTapped"/>
+                </Label.GestureRecognizers>
+            </Label>
+
+            <Label x:Name="CooldownLabel"
+                   TextColor="#888"
+                   FontSize="12"
+                   HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+    </Grid>
 </ContentPage>

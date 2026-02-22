@@ -17,4 +17,10 @@ public partial class App : Application
         //return new Window(navPage);
         return new Window(new SplashPage()); //поменять после тестирования регистрации/авторизации
     }
+
+    protected override async void OnStart()
+    {
+        var session = MauiProgram.ServiceProvider.GetRequiredService<AuthSession>();
+        await session.InitializeAsync();
+    }
 }

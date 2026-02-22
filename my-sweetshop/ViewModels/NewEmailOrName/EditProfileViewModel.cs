@@ -1,15 +1,24 @@
-﻿using my_sweetshop.Views.Profile.ProfileChanges;
-using System.Windows.Input;
-using my_sweetshop.Services.Domain;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
 using my_sweetshop.Dtos;
+using my_sweetshop.Services.Api;
+using my_sweetshop.Services.AuthStep;
+using my_sweetshop.Services.Domain;
+using my_sweetshop.Views.Profile.ProfileChanges;
+using System.Windows.Input;
 
 namespace my_sweetshop.ViewModels.NewEmail
 {
     public class EditProfileViewModel : BaseViewModel
     {
+        private readonly AuthApi _authApi;
+        private readonly AuthSession _session;
+
         private string _newName;
         private string _newSurname;
         private string _newEmail;
+
+        private readonly EmailCache _emailCache;
 
         public string NewName
         {
@@ -35,9 +44,12 @@ namespace my_sweetshop.ViewModels.NewEmail
 
         private readonly IUserService _userService;
 
-        public EditProfileViewModel(IUserService userService)
+        public EditProfileViewModel(IUserService userService, EmailCache emailCache, AuthApi authApi, AuthSession session)
         {
             _userService = userService;
+            _authApi = authApi;
+            _emailCache = emailCache;
+            _session = session;
 
             SaveCommand = new Command(async () => await SaveAsync());
             GoToChangeEmailCommand = new Command(async () => await GoToChangeEmail());
@@ -45,14 +57,18 @@ namespace my_sweetshop.ViewModels.NewEmail
 
             // вызываем асинхронный метод для загрузки пользователя
             _ = LoadUserAsync();
+            
         }
 
         private async Task LoadUserAsync()
         {
-            var user = await _userService.GetCurrentUser(); // await нужен
+            await _session.InitializeAsync(); // <- убедиться, что Email и Token загружены
+            var user = await _userService.GetCurrentUser();
             NewName = user.Name;
             NewSurname = user.Surname;
             NewEmail = user.Email;
+
+            _session.Email ??= user.Email; // на случай, если SecureStorage пуст
         }
 
         private async Task SaveAsync()
@@ -81,14 +97,42 @@ namespace my_sweetshop.ViewModels.NewEmail
         {
             if (string.IsNullOrWhiteSpace(NewEmail) || !NewEmail.Contains("@"))
             {
-                await Shell.Current.DisplayAlertAsync("Ошибка", "Введите корректную почту", "Ок");
+                await ShowToast("Введите корректную новую почту");
                 return;
             }
 
-            // сохраняем почту в memory storage
-            EmailCache.TempEmail = NewEmail;
+            try
+            {
+                await Shell.Current.DisplayAlertAsync("Ошибка", $"Token: {_session.Token}, Email: {_session.Email}", "Ок");
 
-            await Shell.Current.GoToAsync(nameof(NewEmailPage));
+                // сохраняем новую почту
+                _emailCache.TempEmail = NewEmail;
+
+                // используем текущую почту пользователя
+                var currentEmail = _session.Email ?? NewEmail; // fallback
+
+                if (string.IsNullOrWhiteSpace(currentEmail))
+                {
+                    await ShowToast("Текущая почта не найдена");
+                    return;
+                }
+
+                // отправка кода
+                await _authApi.RequestCodeAsync(currentEmail);
+
+                // переход на страницу ввода кода
+                await Shell.Current.GoToAsync(nameof(NewEmailPage));
+            }
+            catch
+            {
+                await ShowToast("Ошибка отправки кода");
+            }
+        }
+
+        async Task ShowToast(string text)
+        {
+            var toast = Toast.Make(text, ToastDuration.Short);
+            await toast.Show();
         }
     }
 }

@@ -12,8 +12,8 @@ namespace my_sweetshop.Services.Api
         static ApiService()
         {
             string baseUrl = DeviceInfo.Platform == DevicePlatform.Android
-                ? "http://10.0.2.2:5107/api/"
-                : "http://localhost:5107/api/";
+                ? "http://10.0.2.2:5107/"
+                : "http://localhost:5107/";
 
             _httpClient = new HttpClient
             {
@@ -39,7 +39,7 @@ namespace my_sweetshop.Services.Api
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<UserModel>("user/profile") ?? new UserModel();
+                return await _httpClient.GetFromJsonAsync<UserModel>("profile/me") ?? new UserModel();
             }
             catch (Exception ex)
             {
@@ -53,7 +53,7 @@ namespace my_sweetshop.Services.Api
             var dto = new UpdateProfileDto { FirstName = firstName, LastName = lastName };
             try
             {
-                await _httpClient.PostAsJsonAsync("user/profile/update", dto);
+                await _httpClient.PatchAsJsonAsync("/profile", dto);
             }
             catch (Exception ex)
             {
@@ -65,7 +65,7 @@ namespace my_sweetshop.Services.Api
         public async Task RequestChangeEmailAsync(string newEmail)
         {
             var dto = new AuthRequestChangeEmailDto { NewEmail = newEmail };
-            await _httpClient.PostAsJsonAsync("user/request-change-email", dto);
+            await _httpClient.PostAsJsonAsync("profile/request-change-email", dto);
         }
 
         // Подтверждение смены почты
@@ -76,7 +76,7 @@ namespace my_sweetshop.Services.Api
                 NewEmail = newEmail,
                 Code = code
             };
-            await _httpClient.PostAsJsonAsync("user/confirm-change-email", dto);
+            await _httpClient.PostAsJsonAsync("profile/confirm-change-email", dto);
         }
     }
 }

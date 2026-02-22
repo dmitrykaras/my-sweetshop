@@ -38,7 +38,7 @@
                     Padding="14"
                     StrokeShape="RoundRectangle 12">
                 <Grid ColumnDefinitions="40,*">
-                    <Image Source="user_gray.png"
+                    <Image Source="user.png"
                            HeightRequest="24"
                            WidthRequest="24"
                            VerticalOptions="Center"/>
@@ -62,7 +62,7 @@
                     Padding="14"
                     StrokeShape="RoundRectangle 12">
                 <Grid ColumnDefinitions="40,*">
-                    <Image Source="heart_gray.png"
+                    <Image Source="favorites.png"
                            HeightRequest="24"
                            WidthRequest="24"
                            VerticalOptions="Center"/>

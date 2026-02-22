@@ -1,8 +1,9 @@
-﻿using my_sweetshop.Services.AuthStep;
+﻿using my_sweetshop.Dtos;
+using my_sweetshop.Services.AuthStep;
 using System.Net.Http.Headers;
-using System.Text;
-using my_sweetshop.Dtos;
 using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 
 namespace my_sweetshop.Services.Api
 {
@@ -17,27 +18,27 @@ namespace my_sweetshop.Services.Api
             _session = session;
         }
 
-
-
-        public async Task<HttpResponseMessage> PostAsync(string path, object body, bool auth = false)
+        public async Task<HttpResponseMessage> GetAsync(string url)
         {
-            if (auth && _session.IsAuthorized)
-                _http.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", _session.Token);
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
 
-            var json = System.Text.Json.JsonSerializer.Serialize(body);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            if (!string.IsNullOrWhiteSpace(_session.Token))
+                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _session.Token);
 
-            return await _http.PostAsync(path, content);
+            return await _http.SendAsync(request);
         }
 
-        public async Task<HttpResponseMessage> GetAsync(string path, bool auth = false)
+        public async Task<HttpResponseMessage> PostAsync(string url, object data)
         {
-            if (auth && _session.IsAuthorized)
-                _http.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", _session.Token);
+            var request = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json")
+            };
 
-            return await _http.GetAsync(path);
+            if (!string.IsNullOrWhiteSpace(_session.Token))
+                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _session.Token);
+
+            return await _http.SendAsync(request);
         }
     }
 }

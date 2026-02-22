@@ -167,6 +167,7 @@ public partial class CodePage : ContentPage
         D1.IsEnabled = D2.IsEnabled = D3.IsEnabled = D4.IsEnabled = enabled;
     }
 
+    // Инициализация отсчёта повтроной отправки кода
     private void StartResendCooldown()
     {
         _cooldownActive = true;

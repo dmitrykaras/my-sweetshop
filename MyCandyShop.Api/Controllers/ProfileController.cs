@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyCandyShop.Api.Contracts;
@@ -171,6 +172,18 @@ namespace MyCandyShop.Api.Controllers
 
             user.Email = newEmail;
 
+            var refreshTokenEntity = new RefreshToken
+            {
+                Id = Guid.NewGuid(),
+                Token = Guid.NewGuid().ToString("N"), // Случайная уникальная строка
+                UserId = user.Id,
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddDays(30), // Срок жизни 30 дней
+                IsUsed = false
+            };
+
+            _db.RefreshTokens.Add(refreshTokenEntity);
+
             await _db.SaveChangesAsync();
 
             // важно: после смены email лучше выдать новый токен
@@ -179,6 +192,7 @@ namespace MyCandyShop.Api.Controllers
             return Ok(new
             {
                 token,
+                refreshToken = refreshTokenEntity.Token,
                 user = new
                 {
                     user.Id,
@@ -338,6 +352,68 @@ namespace MyCandyShop.Api.Controllers
             });
         }
 
+        // Метод для проверки кода (не создаёт новых пользователей)
+        [HttpPost("verify-code")]
+        public async Task<IActionResult> VerifyEmailCode([FromBody] AuthVerifyCodeRequest request)
+        {
+            var email = request.Email?.Trim().ToLower();
+            var code = request.Code?.Trim();
+
+            if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
+                return BadRequest(new ApiErrorResponse { Error = "invalid_email", Message = "Invalid email" });
+
+            if (string.IsNullOrWhiteSpace(code) || code.Length != 4 || !code.All(char.IsDigit))
+                return BadRequest(new ApiErrorResponse { Error = "invalid_code_format", Message = "Invalid code format" });
+
+            var entity = await _db.EmailVerificationCodes
+                .Where(x => x.Email == email)
+                .OrderByDescending(x => x.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            if (entity == null)
+                return BadRequest(new ApiErrorResponse { Error = "code_not_found", Message = "Code not found" });
+
+            if (entity.IsUsed)
+                return BadRequest(new ApiErrorResponse { Error = "code_already_used", Message = "Code already used" });
+
+            if (DateTimeOffset.UtcNow > entity.ExpiresAt)
+                return BadRequest(new ApiErrorResponse { Error = "code_expired", Message = "Code expired" });
+
+            // Проверка блокировки и попыток
+            const int maxAttempts = 5;
+            const int blockSeconds = 120;
+
+            if (entity.BlockedUntil.HasValue && DateTimeOffset.UtcNow < entity.BlockedUntil.Value)
+            {
+                var retry = (int)(entity.BlockedUntil.Value - DateTimeOffset.UtcNow).TotalSeconds;
+                return BadRequest(new ApiErrorResponse { Error = "too_many_attempts", Message = "Too many attempts", AttemptsLeft = 0, RetryAfterSeconds = retry });
+            }
+
+            entity.Attempts++;
+            var inputHash = HashService.Sha256($"{email}:{code}");
+
+            if (entity.CodeHash != inputHash)
+            {
+                if (entity.Attempts >= maxAttempts)
+                {
+                    entity.BlockedUntil = DateTimeOffset.UtcNow.AddSeconds(blockSeconds);
+                }
+                await _db.SaveChangesAsync();
+
+                return BadRequest(new ApiErrorResponse
+                {
+                    Error = "invalid_code",
+                    Message = "Invalid code",
+                    AttemptsLeft = Math.Max(0, maxAttempts - entity.Attempts)
+                });
+            }
+
+            // Код верный
+            entity.IsUsed = true;
+            await _db.SaveChangesAsync();
+
+            return Ok(new { success = true });
+        }
 
     }
 }

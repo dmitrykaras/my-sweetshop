@@ -1,11 +1,12 @@
-﻿using System.Linq;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyCandyShop.Api.Contracts;
 using MyCandyShop.Api.Data;
 using MyCandyShop.Api.Entities;
 using MyCandyShop.Api.Services;
-using Microsoft.AspNetCore.Authorization;
+using System.Linq;
 using System.Security.Claims;
 
 namespace MyCandyShop.Api.Controllers;
@@ -78,18 +79,10 @@ public class AuthController : ControllerBase
         var code = request.Code?.Trim();
 
         if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
-            return BadRequest(new ApiErrorResponse
-            {
-                Error = "invalid_email",
-                Message = "Invalid email"
-            });
+            return BadRequest(new ApiErrorResponse { Error = "invalid_email", Message = "Invalid email" });
 
         if (string.IsNullOrWhiteSpace(code) || code.Length != 4 || !code.All(char.IsDigit))
-            return BadRequest(new ApiErrorResponse
-            {
-                Error = "invalid_code_format",
-                Message = "Invalid code format"
-            });
+            return BadRequest(new ApiErrorResponse { Error = "invalid_code_format", Message = "Invalid code format" });
 
         var entity = await _db.EmailVerificationCodes
             .Where(x => x.Email == email)
@@ -97,43 +90,23 @@ public class AuthController : ControllerBase
             .FirstOrDefaultAsync();
 
         if (entity == null)
-            return BadRequest(new ApiErrorResponse
-            {
-                Error = "code_not_found",
-                Message = "Code not found"
-            });
+            return BadRequest(new ApiErrorResponse { Error = "code_not_found", Message = "Code not found" });
 
         if (entity.IsUsed)
-            return BadRequest(new ApiErrorResponse
-            {
-                Error = "code_already_used",
-                Message = "Code already used"
-            });
+            return BadRequest(new ApiErrorResponse { Error = "code_already_used", Message = "Code already used" });
 
         if (DateTimeOffset.UtcNow > entity.ExpiresAt)
-            return BadRequest(new ApiErrorResponse
-            {
-                Error = "code_expired",
-                Message = "Code expired"
-            });
+            return BadRequest(new ApiErrorResponse { Error = "code_expired", Message = "Code expired" });
 
         const int maxAttempts = 5;
-        const int blockSeconds = 120; // 2 минуты блокировки
+        const int blockSeconds = 120;
 
-        // Проверка блокировки
         if (entity.BlockedUntil.HasValue && DateTimeOffset.UtcNow < entity.BlockedUntil.Value)
         {
             var retry = (int)(entity.BlockedUntil.Value - DateTimeOffset.UtcNow).TotalSeconds;
-            return BadRequest(new ApiErrorResponse
-            {
-                Error = "too_many_attempts",
-                Message = "Too many attempts",
-                AttemptsLeft = 0,
-                RetryAfterSeconds = retry
-            });
+            return BadRequest(new ApiErrorResponse { Error = "too_many_attempts", Message = "Too many attempts", AttemptsLeft = 0, RetryAfterSeconds = retry });
         }
 
-        // Проверка кода
         entity.Attempts++;
         var inputHash = HashService.Sha256($"{email}:{code}");
 
@@ -143,54 +116,81 @@ public class AuthController : ControllerBase
             {
                 entity.BlockedUntil = DateTimeOffset.UtcNow.AddSeconds(blockSeconds);
                 await _db.SaveChangesAsync();
-
-                return BadRequest(new ApiErrorResponse
-                {
-                    Error = "too_many_attempts",
-                    Message = "Too many attempts",
-                    AttemptsLeft = 0,
-                    RetryAfterSeconds = blockSeconds
-                });
+                return BadRequest(new ApiErrorResponse { Error = "too_many_attempts", Message = "Too many attempts", AttemptsLeft = 0, RetryAfterSeconds = blockSeconds });
             }
 
             await _db.SaveChangesAsync();
-
-            return BadRequest(new ApiErrorResponse
-            {
-                Error = "invalid_code",
-                Message = "Invalid code",
-                AttemptsLeft = maxAttempts - entity.Attempts
-            });
+            return BadRequest(new ApiErrorResponse { Error = "invalid_code", Message = "Invalid code", AttemptsLeft = maxAttempts - entity.Attempts });
         }
 
-        // Если код верный
+        // Код верный
         entity.IsUsed = true;
         await _db.SaveChangesAsync();
 
-        // Найти или создать пользователя
-        var user = await _db.Users.FirstOrDefaultAsync(x => x.Email == email);
-        if (user == null)
+        // Получаем текущего пользователя через Claims
+        var userIdClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        User? user = null;
+
+        if (!string.IsNullOrEmpty(userIdClaim))
         {
-            user = new User
+            // Залогинен: обновляем почту
+            var currentUserId = Guid.Parse(userIdClaim);
+            user = await _db.Users.FirstOrDefaultAsync(u => u.Id == currentUserId);
+
+            if (user == null)
+                return BadRequest(new ApiErrorResponse { Error = "user_not_found", Message = "User not found" });
+
+            if (user.Email != email)
             {
-                Id = Guid.NewGuid(),
-                Email = email,
-                CreatedAt = DateTimeOffset.UtcNow,
-                Points = 0,
-                FirstName = null,
-                LastName = null
-            };
-            _db.Users.Add(user);
-            await _db.SaveChangesAsync();
+                user.Email = email;
+                await _db.SaveChangesAsync();
+            }
+        }
+        else
+        {
+            // Неавторизованный: проверяем email и создаём при необходимости
+            user = await _db.Users.FirstOrDefaultAsync(x => x.Email == email);
+            if (user == null)
+            {
+                user = new User
+                {
+                    Id = Guid.NewGuid(),
+                    Email = email,
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    Points = 0,
+                    FirstName = null,
+                    LastName = null
+                };
+                _db.Users.Add(user);
+                await _db.SaveChangesAsync();
+            }
         }
 
-        // Создать JWT
-        var token = _jwt.CreateToken(user);
+        // 1. ГЕНЕРИРУЕМ REFRESH TOKEN (этого у тебя не было!)
+        var refreshTokenEntity = new RefreshToken
+        {
+            Id = Guid.NewGuid(),
+            Token = Guid.NewGuid().ToString("N"),
+            UserId = user.Id,
+            CreatedAt = DateTime.UtcNow,
+            ExpiresAt = DateTime.UtcNow.AddDays(30),
+            IsUsed = false
+        };
+
+        // 2. СОХРАНЯЕМ В БАЗУ
+        _db.RefreshTokens.Add(refreshTokenEntity);
+        await _db.SaveChangesAsync();
+
+        // 3. ФОРМИРУЕМ JWT
+        var token = string.IsNullOrEmpty(userIdClaim) ? _jwt.CreateToken(user) : null;
         var needsProfile = string.IsNullOrWhiteSpace(user.FirstName) || string.IsNullOrWhiteSpace(user.LastName);
 
+        // 4. ВОЗВРАЩАЕМ ВСЁ КЛИЕНТУ
         return Ok(new
         {
             token,
+            refreshToken = refreshTokenEntity.Token, // Обязательно добавляем это поле!
             user = new
             {
                 user.Id,
@@ -200,6 +200,43 @@ public class AuthController : ControllerBase
                 user.Points
             },
             needsProfile
+        });
+    }
+
+    // Получение нового JWT по refresh token
+    [HttpPost("refresh")]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshRequest req)
+    {
+        var oldRefresh = await _db.RefreshTokens
+            .Include(x => x.User)
+            .FirstOrDefaultAsync(x => x.Token == req.RefreshToken);
+
+        if (oldRefresh == null || oldRefresh.IsUsed || oldRefresh.ExpiresAt < DateTime.UtcNow)
+            return Unauthorized();
+
+        // 1. Помечаем старый как использованный
+        oldRefresh.IsUsed = true;
+
+        // 2. Создаем НОВЫЙ Refresh Token (Rotation)
+        var newRefresh = new RefreshToken
+        {
+            Token = Guid.NewGuid().ToString("N"),
+            UserId = oldRefresh.UserId,
+            ExpiresAt = DateTime.UtcNow.AddDays(30),
+            IsUsed = false
+        };
+
+        // 3. Генерируем новый JWT
+        var newJwt = _jwt.CreateToken(oldRefresh.User);
+
+        _db.RefreshTokens.Add(newRefresh);
+        await _db.SaveChangesAsync();
+
+        // Возвращаем ПАРУ
+        return Ok(new
+        {
+            token = newJwt,
+            refreshToken = newRefresh.Token
         });
     }
 }

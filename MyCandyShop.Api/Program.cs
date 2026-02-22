@@ -11,7 +11,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --------------------- Контроллеры и Swagger ---------------------
+// Контроллеры и Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -41,7 +41,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// --------------------- Конфигурация JWT ---------------------
+// Конфигурация JWT
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddScoped<JwtService>();
 
@@ -60,43 +60,43 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = jwtOptions.Issuer,
             ValidAudience = jwtOptions.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(key),
-            ClockSkew = TimeSpan.FromSeconds(10)
+            ClockSkew = TimeSpan.Zero
         };
     });
 
 builder.Services.AddAuthorization();
 
-// --------------------- Конфигурация базы данных ---------------------
+// Конфигурация базы данных
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
-// --------------------- Сервисы работы с файлами ---------------------
+// Сервисы работы с файлами
 builder.Services.Configure<BucketSettings>(builder.Configuration.GetSection("BucketSettings"));
 builder.Services.AddSingleton<IObjectStorage, BucketStorage>();
 
 var app = builder.Build();
 
-// --------------------- Swagger ---------------------
+// Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// --------------------- HTTPS ---------------------
+// HTTPS
 if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
 
-// --------------------- Middleware аутентификации ---------------------
+// Middleware аутентификации
 app.UseAuthentication();
 app.UseAuthorization();
 
-// --------------------- Маршруты ---------------------
+// Маршруты
 app.MapControllers();
 
-// --------------------- Сценарии для работы с изображениями ---------------------
+// Сценарии для работы с изображениями
 if (args.Contains("--seed-images"))
 {
     await ISeedProductImages.SeedAsync(app);

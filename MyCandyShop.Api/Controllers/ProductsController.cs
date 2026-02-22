@@ -7,7 +7,7 @@ using MyCandyShop.Api.Services;
 namespace MyCandyShop.Api.Controllers;
 
 [ApiController]
-[Route("api/products")]
+[Route("/products")]
 public class ProductsController : ControllerBase
 {
     private readonly AppDbContext _db;

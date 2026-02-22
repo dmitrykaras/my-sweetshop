@@ -15,6 +15,8 @@ public class AppDbContext : DbContext
     public DbSet<Product> Products { get; set; }
     public DbSet<UserFavorite> UserFavorites { get; set; }
 
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

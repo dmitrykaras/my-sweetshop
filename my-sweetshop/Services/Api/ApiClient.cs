@@ -18,27 +18,10 @@ namespace my_sweetshop.Services.Api
             _session = session;
         }
 
-        public async Task<HttpResponseMessage> GetAsync(string url)
-        {
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
+        public Task<HttpResponseMessage> GetAsync(string url)
+            => _http.GetAsync(url);
 
-            if (!string.IsNullOrWhiteSpace(_session.Token))
-                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _session.Token);
-
-            return await _http.SendAsync(request);
-        }
-
-        public async Task<HttpResponseMessage> PostAsync(string url, object data)
-        {
-            var request = new HttpRequestMessage(HttpMethod.Post, url)
-            {
-                Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json")
-            };
-
-            if (!string.IsNullOrWhiteSpace(_session.Token))
-                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _session.Token);
-
-            return await _http.SendAsync(request);
-        }
+        public Task<HttpResponseMessage> PostAsync(string url, object data)
+            => _http.PostAsJsonAsync(url, data);
     }
 }

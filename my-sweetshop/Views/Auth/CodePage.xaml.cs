@@ -90,6 +90,8 @@ public partial class CodePage : ContentPage
             await _session.SetTokenAsync(resp.Token);
             await SecureStorage.SetAsync("access_token", resp.Token);
 
+            await SecureStorage.SetAsync("refresh_token", resp.RefreshToken);
+
             var window = Application.Current?.Windows.FirstOrDefault();
             if (window != null)
             {

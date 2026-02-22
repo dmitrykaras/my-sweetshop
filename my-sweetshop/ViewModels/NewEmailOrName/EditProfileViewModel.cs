@@ -62,7 +62,7 @@ namespace my_sweetshop.ViewModels.NewEmail
 
         private async Task LoadUserAsync()
         {
-            await _session.InitializeAsync(); // <- убедиться, что Email и Token загружены
+            await _session.InitializeAsync();
             var user = await _userService.GetCurrentUser();
             NewName = user.Name;
             NewSurname = user.Surname;
@@ -103,8 +103,6 @@ namespace my_sweetshop.ViewModels.NewEmail
 
             try
             {
-                await Shell.Current.DisplayAlertAsync("Ошибка", $"Token: {_session.Token}, Email: {_session.Email}", "Ок");
-
                 // сохраняем новую почту
                 _emailCache.TempEmail = NewEmail;
 

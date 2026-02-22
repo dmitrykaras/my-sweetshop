@@ -7,19 +7,11 @@ namespace my_sweetshop.Services.Api
 {
     public class ApiService
     {
-        private static readonly HttpClient _httpClient;
+        private readonly HttpClient _httpClient;
 
-        static ApiService()
+        public ApiService(HttpClient httpClient)
         {
-            string baseUrl = DeviceInfo.Platform == DevicePlatform.Android
-                ? "http://10.0.2.2:5107/"
-                : "http://localhost:5107/";
-
-            _httpClient = new HttpClient
-            {
-                BaseAddress = new Uri(baseUrl),
-                Timeout = TimeSpan.FromSeconds(10)
-            };
+            _httpClient = httpClient;
         }
 
         public async Task<List<ProductDto>> GetProductsAsync()

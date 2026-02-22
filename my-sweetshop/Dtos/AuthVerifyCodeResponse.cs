@@ -3,8 +3,8 @@
     public class AuthVerifyCodeResponse
     {
         public string Token { get; set; } = null!;
+        public string RefreshToken { get; set; }
         public bool NeedsProfile { get; set; }
-
         public UserDto User { get; set; } = null!;
     }
 

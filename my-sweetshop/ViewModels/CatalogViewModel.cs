@@ -8,7 +8,7 @@ namespace my_sweetshop.ViewModels
 {
     public class CatalogViewModel : BindableObject
     {
-        private readonly ApiService _apiService = new ApiService();
+        private readonly ApiService _apiService;
 
         public ObservableCollection<Product> Desserts { get; } = new();
         public ObservableCollection<Product> MaleCakes { get; } = new();
@@ -20,8 +20,10 @@ namespace my_sweetshop.ViewModels
 
         public ICommand OpenProductCommand { get; }
 
-        public CatalogViewModel()
+        public CatalogViewModel(ApiService apiService)
         {
+            _apiService = apiService; // Теперь DI передает сюда настроенный сервис
+
             OpenProductCommand = new Command<Product>(OpenProduct);
 
             // Сразу запускаем загрузку

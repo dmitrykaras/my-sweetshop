@@ -33,65 +33,79 @@ namespace my_sweetshop
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            builder.Services.AddSingleton<HttpClient>(sp =>
-            {
-                return new HttpClient
-                {
-                    BaseAddress = new Uri("http://10.0.2.2:5107/")
-                };
-            });
             builder.Services.AddSingleton<AppShell>();
 
-            //Services 
-            // Api
-            builder.Services.AddSingleton<ApiClient>();
-            builder.Services.AddSingleton<ApiException>();
-            builder.Services.AddSingleton<ApiService>();
-            builder.Services.AddSingleton<AuthApi>();
-
-            // Domain
-            builder.Services.AddSingleton<IUserService, UserService>();
-
-            // AuthStep
+            // 1. Auth session
             builder.Services.AddSingleton<AuthSession>();
+
+            // 2. HttpClient для рефреша (БЕЗ хендлера, чтобы не было зацикливания)
+            builder.Services.AddHttpClient("refresh_client", c =>
+            {
+                c.BaseAddress = new Uri(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:5107/" : "http://localhost:5107/");
+            });
+
+            // 3. Регистрируем JwtAuthHandler с использованием factory для refresh_client
+            builder.Services.AddTransient<JwtAuthHandler>(sp =>
+            {
+                var session = sp.GetRequiredService<AuthSession>();
+                var factory = sp.GetRequiredService<IHttpClientFactory>();
+                var refreshClient = factory.CreateClient("refresh_client");
+                return new JwtAuthHandler(session, refreshClient);
+            });
+
+            // 4. Основные API сервисы через AddHttpClient + JwtAuthHandler
+            string apiBaseUrl = DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:5107/" : "http://localhost:5107/";
+
+            builder.Services.AddHttpClient<AuthApi>(c => c.BaseAddress = new Uri(apiBaseUrl))
+                .AddHttpMessageHandler<JwtAuthHandler>();
+
+            builder.Services.AddHttpClient<ApiService>(c => c.BaseAddress = new Uri(apiBaseUrl))
+                .AddHttpMessageHandler<JwtAuthHandler>();
+
+            builder.Services.AddHttpClient<ApiClient>(c => c.BaseAddress = new Uri(apiBaseUrl))
+                .AddHttpMessageHandler<JwtAuthHandler>();
+
+            // Остальные вспомогательные сервисы
+            builder.Services.AddSingleton<ApiException>();
+            builder.Services.AddSingleton<IUserService, UserService>();
             builder.Services.AddSingleton<CodePageFactory>();
             builder.Services.AddSingleton<ChangeEmail>();
             builder.Services.AddSingleton<EmailCache>();
 
-            // Pages
-            builder.Services.AddTransient<HomePage>();
-            builder.Services.AddTransient<CatalogPage>();
-            builder.Services.AddTransient<ProductPage>();
-            builder.Services.AddTransient<ContactPage>();
-            builder.Services.AddTransient<ProfilePage>();
-            builder.Services.AddTransient<EditProfilePage>();
-            builder.Services.AddTransient<NewEmailPage>();
-            builder.Services.AddTransient<FavoritesProduct>();
-            builder.Services.AddTransient<CashierPage>();
-
-            // AuthStep Pages
-            builder.Services.AddTransient<AuthStartPage>();
-            builder.Services.AddTransient<EmailPage>();
-            builder.Services.AddTransient<CodePage>();
-            builder.Services.AddTransient<CompletionProfilePage>();
-
-            builder.Services.AddTransient<SplashPage>();
-
-            // ViewModels
-            // NewEmailOrName
-            builder.Services.AddTransient<EditProfileViewModel>();
-            builder.Services.AddTransient<NewEmailViewModel>();
-
-            // BaseViewModels
-            builder.Services.AddTransient<HomeViewModel>();
-            builder.Services.AddTransient<CatalogViewModel>();
-            builder.Services.AddTransient<CategoryViewModel>();
-            builder.Services.AddTransient<ProductViewModel>();
+            // Pages & ViewModels
+            RegisterPagesAndViewModels(builder.Services);
 
             var app = builder.Build();
             ServiceProvider = app.Services;
 
             return app;
+        }
+
+        private static void RegisterPagesAndViewModels(IServiceCollection services)
+        {
+            // Pages
+            services.AddTransient<HomePage>();
+            services.AddTransient<CatalogPage>();
+            services.AddTransient<ProductPage>();
+            services.AddTransient<ContactPage>();
+            services.AddTransient<ProfilePage>();
+            services.AddTransient<EditProfilePage>();
+            services.AddTransient<NewEmailPage>();
+            services.AddTransient<FavoritesProduct>();
+            services.AddTransient<CashierPage>();
+            services.AddTransient<AuthStartPage>();
+            services.AddTransient<EmailPage>();
+            services.AddTransient<CodePage>();
+            services.AddTransient<CompletionProfilePage>();
+            services.AddTransient<SplashPage>();
+
+            // ViewModels
+            services.AddTransient<EditProfileViewModel>();
+            services.AddTransient<NewEmailViewModel>();
+            services.AddTransient<HomeViewModel>();
+            services.AddTransient<CatalogViewModel>();
+            services.AddTransient<CategoryViewModel>();
+            services.AddTransient<ProductViewModel>();
         }
     }
 }

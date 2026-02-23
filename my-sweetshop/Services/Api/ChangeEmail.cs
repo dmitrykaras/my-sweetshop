@@ -1,4 +1,4 @@
-﻿using my_sweetshop.Dtos;
+﻿using my_sweetshop.Dtos; //ChangeEmailRequest
 using System.Net.Http.Json;
 
 
@@ -13,9 +13,9 @@ namespace my_sweetshop.Services.Api
             _http = http;
         }
 
-        public async Task<bool> ChangeEmailAsync(string newEmail, string token)
+        public async Task<bool> ChangeEmailAsync(string newEmail, string code, string token)
         {
-            var req = new ChangeEmailRequest { NewEmail = newEmail };
+            var req = new { NewEmail = newEmail, Code = code };
             var httpReq = new HttpRequestMessage(HttpMethod.Post, "profile/confirm-change-email")
             {
                 Content = JsonContent.Create(req)
@@ -24,13 +24,25 @@ namespace my_sweetshop.Services.Api
             // Добавляем JWT
             httpReq.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
+            // В ChangeEmail.cs
             var resp = await _http.SendAsync(httpReq);
 
-            if (resp.IsSuccessStatusCode)
-                return true;
+            if (resp.IsSuccessStatusCode) return true;
 
-            var err = await resp.Content.ReadFromJsonAsync<ApiErrorResponse>();
-            throw new Exception(err?.Message ?? "Ошибка смены почты");
+            string errorMessage;
+            try
+            {
+                // Пробуем прочитать как JSON
+                var err = await resp.Content.ReadFromJsonAsync<ApiErrorResponse>();
+                errorMessage = err?.Message ?? "Неизвестная ошибка";
+            }
+            catch
+            {
+                // Если не JSON — читаем как обычную строку
+                errorMessage = await resp.Content.ReadAsStringAsync();
+            }
+
+            throw new Exception(errorMessage);
         }
 
         // Верификация кода

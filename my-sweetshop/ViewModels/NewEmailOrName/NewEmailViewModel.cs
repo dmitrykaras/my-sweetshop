@@ -50,7 +50,7 @@ public class NewEmailViewModel : BaseViewModel
             await _changeEmail.VerifyCodeAsync(Email, code);
 
             // меняем почту на НОВУЮ
-            await _changeEmail.ChangeEmailAsync(_emailCache.TempEmail!, _session.Token);
+            await _changeEmail.ChangeEmailAsync(_emailCache.TempEmail!, code, _session.Token);
 
             // обновляем сессию
             await _session.SetSessionAsync(_session.Token!, _emailCache.TempEmail!);
@@ -61,17 +61,13 @@ public class NewEmailViewModel : BaseViewModel
 
             return VerifyResult.Successful();
         }
-        catch (ApiException apiEx)
+        catch (Exception ex)
         {
-            return HandleVerifyError(apiEx);
-        }
-        catch
-        {
-            return VerifyResult.Fail("Неверный код");
+            return VerifyResult.Fail(ex.Message);
         }
     }
 
-    // Логика повторной отправки
+    // Попытка повторной отправки
     public async Task<bool> ResendCodeAsync()
     {
         try

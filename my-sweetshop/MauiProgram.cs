@@ -69,7 +69,8 @@ namespace my_sweetshop
             builder.Services.AddSingleton<ApiException>();
             builder.Services.AddSingleton<IUserService, UserService>();
             builder.Services.AddSingleton<CodePageFactory>();
-            builder.Services.AddSingleton<ChangeEmail>();
+            builder.Services.AddHttpClient<ChangeEmail>(c => c.BaseAddress = new Uri(apiBaseUrl))
+                .AddHttpMessageHandler<JwtAuthHandler>();
             builder.Services.AddSingleton<EmailCache>();
 
             // Pages & ViewModels

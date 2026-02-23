@@ -13,6 +13,7 @@ namespace my_sweetshop.Services.Api
             _http = http;
         }
 
+        // Запрос кода подтвеждения
         public async Task RequestCodeAsync(string email)
         {
             var resp = await _http.PostAsJsonAsync("auth/request-code", new { Email = email });
@@ -22,6 +23,7 @@ namespace my_sweetshop.Services.Api
                 throw new Exception(text);
         }
 
+        // Попытка верификации кода
         public async Task<AuthVerifyCodeResponse> VerifyCodeAsync(string email, string code)
         {
             var resp = await _http.PostAsJsonAsync("auth/verify-code", new { email, code });

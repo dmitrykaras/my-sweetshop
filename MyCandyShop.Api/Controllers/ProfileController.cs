@@ -139,7 +139,7 @@ namespace MyCandyShop.Api.Controllers
                 .FirstOrDefaultAsync();
 
             if (entity == null)
-                return BadRequest("Code not found");
+                return BadRequest(new ApiErrorResponse { Message = "Code not found" });
 
             if (entity.IsUsed)
                 return BadRequest("Code already used");
@@ -373,7 +373,7 @@ namespace MyCandyShop.Api.Controllers
             if (entity == null)
                 return BadRequest(new ApiErrorResponse { Error = "code_not_found", Message = "Code not found" });
 
-            if (entity.IsUsed)
+            if (entity.IsUsed )
                 return BadRequest(new ApiErrorResponse { Error = "code_already_used", Message = "Code already used" });
 
             if (DateTimeOffset.UtcNow > entity.ExpiresAt)

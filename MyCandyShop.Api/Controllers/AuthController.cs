@@ -132,6 +132,7 @@ public class AuthController : ControllerBase
 
         User? user = null;
 
+        // ЗАЛУПА!!!!!!!!!!!!!!!
         if (!string.IsNullOrEmpty(userIdClaim))
         {
             // Залогинен: обновляем почту
@@ -167,7 +168,7 @@ public class AuthController : ControllerBase
             }
         }
 
-        // 1. ГЕНЕРИРУЕМ REFRESH TOKEN (этого у тебя не было!)
+        // 1. ГЕНЕРИРУЕМ REFRESH TOKEN
         var refreshTokenEntity = new RefreshToken
         {
             Id = Guid.NewGuid(),

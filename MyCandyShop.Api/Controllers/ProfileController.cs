@@ -115,10 +115,67 @@ namespace MyCandyShop.Api.Controllers
             return Ok(favorites);
         }
 
-        // Метод для подтверждения смены почты
+        // Метод для запроса кода для смены почты
         [Authorize]
-        [HttpPost("confirm-change-email")]
-        public async Task<IActionResult> ConfirmChangeEmail([FromBody] AuthConfirmChangeEmailRequest request)
+        [HttpPost("request-code-for-change-email")]
+        public async Task<IActionResult> RequestChangeEmail([FromBody] AuthRequestChangeEmailRequest request)
+        {
+            var userIdStr = User.FindFirstValue("uid");
+            if (!Guid.TryParse(userIdStr, out var userId))
+                return Unauthorized("Invalid token");
+
+            var Email = request.Email.Trim().ToLower();
+            var newEmail = request.NewEmail.Trim().ToLower();
+
+            if (string.IsNullOrWhiteSpace(Email) || !Email.Contains("@"))
+                return BadRequest("Invalid email");
+
+            // проверка на то, что Email уже занят 
+            if (await _db.Users.AnyAsync(x => x.Email == newEmail))
+                return BadRequest("Email already used by another account");
+
+            //cooldown (например 2 минуты на один email)
+            var last = await _db.EmailChangeCodes
+                .Where(x => x.UserId == userId && x.NewEmail == Email)
+                .OrderByDescending(x => x.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            if (last != null)
+            {
+                var seconds = (int)(DateTimeOffset.UtcNow - last.CreatedAt).TotalSeconds;
+                if (seconds < 120)
+                    return BadRequest($"Wait {120 - seconds} seconds");
+            }
+
+            var code = CodeGenerator.Generate4Digits();
+            var hash = HashService.Sha256($"{userId}:{newEmail}:{code}");
+
+            var entity = new EmailChangeCode
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Email = request.Email,
+                NewEmail = request.NewEmail,
+                CodeHash = hash,
+                CreatedAt = DateTimeOffset.UtcNow,
+                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(10),
+                Attempts = 0,
+                IsUsed = false
+            };
+
+            _db.EmailChangeCodes.Add(entity);
+            await _db.SaveChangesAsync();
+
+            // временно: выводим код в консоль
+            Console.WriteLine($"[CHANGE EMAIL CODE] user={userId} => {Email} => {code}");
+
+            return Ok(new { cooldownSeconds = 120 });
+        }
+
+        // Метод для проверки кода и смены почты
+        [Authorize]
+        [HttpPost("verify-change-email")]
+        public async Task<IActionResult> VerifyChangeEmail([FromBody] AuthConfirmChangeEmailRequest request)
         {
             var userIdStr = User.FindFirstValue("uid");
             if (!Guid.TryParse(userIdStr, out var userId))
@@ -127,9 +184,7 @@ namespace MyCandyShop.Api.Controllers
             var newEmail = request.NewEmail.Trim().ToLower();
             var code = request.Code.Trim();
 
-            if (string.IsNullOrWhiteSpace(newEmail) || !newEmail.Contains("@"))
-                return BadRequest("Invalid email");
-
+            // Проверка на 4 символа и это цифры
             if (code.Length != 4 || !code.All(char.IsDigit))
                 return BadRequest("Invalid code");
 
@@ -138,15 +193,19 @@ namespace MyCandyShop.Api.Controllers
                 .OrderByDescending(x => x.CreatedAt)
                 .FirstOrDefaultAsync();
 
+            // Проверка наден ли код
             if (entity == null)
                 return BadRequest(new ApiErrorResponse { Message = "Code not found" });
 
+            // Проверка на то, что он использован уже
             if (entity.IsUsed)
                 return BadRequest("Code already used");
 
+            // Проверка на срок дейсвтия кода
             if (DateTimeOffset.UtcNow > entity.ExpiresAt)
                 return BadRequest("Code expired");
 
+            // Проверка, что попыток было меньше 5
             if (entity.Attempts >= 5)
                 return BadRequest("Too many attempts");
 
@@ -204,65 +263,6 @@ namespace MyCandyShop.Api.Controllers
             });
         }
 
-        // Метод для запроса смены почты
-        [Authorize]
-        [HttpPost("request-change-email")]
-        public async Task<IActionResult> RequestChangeEmail([FromBody] AuthRequestChangeEmailRequest request)
-        {
-            var userIdStr = User.FindFirstValue("uid");
-            if (!Guid.TryParse(userIdStr, out var userId))
-                return Unauthorized("Invalid token");
-
-            var newEmail = request.NewEmail.Trim().ToLower();
-
-            if (string.IsNullOrWhiteSpace(newEmail) || !newEmail.Contains("@"))
-                return BadRequest("Invalid email");
-
-            //нельзя поставить email, который уже занят
-            var exists = await _db.Users.AnyAsync(X => X.Email == newEmail);
-            if (exists)
-                return BadRequest("Email elredy used");
-
-            //cooldown (например 2 минуты на один email)
-            var last = await _db.EmailChangeCodes
-                 .Where(x => x.UserId == userId && x.NewEmail == newEmail)
-            .OrderByDescending(x => x.CreatedAt)
-            .FirstOrDefaultAsync();
-
-            if (last != null)
-            {
-                var seconds = (int)(DateTimeOffset.UtcNow - last.CreatedAt).TotalSeconds;
-                if (seconds < 120)
-                    return BadRequest($"Wait {120 - seconds} seconds");
-            }
-
-            var code = CodeGenerator.Generate4Digits();
-            var hash = HashService.Sha256($"{userId}:{newEmail}:{code}");
-
-            var entity = new EmailChangeCode
-            {
-                Id = Guid.NewGuid(),
-                UserId = userId,
-                NewEmail = newEmail,
-                CodeHash = hash,
-                CreatedAt = DateTimeOffset.UtcNow,
-                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(10),
-                Attempts = 0,
-                IsUsed = false
-            };
-
-            _db.EmailChangeCodes.Add(entity);
-            await _db.SaveChangesAsync();
-
-            // временно: выводим код в консоль
-            Console.WriteLine($"[CHANGE EMAIL CODE] user={userId} => {newEmail} => {code}");
-
-            return Ok(new { cooldownSeconds = 120 });
-        }
-
-        private string? NormalizeField(string? field) =>
-            string.IsNullOrWhiteSpace(field) ? null : field.Trim();
-
         // Метод для смены имени и/или фамилии
         [HttpPatch]
         public async Task<IActionResult> PatchProfile([FromBody] PatchProfileRequest request)
@@ -294,6 +294,10 @@ namespace MyCandyShop.Api.Controllers
                 user.Points
             });
         }
+
+        // Вспомогательный метод для проверки IsNullOrWhiteSpace
+        private string? NormalizeField(string? field) =>
+            string.IsNullOrWhiteSpace(field) ? null : field.Trim();
 
         // Метод для просмотра текущего профиля
         [Authorize]
@@ -351,69 +355,5 @@ namespace MyCandyShop.Api.Controllers
                 user.LastName
             });
         }
-
-        // Метод для проверки кода (не создаёт новых пользователей)
-        [HttpPost("verify-code")]
-        public async Task<IActionResult> VerifyEmailCode([FromBody] AuthVerifyCodeRequest request)
-        {
-            var email = request.Email?.Trim().ToLower();
-            var code = request.Code?.Trim();
-
-            if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
-                return BadRequest(new ApiErrorResponse { Error = "invalid_email", Message = "Invalid email" });
-
-            if (string.IsNullOrWhiteSpace(code) || code.Length != 4 || !code.All(char.IsDigit))
-                return BadRequest(new ApiErrorResponse { Error = "invalid_code_format", Message = "Invalid code format" });
-
-            var entity = await _db.EmailVerificationCodes
-                .Where(x => x.Email == email)
-                .OrderByDescending(x => x.CreatedAt)
-                .FirstOrDefaultAsync();
-
-            if (entity == null)
-                return BadRequest(new ApiErrorResponse { Error = "code_not_found", Message = "Code not found" });
-
-            if (entity.IsUsed )
-                return BadRequest(new ApiErrorResponse { Error = "code_already_used", Message = "Code already used" });
-
-            if (DateTimeOffset.UtcNow > entity.ExpiresAt)
-                return BadRequest(new ApiErrorResponse { Error = "code_expired", Message = "Code expired" });
-
-            // Проверка блокировки и попыток
-            const int maxAttempts = 5;
-            const int blockSeconds = 120;
-
-            if (entity.BlockedUntil.HasValue && DateTimeOffset.UtcNow < entity.BlockedUntil.Value)
-            {
-                var retry = (int)(entity.BlockedUntil.Value - DateTimeOffset.UtcNow).TotalSeconds;
-                return BadRequest(new ApiErrorResponse { Error = "too_many_attempts", Message = "Too many attempts", AttemptsLeft = 0, RetryAfterSeconds = retry });
-            }
-
-            entity.Attempts++;
-            var inputHash = HashService.Sha256($"{email}:{code}");
-
-            if (entity.CodeHash != inputHash)
-            {
-                if (entity.Attempts >= maxAttempts)
-                {
-                    entity.BlockedUntil = DateTimeOffset.UtcNow.AddSeconds(blockSeconds);
-                }
-                await _db.SaveChangesAsync();
-
-                return BadRequest(new ApiErrorResponse
-                {
-                    Error = "invalid_code",
-                    Message = "Invalid code",
-                    AttemptsLeft = Math.Max(0, maxAttempts - entity.Attempts)
-                });
-            }
-
-            // Код верный
-            entity.IsUsed = true;
-            await _db.SaveChangesAsync();
-
-            return Ok(new { success = true });
-        }
-
     }
 }

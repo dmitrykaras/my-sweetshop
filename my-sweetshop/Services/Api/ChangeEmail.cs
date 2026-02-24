@@ -1,7 +1,6 @@
 ﻿using my_sweetshop.Dtos; //ChangeEmailRequest
 using System.Net.Http.Json;
 
-
 namespace my_sweetshop.Services.Api
 {
     public class ChangeEmail
@@ -13,10 +12,23 @@ namespace my_sweetshop.Services.Api
             _http = http;
         }
 
-        public async Task<bool> ChangeEmailAsync(string newEmail, string code, string token)
+        // Метод для отправки code: при успехе отправляет код на почту
+        public async Task RequestCodeAsync(string Email, string NewEmail)
+        {
+            var payload = new { Email, NewEmail };
+
+            var resp = await _http.PostAsJsonAsync("profile/request-code-for-change-email", payload);
+            var text = await resp.Content.ReadAsStringAsync();
+
+            if (!resp.IsSuccessStatusCode)
+                throw new Exception(text);
+        }
+
+        // Метод для проверки code: при успехе меняет почту Email на NewEmail
+        public async Task<bool> VerifyCodeForChangeEmail(string newEmail, string code, string token)
         {
             var req = new { NewEmail = newEmail, Code = code };
-            var httpReq = new HttpRequestMessage(HttpMethod.Post, "profile/confirm-change-email")
+            var httpReq = new HttpRequestMessage(HttpMethod.Post, "profile/verify-change-email")
             {
                 Content = JsonContent.Create(req)
             };
@@ -24,7 +36,6 @@ namespace my_sweetshop.Services.Api
             // Добавляем JWT
             httpReq.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            // В ChangeEmail.cs
             var resp = await _http.SendAsync(httpReq);
 
             if (resp.IsSuccessStatusCode) return true;
@@ -43,24 +54,6 @@ namespace my_sweetshop.Services.Api
             }
 
             throw new Exception(errorMessage);
-        }
-
-        // Верификация кода
-        public async Task<bool> VerifyCodeAsync(string email, string code)
-        {
-            var req = new AuthVerifyCodeRequest
-            {
-                Email = email,
-                Code = code
-            };
-
-            var resp = await _http.PostAsJsonAsync("profile/verify-code", req);
-
-            if (resp.IsSuccessStatusCode)
-                return true;
-
-            var err = await resp.Content.ReadFromJsonAsync<ApiErrorResponse>();
-            throw new Exception(err?.Message ?? "Ошибка проверки кода");
         }
     }
 }

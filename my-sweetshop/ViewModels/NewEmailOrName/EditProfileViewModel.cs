@@ -2,7 +2,6 @@
 using CommunityToolkit.Maui.Core;
 using my_sweetshop.Dtos;
 using my_sweetshop.Services.Api;
-using my_sweetshop.Services.AuthStep;
 using my_sweetshop.Services.Domain;
 using my_sweetshop.Views.Profile.ProfileChanges;
 using System.Windows.Input;
@@ -11,8 +10,8 @@ namespace my_sweetshop.ViewModels.NewEmail
 {
     public class EditProfileViewModel : BaseViewModel
     {
-        private readonly AuthApi _authApi;
         private readonly AuthSession _session;
+        private readonly ChangeEmail _changeEmail;
 
         private string _newName;
         private string _newSurname;
@@ -44,10 +43,10 @@ namespace my_sweetshop.ViewModels.NewEmail
 
         private readonly IUserService _userService;
 
-        public EditProfileViewModel(IUserService userService, EmailCache emailCache, AuthApi authApi, AuthSession session)
+        public EditProfileViewModel(IUserService userService, EmailCache emailCache, ChangeEmail changeEmail, AuthSession session)
         {
             _userService = userService;
-            _authApi = authApi;
+            _changeEmail = changeEmail;
             _emailCache = emailCache;
             _session = session;
 
@@ -116,7 +115,7 @@ namespace my_sweetshop.ViewModels.NewEmail
                 }
 
                 // отправка кода
-                await _authApi.RequestCodeAsync(currentEmail);
+                await _changeEmail.RequestCodeAsync(currentEmail, NewEmail);
 
                 // переход на страницу ввода кода
                 await Shell.Current.GoToAsync(nameof(NewEmailPage));

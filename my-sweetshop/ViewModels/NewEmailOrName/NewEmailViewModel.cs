@@ -1,9 +1,11 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using my_sweetshop.Dtos;
 using my_sweetshop.Services.Api;
 using my_sweetshop.Services.AuthStep;
+using my_sweetshop.Views.Profile;
+using my_sweetshop.Views.Profile.ProfileChanges;
 using System.Windows.Input;
-using my_sweetshop.Dtos;
 
 namespace my_sweetshop.ViewModels.NewEmailOrName;
 
@@ -46,18 +48,15 @@ public class NewEmailViewModel : BaseViewModel
     {
         try
         {
-            // проверяем код по СТАРОЙ почте
-            await _changeEmail.VerifyCodeAsync(Email, code);
-
-            // меняем почту на НОВУЮ
-            await _changeEmail.ChangeEmailAsync(_emailCache.TempEmail!, code, _session.Token);
+            // меняем почту на новую
+            await _changeEmail.VerifyCodeForChangeEmail(_emailCache.TempEmail!, code, _session.Token);
 
             // обновляем сессию
             await _session.SetSessionAsync(_session.Token!, _emailCache.TempEmail!);
 
             _emailCache.TempEmail = null;
 
-            await Shell.Current.GoToAsync("//AppShell");
+            await Shell.Current.GoToAsync(nameof(ProfilePage));
 
             return VerifyResult.Successful();
         }
@@ -72,7 +71,7 @@ public class NewEmailViewModel : BaseViewModel
     {
         try
         {
-            await _authApi.RequestCodeAsync(Email);
+            await _changeEmail.RequestCodeAsync(this.Email, _emailCache.TempEmail!);
             ShowToast("Код отправлен повторно. Проверьте “Спам”.");
             return true;
         }

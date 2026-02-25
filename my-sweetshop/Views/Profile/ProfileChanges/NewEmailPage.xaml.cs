@@ -1,4 +1,5 @@
 using my_sweetshop.ViewModels.NewEmailOrName;
+
 namespace my_sweetshop.Views.Profile.ProfileChanges;
 
 public partial class NewEmailPage : ContentPage
@@ -62,7 +63,6 @@ public partial class NewEmailPage : ContentPage
     }
 
     // Попытка верификации кода через VM
-    // Изменено на Task, чтобы можно было ожидать завершения
     private async Task TryVerify(string code)
     {
         if (VM.VerifyCooldownActive || _isProcessing) return;

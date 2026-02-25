@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:my_sweetshop.ViewModels.NewEmail"
+             x:DataType="viewmodels:EditProfileViewModel"
              x:Class="my_sweetshop.Views.Profile.EditProfilePage"
              Title="EditProfile">
-    <Grid RowDefinitions="Auto,*">
+    <Grid RowDefinitions="Auto,*,Auto">
 
         <!-- Заголовок -->
         <Grid Padding="16" ColumnDefinitions="Auto,*">
@@ -22,30 +24,64 @@
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="14">
 
-                <Label Text="Новое имя:"/>
-                <Entry Placeholder="Введите имя"
-                       Text="{Binding NewName}" />
+                <Label Text="Новое имя:" TextColor="Black" FontAttributes="Bold" />
+                <Entry Placeholder="{Binding NewFirstname}"
+                    TextColor="Black"
+                    BackgroundColor="Transparent" />
 
-                <Label Text="Новая фамилия:"/>
-                <Entry Placeholder="Введите фамилию"
-                       Text="{Binding NewSurname}" />
+                <Label Text="Новая фамилия:" TextColor="Black" FontAttributes="Bold" />
+                <Entry Placeholder="{Binding NewLastname}"
+                    TextColor="Black"
+                    BackgroundColor="Transparent" />
 
-                <Label Text="Новая почта:"/>
-                <Entry Placeholder="Введите почту"
-                       Text="{Binding NewEmail}" />
+                <Label Text="Новая почта:" TextColor="Black" FontAttributes="Bold" />
+                <Entry Text="{Binding NewEmail, Mode=OneWayToSource}"
+                    Placeholder="Введите новый адрес"
+                    TextColor="Black"
+                    Keyboard="Email" />
 
-                <Button Text="Сменить почту"
-                        Command="{Binding GoToChangeEmailCommand}"/>
+                <Button x:Name="ChangeEmailBtn"
+                    Text="Сменить почту"
+                    Command="{Binding GoToChangeEmailCommand}">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button"
+                                Binding="{Binding IsCooldownActive}"
+                                Value="True">
+                            <Setter Property="Opacity" Value="0.4" />
+                        </DataTrigger>
+
+                        <DataTrigger TargetType="Button"
+                                Binding="{Binding IsCooldownActive}"
+                                Value="False">
+                            <Setter Property="Opacity" Value="1.0" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
+                <Label x:Name="CooldownLabel"
+                   TextColor="#888"
+                   FontSize="12"
+                   HorizontalOptions="Center"/>
 
                 <Grid HeightRequest="40"/>
 
-                <Button Text="Сохранить"
-                        Command="{Binding SaveCommand}"
-                        HorizontalOptions="Center"
-                        WidthRequest="200"/>
 
             </VerticalStackLayout>
         </ScrollView>
 
+        <Border Grid.Row="2" 
+               Padding="20,10" 
+               BackgroundColor="White" 
+               Stroke="Transparent">
+            <Border.Shadow>
+                <Shadow Opacity="0" />
+            </Border.Shadow>
+            <Button Text="Сохранить"
+                    Command="{Binding SaveCommand}"
+                    HorizontalOptions="Fill"
+                    HeightRequest="50"
+                    CornerRadius="10"
+                    FontAttributes="Bold"/>
+        </Border>
     </Grid>
 </ContentPage>

@@ -4,8 +4,8 @@ using my_sweetshop.Services.Api;
 using my_sweetshop.Services.AuthStep;
 using my_sweetshop.Services.Domain;
 using my_sweetshop.ViewModels;
-using my_sweetshop.ViewModels.NewEmail;
-using my_sweetshop.ViewModels.NewEmailOrName;
+using my_sweetshop.ViewModels.Profile;
+using my_sweetshop.ViewModels.Profile.NewEmailOrName;
 using my_sweetshop.Views;
 using my_sweetshop.Views.Auth;
 using my_sweetshop.Views.Catalog;
@@ -73,6 +73,13 @@ namespace my_sweetshop
                 .AddHttpMessageHandler<JwtAuthHandler>();
             builder.Services.AddSingleton<EmailCache>();
 
+            // Регистрация вью-моделей
+            builder.Services.AddTransient<UserProfileViewModel>();
+            builder.Services.AddTransient<UserPointsViewModel>();
+
+            // Регистрация основной (корневой) вью-модели
+            builder.Services.AddTransient<EditProfileRootViewModel>();
+
             // Pages & ViewModels
             RegisterPagesAndViewModels(builder.Services);
 
@@ -101,7 +108,6 @@ namespace my_sweetshop
             services.AddTransient<SplashPage>();
 
             // ViewModels
-            services.AddTransient<EditProfileViewModel>();
             services.AddTransient<NewEmailViewModel>();
             services.AddTransient<HomeViewModel>();
             services.AddTransient<CatalogViewModel>();

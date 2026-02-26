@@ -1,4 +1,4 @@
-using my_sweetshop.ViewModels.NewEmailOrName;
+using my_sweetshop.ViewModels.Profile.NewEmailOrName;
 
 namespace my_sweetshop.Views.Profile.ProfileChanges;
 

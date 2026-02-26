@@ -2,12 +2,10 @@
 using CommunityToolkit.Maui.Core;
 using my_sweetshop.Dtos;
 using my_sweetshop.Services.Api;
-using my_sweetshop.Services.AuthStep;
 using my_sweetshop.Views.Profile;
-using my_sweetshop.Views.Profile.ProfileChanges;
 using System.Windows.Input;
 
-namespace my_sweetshop.ViewModels.NewEmailOrName;
+namespace my_sweetshop.ViewModels.Profile.NewEmailOrName;
 
 public class NewEmailViewModel : BaseViewModel
 {

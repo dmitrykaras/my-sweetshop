@@ -1,5 +1,6 @@
 using Microsoft.Maui.Controls;
-using my_sweetshop.ViewModels.NewEmail;
+using my_sweetshop.ViewModels.Profile;
+using my_sweetshop.ViewModels.Profile.NewEmailOrName;
 using my_sweetshop.Views.Contact;
 using my_sweetshop.Views.Profile.Cashier;
 
@@ -9,7 +10,7 @@ public partial class ProfilePage : ContentPage
 {
     private int _secretTapCount = 0;
 
-    public ProfilePage(EditProfileViewModel vm)
+    public ProfilePage(EditProfileRootViewModel vm)
     {
         InitializeComponent();
 

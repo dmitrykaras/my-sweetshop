@@ -1,31 +1,31 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using my_sweetshop.Dtos;
+using my_sweetshop.Models;
 using my_sweetshop.Services.Api;
 using my_sweetshop.Services.Domain;
 using my_sweetshop.Views.Profile.ProfileChanges;
 using System.Windows.Input;
 
-namespace my_sweetshop.ViewModels.NewEmail
+namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
 {
-    public class EditProfileViewModel : BaseViewModel
+    public class UserProfileViewModel : BaseViewModel
     {
-        private readonly AuthSession _session;
+        private readonly IUserService _userService;
+        private readonly EmailCache _emailCache;
         private readonly ChangeEmail _changeEmail;
+        private readonly AuthSession _session;
 
-        private UserDto _originalUser;
-
+        private UserModel _originalUser;
         private string _newFirstname;
         private string _newLastname;
-
         private string _newEmail;
-
         private string _currentEmail;
-
-        private readonly EmailCache _emailCache;
-
-        // Флаг активности Cooldown
         private bool _cooldownActive;
+        private string _cooldownText;
+
+        private int _cooldownSeconds = 120;
+
         public bool IsCooldownActive
         {
             get => _cooldownActive;
@@ -39,10 +39,6 @@ namespace my_sweetshop.ViewModels.NewEmail
             }
         }
 
-        private int _cooldownSeconds = 120;
-
-        // Текст для Cooldown 
-        private string _cooldownText;
         public string CooldownText
         {
             get => _cooldownText;
@@ -75,24 +71,18 @@ namespace my_sweetshop.ViewModels.NewEmail
 
         public ICommand SaveCommand { get; }
         public ICommand GoToChangeEmailCommand { get; }
-        public ICommand BackCommand { get; }
 
-        private readonly IUserService _userService;
-
-        public EditProfileViewModel(IUserService userService, EmailCache emailCache, ChangeEmail changeEmail, AuthSession session)
+        public UserProfileViewModel(IUserService userService, EmailCache emailCache, ChangeEmail changeEmail, AuthSession session)
         {
             _userService = userService;
-            _changeEmail = changeEmail;
             _emailCache = emailCache;
+            _changeEmail = changeEmail;
             _session = session;
 
-            SaveCommand = new Command(async () => await SaveAsync());
-            GoToChangeEmailCommand = new Command(async () => await GoToChangeEmail(), () => !_cooldownActive);
-            BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
+            SaveCommand = new Command(async () => await SaveAsync(), () => !IsBusy);
+            GoToChangeEmailCommand = new Command(async () => await GoToChangeEmail(), () => !IsCooldownActive);
 
-            // Инициализация
             InitializeViewModel();
-
         }
 
         // Инициализация VM
@@ -110,18 +100,34 @@ namespace my_sweetshop.ViewModels.NewEmail
             {
                 await _session.InitializeAsync();
 
+                // 1. Получаем данные
                 var user = await _userService.GetCurrentUser();
 
-                NewFirstname = user.FirstName;
-                NewLastname = user.LastName;
+                // 2. ПРОВЕРКА: если user пришел null, не идем дальше
+                if (user == null)
+                {
+                    await ShowToast("Данные пользователя не найдены");
+                    return;
+                }
 
-                // Выбираем первый не пустой вариант (если их почему-то несколько)
-                var emailToShow = !string.IsNullOrWhiteSpace(user.Email) ? user.Email : _session.Email;
+                // 3. Сохраняем в оригинальный объект
+                _originalUser = user;
 
-                CurrentEmail = !string.IsNullOrWhiteSpace(emailToShow) ? emailToShow : "Почта не указана";
+                // 4. Безопасно заполняем поля
+                NewFirstname = _originalUser.FirstName;
+                NewLastname = _originalUser.LastName;
+
+                var emailToShow = !string.IsNullOrWhiteSpace(_originalUser.Email)
+                                  ? _originalUser.Email
+                                  : _session.Email;
+
+                CurrentEmail = !string.IsNullOrWhiteSpace(emailToShow)
+                               ? emailToShow
+                               : "Почта не указана";
             }
             catch (Exception ex)
             {
+                // Логируйте ex, чтобы видеть реальную причину (ошибка сети, 401 и т.д.)
                 await ShowToast("Ошибка загрузки данных");
             }
         }
@@ -158,11 +164,11 @@ namespace my_sweetshop.ViewModels.NewEmail
 
                 await _userService.UpdateProfileAsync(updateDto);
 
-                    // Обновляем "оригинал", чтобы кнопка сохранения снова стала неактивной
-                    _originalUser.FirstName = NewFirstname;
-                    _originalUser.LastName = NewLastname;
+                // Обновляем "оригинал", чтобы кнопка сохранения снова стала неактивной
+                _originalUser.FirstName = NewFirstname;
+                _originalUser.LastName = NewLastname;
 
-                    await ShowToast("Профиль успешно обновлен");
+                await ShowToast("Профиль успешно обновлен");
             }
             catch (Exception ex)
             {

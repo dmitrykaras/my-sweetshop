@@ -2,9 +2,9 @@
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:viewmodels="clr-namespace:my_sweetshop.ViewModels.NewEmail"
-    x:DataType="viewmodels:EditProfileViewModel"
+    xmlns:viewmodels="clr-namespace:my_sweetshop.ViewModels.Profile"
     x:Class="my_sweetshop.Views.Profile.ProfilePage"
+    x:DataType="viewmodels:EditProfileRootViewModel"
     Title="Профиль"
     BackgroundColor="{StaticResource PageBackgroundLight}">
 
@@ -23,7 +23,7 @@
                     Padding="16"
                     StrokeShape="RoundRectangle 14">
                 <VerticalStackLayout Spacing="6">
-                    <Label Text="-----------------------"
+                    <Label Text="{Binding Points.TotalPoints}"
                            FontSize="28"
                            FontAttributes="Bold"
                            HorizontalOptions="Start" />
@@ -45,11 +45,11 @@
                            WidthRequest="24"
                            VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2">
-                        <Label Text="{Binding NewFirstname}"
+                        <Label Text="{Binding Profile.NewFirstname}"
                                FontSize="15"
                                FontAttributes="Bold"/>
                         <Label 
-                            Text="{Binding CurrentEmail}"
+                            Text="{Binding Profile.CurrentEmail}"
                             FontSize="13"
                             TextColor="Gray"/>
                     </VerticalStackLayout>

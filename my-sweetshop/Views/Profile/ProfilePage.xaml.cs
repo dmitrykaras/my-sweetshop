@@ -1,4 +1,5 @@
 using Microsoft.Maui.Controls;
+using my_sweetshop.ViewModels.NewEmail;
 using my_sweetshop.Views.Contact;
 using my_sweetshop.Views.Profile.Cashier;
 
@@ -8,21 +9,26 @@ public partial class ProfilePage : ContentPage
 {
     private int _secretTapCount = 0;
 
-    public ProfilePage()
+    public ProfilePage(EditProfileViewModel vm)
     {
         InitializeComponent();
+
+        BindingContext = vm;
     }
 
+    // Метод перемещения на EditProfilePage
     private async void OnProfileTapped(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(EditProfilePage));
     }
 
+    // Метод перемещения на FavoritesPage
     //private async void OnFavoritesTapped(object sender, EventArgs e)
     //{
     //    await Shell.Current.GoToAsync(nameof(FavoritesPage));
     //}
 
+    // Метод перемещения на раздел "Связаться"
     private async void OnHelpTapped(object sender, EventArgs e)
     {
         var shell = Shell.Current;
@@ -42,6 +48,7 @@ public partial class ProfilePage : ContentPage
         }
     }
 
+    // Метод перемещения на сайт
     private async void OnSiteTapped(object sender, EventArgs e)
     {
         await Launcher.OpenAsync("https://mysweetshop.ru");

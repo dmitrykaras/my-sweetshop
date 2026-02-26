@@ -13,10 +13,14 @@ namespace my_sweetshop.ViewModels.NewEmail
         private readonly AuthSession _session;
         private readonly ChangeEmail _changeEmail;
 
+        private UserDto _originalUser;
+
         private string _newFirstname;
         private string _newLastname;
 
         private string _newEmail;
+
+        private string _currentEmail;
 
         private readonly EmailCache _emailCache;
 
@@ -63,6 +67,12 @@ namespace my_sweetshop.ViewModels.NewEmail
             set => SetProperty(ref _newEmail, value);
         }
 
+        public string CurrentEmail
+        {
+            get => _currentEmail;
+            set => SetProperty(ref _currentEmail, value);
+        }
+
         public ICommand SaveCommand { get; }
         public ICommand GoToChangeEmailCommand { get; }
         public ICommand BackCommand { get; }
@@ -80,39 +90,90 @@ namespace my_sweetshop.ViewModels.NewEmail
             GoToChangeEmailCommand = new Command(async () => await GoToChangeEmail(), () => !_cooldownActive);
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
 
-            // вызываем асинхронный метод для загрузки пользователя
-            _ = LoadUserAsync();
-            
+            // Инициализация
+            InitializeViewModel();
+
         }
 
+        // Инициализация VM
+        private async void InitializeViewModel()
+        {
+            IsBusy = true;
+            await LoadUserAsync();
+            IsBusy = false;
+        }
+
+        // Метод загрузки данных
         private async Task LoadUserAsync()
         {
-            await _session.InitializeAsync();
-            var user = await _userService.GetCurrentUser();
-            NewFirstname = user.FirstName;
-            NewLastname = user.LastName;
+            try
+            {
+                await _session.InitializeAsync();
+
+                var user = await _userService.GetCurrentUser();
+
+                NewFirstname = user.FirstName;
+                NewLastname = user.LastName;
+
+                // Выбираем первый не пустой вариант (если их почему-то несколько)
+                var emailToShow = !string.IsNullOrWhiteSpace(user.Email) ? user.Email : _session.Email;
+
+                CurrentEmail = !string.IsNullOrWhiteSpace(emailToShow) ? emailToShow : "Почта не указана";
+            }
+            catch (Exception ex)
+            {
+                await ShowToast("Ошибка загрузки данных");
+            }
         }
 
+        // Метод сохранения данных
         private async Task SaveAsync()
         {
-            var user = await _userService.GetCurrentUser();
+            if (IsBusy) return;
 
-            bool nameChanged = !string.IsNullOrWhiteSpace(NewFirstname) && NewFirstname != user.FirstName;
-            bool surnameChanged = !string.IsNullOrWhiteSpace(NewLastname) && NewLastname != user.LastName;
-
-            // если ничего не менялось — вообще ничего не отправляем
-            if (!nameChanged && !surnameChanged)
+            // Простая валидация перед отправкой
+            if (string.IsNullOrWhiteSpace(NewFirstname) || string.IsNullOrWhiteSpace(NewLastname))
+            {
+                await ShowToast("Имя и фамилия не могут быть пустыми");
                 return;
+            }
 
-            var updateDto = new UpdateProfileDto();
+            // Сравниваем с оригиналом (опционально, но профессионально)
+            if (NewFirstname == _originalUser?.FirstName && NewLastname == _originalUser?.LastName)
+            {
+                await ShowToast("Изменений не обнаружено");
+                return;
+            }
 
-            if (nameChanged)
-                updateDto.FirstName = NewFirstname;
+            IsBusy = true;
+            ((Command)SaveCommand).ChangeCanExecute(); // Обновляем состояние кнопки
 
-            if (surnameChanged)
-                updateDto.LastName = NewLastname;
+            try
+            {
+                var updateDto = new UpdateProfileDto
+                {
+                    FirstName = NewFirstname,
+                    LastName = NewLastname
+                };
 
-            await _userService.UpdateProfileAsync(updateDto);
+                await _userService.UpdateProfileAsync(updateDto);
+
+                    // Обновляем "оригинал", чтобы кнопка сохранения снова стала неактивной
+                    _originalUser.FirstName = NewFirstname;
+                    _originalUser.LastName = NewLastname;
+
+                    await ShowToast("Профиль успешно обновлен");
+            }
+            catch (Exception ex)
+            {
+                // Логируем ошибку (ex)
+                await ShowToast("Не удалось сохранить изменения");
+            }
+            finally
+            {
+                IsBusy = false;
+                ((Command)SaveCommand).ChangeCanExecute();
+            }
         }
 
         private async Task GoToChangeEmail()
@@ -169,6 +230,7 @@ namespace my_sweetshop.ViewModels.NewEmail
             CooldownText = string.Empty;
         }
 
+        // Метод вывода
         async Task ShowToast(string text)
         {
             var toast = Toast.Make(text, ToastDuration.Short);

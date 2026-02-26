@@ -40,8 +40,7 @@
                     TextColor="Black"
                     Keyboard="Email" />
 
-                <Button x:Name="ChangeEmailBtn"
-                    Text="Сменить почту"
+                <Button Text="Сменить почту"
                     Command="{Binding GoToChangeEmailCommand}">
                     <Button.Triggers>
                         <DataTrigger TargetType="Button"

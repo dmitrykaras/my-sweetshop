@@ -2,15 +2,10 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="my_sweetshop.Views.Profile.ProfileChanges.NewEmailPage"
+             Shell.NavBarIsVisible="True"
              Title="Подтверждение почты">
 
     <Grid Padding="24" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto">
-
-        <ImageButton Source="page_transition.png"
-                     WidthRequest="26"
-                     HeightRequest="26"
-                     HorizontalOptions="Start"
-                     Clicked="OnBack"/>
 
         <Label Grid.Row="1"
                Text="Введите код подтверждения"

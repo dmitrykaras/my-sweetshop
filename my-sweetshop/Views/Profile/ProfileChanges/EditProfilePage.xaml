@@ -4,6 +4,7 @@
              xmlns:viewmodels="clr-namespace:my_sweetshop.ViewModels.NewEmail"
              x:DataType="viewmodels:EditProfileViewModel"
              x:Class="my_sweetshop.Views.Profile.EditProfilePage"
+             Shell.NavBarIsVisible="True"
              Title="EditProfile">
     <Grid RowDefinitions="Auto,*,Auto">
 

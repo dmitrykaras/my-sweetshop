@@ -1,7 +1,7 @@
 ﻿using my_sweetshop.Models;
 using my_sweetshop.Dtos;
 
-namespace my_sweetshop.Services.Domain
+namespace my_sweetshop.Services.UserService
 {
     public interface IUserService
     {

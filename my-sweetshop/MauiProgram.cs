@@ -1,8 +1,9 @@
 ﻿using CommunityToolkit.Maui;
 using my_sweetshop.Dtos;
 using my_sweetshop.Services.Api;
+using my_sweetshop.Services.Api.ProfileService;
 using my_sweetshop.Services.AuthStep;
-using my_sweetshop.Services.Domain;
+using my_sweetshop.Services.UserService;
 using my_sweetshop.ViewModels;
 using my_sweetshop.ViewModels.Profile;
 using my_sweetshop.ViewModels.Profile.NewEmailOrName;
@@ -35,16 +36,18 @@ namespace my_sweetshop
 
             builder.Services.AddSingleton<AppShell>();
 
-            // 1. Auth session
+            // 1. Сессия авторизации
             builder.Services.AddSingleton<AuthSession>();
 
-            // 2. HttpClient для рефреша (БЕЗ хендлера, чтобы не было зацикливания)
+            string apiBaseUrl = DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:5107/" : "http://localhost:5107/";
+
+            // 2. HttpClient для рефреша (Строго БЕЗ JwtAuthHandler)
             builder.Services.AddHttpClient("refresh_client", c =>
             {
-                c.BaseAddress = new Uri(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:5107/" : "http://localhost:5107/");
+                c.BaseAddress = new Uri(apiBaseUrl);
             });
 
-            // 3. Регистрируем JwtAuthHandler с использованием factory для refresh_client
+            // 3. Регистрация JwtAuthHandler
             builder.Services.AddTransient<JwtAuthHandler>(sp =>
             {
                 var session = sp.GetRequiredService<AuthSession>();
@@ -53,35 +56,53 @@ namespace my_sweetshop
                 return new JwtAuthHandler(session, refreshClient);
             });
 
-            // 4. Основные API сервисы через AddHttpClient + JwtAuthHandler
-            string apiBaseUrl = DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:5107/" : "http://localhost:5107/";
+            // 4. Регистрация ProfileService как Singleton с поддержкой HttpClient
+            // Сначала настраиваем именованный клиент для профиля
+            builder.Services.AddHttpClient("ProfileClient", c =>
+            {
+                c.BaseAddress = new Uri(apiBaseUrl);
+            })
+            .AddHttpMessageHandler<JwtAuthHandler>();
 
+            // Теперь регистрируем сам сервис как Singleton, внедряя в него настроенный клиент
+            builder.Services.AddScoped<IProfileService>(sp =>
+            {
+                var factory = sp.GetRequiredService<IHttpClientFactory>();
+                var httpClient = factory.CreateClient("ProfileClient");
+                return new ProfileService(httpClient);
+            });
+
+            // 5. Остальные API сервисы (AddHttpClient здесь работает нормально для Transient)
             builder.Services.AddHttpClient<AuthApi>(c => c.BaseAddress = new Uri(apiBaseUrl))
                 .AddHttpMessageHandler<JwtAuthHandler>();
 
-            builder.Services.AddHttpClient<ApiService>(c => c.BaseAddress = new Uri(apiBaseUrl))
+            builder.Services.AddHttpClient<GetProducts>(c => c.BaseAddress = new Uri(apiBaseUrl))
                 .AddHttpMessageHandler<JwtAuthHandler>();
 
             builder.Services.AddHttpClient<ApiClient>(c => c.BaseAddress = new Uri(apiBaseUrl))
                 .AddHttpMessageHandler<JwtAuthHandler>();
 
-            // Остальные вспомогательные сервисы
+            builder.Services.AddHttpClient<ChangeEmail>(c => c.BaseAddress = new Uri(apiBaseUrl))
+                .AddHttpMessageHandler<JwtAuthHandler>();
+
+            // Вспомогательные сервисы
             builder.Services.AddSingleton<ApiException>();
             builder.Services.AddSingleton<IUserService, UserService>();
             builder.Services.AddSingleton<CodePageFactory>();
-            builder.Services.AddHttpClient<ChangeEmail>(c => c.BaseAddress = new Uri(apiBaseUrl))
-                .AddHttpMessageHandler<JwtAuthHandler>();
             builder.Services.AddSingleton<EmailCache>();
 
             // Регистрация вью-моделей
-            builder.Services.AddTransient<UserProfileViewModel>();
+            builder.Services.AddSingleton<UserProfileViewModel>();
             builder.Services.AddTransient<UserPointsViewModel>();
+            builder.Services.AddSingleton<EditProfileRootViewModel>();
+            builder.Services.AddTransient<NewEmailViewModel>();
+            builder.Services.AddTransient<HomeViewModel>();
+            builder.Services.AddTransient<CatalogViewModel>();
+            builder.Services.AddTransient<CategoryViewModel>();
+            builder.Services.AddTransient<ProductViewModel>();
 
-            // Регистрация основной (корневой) вью-модели
-            builder.Services.AddTransient<EditProfileRootViewModel>();
-
-            // Pages & ViewModels
-            RegisterPagesAndViewModels(builder.Services);
+            // Pages
+            RegisterPages(builder.Services);
 
             var app = builder.Build();
             ServiceProvider = app.Services;
@@ -89,9 +110,8 @@ namespace my_sweetshop
             return app;
         }
 
-        private static void RegisterPagesAndViewModels(IServiceCollection services)
+        private static void RegisterPages(IServiceCollection services)
         {
-            // Pages
             services.AddTransient<HomePage>();
             services.AddTransient<CatalogPage>();
             services.AddTransient<ProductPage>();
@@ -106,13 +126,6 @@ namespace my_sweetshop
             services.AddTransient<CodePage>();
             services.AddTransient<CompletionProfilePage>();
             services.AddTransient<SplashPage>();
-
-            // ViewModels
-            services.AddTransient<NewEmailViewModel>();
-            services.AddTransient<HomeViewModel>();
-            services.AddTransient<CatalogViewModel>();
-            services.AddTransient<CategoryViewModel>();
-            services.AddTransient<ProductViewModel>();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using my_sweetshop.Models;
 using my_sweetshop.Services.Api;
+using my_sweetshop.Services.Api.ProfileService;
 using my_sweetshop.Views.Catalog;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -8,7 +9,7 @@ namespace my_sweetshop.ViewModels
 {
     public class CatalogViewModel : BindableObject
     {
-        private readonly ApiService _apiService;
+        private readonly GetProducts _apiService;
 
         public ObservableCollection<Product> Desserts { get; } = new();
         public ObservableCollection<Product> MaleCakes { get; } = new();
@@ -20,7 +21,7 @@ namespace my_sweetshop.ViewModels
 
         public ICommand OpenProductCommand { get; }
 
-        public CatalogViewModel(ApiService apiService)
+        public CatalogViewModel(GetProducts apiService)
         {
             _apiService = apiService; // Теперь DI передает сюда настроенный сервис
 

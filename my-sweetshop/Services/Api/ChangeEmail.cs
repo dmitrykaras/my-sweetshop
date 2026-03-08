@@ -1,4 +1,5 @@
 ﻿using my_sweetshop.Dtos; //ChangeEmailRequest
+using my_sweetshop.ViewModels.Profile.NewEmailOrName;
 using System.Net.Http.Json;
 
 namespace my_sweetshop.Services.Api
@@ -38,9 +39,16 @@ namespace my_sweetshop.Services.Api
 
             var resp = await _http.SendAsync(httpReq);
 
-            if (resp.IsSuccessStatusCode) return true;
+            if (resp.IsSuccessStatusCode)
+            {
+                // 3. Вызываем загрузку у синглтона
+                var vm = MauiProgram.ServiceProvider.GetRequiredService<UserProfileViewModel>();
+                await vm.LoadUserAsync();
 
-            string errorMessage;
+                return true;
+            }
+
+                string errorMessage;
             try
             {
                 // Пробуем прочитать как JSON
@@ -52,6 +60,10 @@ namespace my_sweetshop.Services.Api
                 // Если не JSON — читаем как обычную строку
                 errorMessage = await resp.Content.ReadAsStringAsync();
             }
+
+            // 2. Обновляем сессию
+            //var session = MauiProgram.ServiceProvider.GetRequiredService<AuthSession>();
+            //await session.SetSessionAsync(session.Token, newEmail);
 
             throw new Exception(errorMessage);
         }

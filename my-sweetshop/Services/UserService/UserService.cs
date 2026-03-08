@@ -1,26 +1,26 @@
 ﻿using my_sweetshop.Dtos;
 using my_sweetshop.Models;
-using my_sweetshop.Services.Api;
+using my_sweetshop.Services.Api.ProfileService;
 
-namespace my_sweetshop.Services.Domain
+namespace my_sweetshop.Services.UserService
 {
     public class UserService : IUserService
     {
-        private readonly ApiService _api;
+        private readonly IProfileService _api;
 
-        public UserService(ApiService api)
+        public UserService(IProfileService api)
         {
             _api = api;
         }
 
         public Task<UserModel> GetCurrentUser()
         {
-            return _api.GetUserAsync();
+            return _api.GetProfileAsync(forceRefresh: true);
         }
 
         public Task UpdateProfileAsync(UpdateProfileDto dto)
         {
-            return _api.UpdateProfileAsync(dto.FirstName, dto.LastName);
+            return _api.UpdateProfileAsync(dto);
         }
 
         public async Task ChangeEmailAsync(string newEmail)

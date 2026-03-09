@@ -30,26 +30,17 @@
                     Keyboard="Email" />
 
                 <Button Text="Сменить почту"
-                    Command="{Binding Profile.GoToChangeEmailCommand}">
+                Command="{Binding Profile.GoToChangeEmailCommand}">
                     <Button.Triggers>
-                        <DataTrigger TargetType="Button"
-                                Binding="{Binding Profile.IsCooldownActive}"
-                                Value="True">
+                        <DataTrigger TargetType="Button" Binding="{Binding Profile.IsEmailCooldownActive}" Value="True">
                             <Setter Property="Opacity" Value="0.4" />
-                        </DataTrigger>
-
-                        <DataTrigger TargetType="Button"
-                                Binding="{Binding Profile.IsCooldownActive}"
-                                Value="False">
-                            <Setter Property="Opacity" Value="1.0" />
                         </DataTrigger>
                     </Button.Triggers>
                 </Button>
 
-                <Label x:Name="CooldownLabel"
-                   TextColor="#888"
-                   FontSize="12"
-                   HorizontalOptions="Center"/>
+                <Label Text="{Binding Profile.EmailCooldownText}"
+                   IsVisible="{Binding Profile.IsEmailCooldownActive}"
+                   TextColor="#888" FontSize="12" HorizontalOptions="Center"/>
 
                 <Grid HeightRequest="40"/>
 
@@ -64,12 +55,24 @@
             <Border.Shadow>
                 <Shadow Opacity="0" />
             </Border.Shadow>
-            <Button Text="Сохранить"
-                    Command="{Binding Profile.SaveCommand}"
-                    HorizontalOptions="Fill"
-                    HeightRequest="50"
-                    CornerRadius="10"
-                    FontAttributes="Bold"/>
+            <VerticalStackLayout>
+                <Label Text="{Binding Profile.ProfileCooldownText}"
+                   IsVisible="{Binding Profile.IsProfileCooldownActive}"
+                   TextColor="#888" FontSize="12" HorizontalOptions="Center" Margin="0,0,0,5"/>
+
+                <Button Text="Сохранить"
+                Command="{Binding Profile.SaveCommand}"
+                HorizontalOptions="Fill"
+                HeightRequest="50"
+                CornerRadius="10"
+                FontAttributes="Bold">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding Profile.IsProfileCooldownActive}" Value="True">
+                            <Setter Property="Opacity" Value="0.5" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+            </VerticalStackLayout>
         </Border>
     </Grid>
 </ContentPage>

@@ -1,6 +1,7 @@
 ﻿using my_sweetshop;
 using my_sweetshop.Dtos;
 using my_sweetshop.Models;
+using my_sweetshop.Services.Api;
 using my_sweetshop.Services.Api.ProfileService;
 using my_sweetshop.Services.UserService;
 using my_sweetshop.ViewModels.Profile.NewEmailOrName;
@@ -56,7 +57,8 @@ public class ProfileService : IProfileService
             _cachedUser = updated;
             return true;
         }
-        return false;
+        var errorData = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
+        throw new ApiException((int)response.StatusCode, errorData?.Message ?? "Ошибка сервера", errorData);
     }
 
     // Запрос на смену почты

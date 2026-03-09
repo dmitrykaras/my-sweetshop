@@ -7,6 +7,8 @@ using my_sweetshop.Services.Api.ProfileService;
 using my_sweetshop.Services.UserService;
 using my_sweetshop.Views.Profile.ProfileChanges;
 using System.Windows.Input;
+using System.Timers;
+using System.ComponentModel.DataAnnotations;
 
 namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
 {
@@ -25,29 +27,49 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
         private string _newLastname;
         private string _newEmail;
         private string _currentEmail;
-        private bool _cooldownActive;
-        private string _cooldownText;
 
-        private int _cooldownSeconds = 120;
+        // Поля для смены почты
+        private bool _isEmailCooldownActive;
+        private string _emailCooldownText;
+        private int _emailCooldownSeconds = 300;
 
-        public bool IsCooldownActive
+        // Поля для сохранения профиля (имя/фамилия)
+        private bool _isProfileCooldownActive;
+        private string _profileCooldownText;
+        private int _profileCooldownSeconds = 120;
+
+        private DateTime? _emailCooldownEndTime;
+        private DateTime? _profileCooldownEndTime;
+
+        /// <summary>
+        /// Cooldown - для почты и для смены имени и/или фамилии
+        /// </summary>
+
+        // Свойства для почты
+        public bool IsEmailCooldownActive
         {
-            get => _cooldownActive;
-            set
-            {
-                if (SetProperty(ref _cooldownActive, value))
-                {
-                    // Это заставит кнопку перепроверить свою доступность (CanExecute)
-                    ((Command)GoToChangeEmailCommand).ChangeCanExecute();
-                }
-            }
+            get => _isEmailCooldownActive;
+            set { if (SetProperty(ref _isEmailCooldownActive, value)) ((Command)GoToChangeEmailCommand).ChangeCanExecute(); }
+        }
+        public string EmailCooldownText
+        {
+            get => _emailCooldownText;
+            set => SetProperty(ref _emailCooldownText, value);
         }
 
-        public string CooldownText
+        // Свойства для профиля
+        public bool IsProfileCooldownActive
         {
-            get => _cooldownText;
-            set => SetProperty(ref _cooldownText, value);
+            get => _isProfileCooldownActive;
+            set { if (SetProperty(ref _isProfileCooldownActive, value)) ((Command)SaveCommand).ChangeCanExecute(); }
         }
+        public string ProfileCooldownText
+        {
+            get => _profileCooldownText;
+            set => SetProperty(ref _profileCooldownText, value);
+        }
+
+
 
         public string CurrentFirstname
         {
@@ -58,7 +80,14 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
         public string NewFirstname
         {
             get => _newFirstname;
-            set => SetProperty(ref _newFirstname, value);
+            set
+            {
+                if (SetProperty(ref _newFirstname, value))
+                {
+                    // Уведомляем SaveCommand, что нужно перепроверить CanExecute
+                    ((Command)SaveCommand).ChangeCanExecute();
+                }
+            }
         }
 
         public string CurrentLastname
@@ -70,13 +99,25 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
         public string NewLastname
         {
             get => _newLastname;
-            set => SetProperty(ref _newLastname, value);
+            set
+            {
+                if (SetProperty(ref _newLastname, value))
+                {
+                    ((Command)SaveCommand).ChangeCanExecute();
+                }
+            }
         }
 
         public string NewEmail
         {
             get => _newEmail;
-            set => SetProperty(ref _newEmail, value);
+            set
+            {
+                if (SetProperty(ref _newEmail, value))
+                {
+                    ((Command)GoToChangeEmailCommand).ChangeCanExecute();
+                }
+            }
         }
 
         public string CurrentEmail
@@ -104,8 +145,15 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             _session = session;
             _profileService = profileService;
 
-            SaveCommand = new Command(async () => await SaveAsync(), () => !IsBusy);
-            GoToChangeEmailCommand = new Command(async () => await GoToChangeEmail(), () => !IsCooldownActive);
+            SaveCommand = new Command(
+                execute: async () => await SaveAsync(),
+                canExecute: () => !IsBusy && CanSave() && !IsProfileCooldownActive
+            );
+
+            GoToChangeEmailCommand = new Command(
+                execute: async () => await GoToChangeEmail(),
+                canExecute: () => !IsEmailCooldownActive && IsValidEmail(NewEmail)
+            );
 
             InitializeViewModel();
         }
@@ -116,6 +164,25 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             IsBusy = true;
             await LoadUserAsync();
             IsBusy = false;
+        }
+
+        // Вспомогательный метод для валидации кнопки сохранения
+        private bool CanSave()
+        {
+            // Проверяем, что хотя бы в одном поле есть 2 или более символов
+            bool fnValid = !string.IsNullOrWhiteSpace(NewFirstname) && NewFirstname.Length >= 2;
+            bool lnValid = !string.IsNullOrWhiteSpace(NewLastname) && NewLastname.Length >= 2;
+
+            return fnValid || lnValid;
+        }
+
+        // Вспомогательный метод для валидации почты
+        private bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
+
+            return new EmailAddressAttribute().IsValid(email);
         }
 
         // Метод загрузки данных
@@ -193,17 +260,19 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
                 if (success)
                 {
                     await ShowToast("Профиль обновлен");
+                    _ = StartCooldown(_profileCooldownSeconds, (v) => IsProfileCooldownActive = v, (t) => ProfileCooldownText = t, false);
                     await LoadUserAsync();
                     ClearEntryString();
                 }
-                else
-                {
-                    await ShowToast("Ошибка при сохранении");
-                }
+            }
+            catch (ApiException apiEx)
+            {
+                var message = apiEx.Error?.Message ?? apiEx.Message;
+                await ShowToast(message);
             }
             catch (Exception)
             {
-                await ShowToast("Ошибка сети");
+                await ShowToast("Ошибка сети или сервера");
             }
             finally
             {
@@ -223,7 +292,7 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
         // Переход к странице ввода кода врификации и отправка кода
         private async Task GoToChangeEmail()
         {
-            if (string.IsNullOrWhiteSpace(NewEmail) || !NewEmail.Contains("@"))
+            if (!IsValidEmail(NewEmail))
             {
                 await ShowToast("Введите корректную новую почту");
                 return;
@@ -250,7 +319,7 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
                 await Shell.Current.GoToAsync(nameof(NewEmailPage));
 
                 // если запрос прошёл успешно, то запускаем таймер на cooldown
-                await StartCooldownTimer();
+                await StartCooldown(_emailCooldownSeconds, (v) => IsEmailCooldownActive = v, (t) => EmailCooldownText = t, false);
             }
             catch
             {
@@ -259,24 +328,28 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
         }
 
         // Метод для отсчёта времени Cooldown
-        private async Task StartCooldownTimer()
+        private async Task StartCooldown(int seconds, Action<bool> setStatus, Action<string> setText, bool isEmail)
         {
-            IsCooldownActive = true;
+            var endTime = DateTime.Now.AddSeconds(seconds);
 
-            for (int i = _cooldownSeconds; i > 0; i--)
+            // Сохраняем время окончания
+            if (isEmail) _emailCooldownEndTime = endTime;
+            else _profileCooldownEndTime = endTime;
+
+            setStatus(true);
+
+            while (DateTime.Now < endTime)
             {
-                CooldownText = $"Повтор через {i}с";
-
-                // Просто ждем 1 секунду, не блокируя поток
+                var remaining = (endTime - DateTime.Now).TotalSeconds;
+                setText($"Повтор через {Math.Ceiling(remaining)}с");
                 await Task.Delay(1000);
             }
 
-            IsCooldownActive = false;
-            CooldownText = string.Empty;
+            setText(string.Empty);
+            setStatus(false);
         }
-
-        // Метод вывода
-        async Task ShowToast(string text)
+            // Метод вывода
+            async Task ShowToast(string text)
         {
             var toast = Toast.Make(text, ToastDuration.Short);
             await toast.Show();

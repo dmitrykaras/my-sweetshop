@@ -32,6 +32,9 @@
                            FontSize="13"
                            TextColor="Gray" />
                 </VerticalStackLayout>
+                <Border.Shadow>
+                    <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                </Border.Shadow>
             </Border>
 
             <!-- Профиль пользователя -->
@@ -45,7 +48,7 @@
                            WidthRequest="24"
                            VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2">
-                        <Label Text="{Binding Profile.NewFirstname}"
+                        <Label Text="{Binding Profile.CurrentFirstname}"
                                FontSize="15"
                                FontAttributes="Bold"/>
                         <Label 
@@ -57,6 +60,9 @@
                         <TapGestureRecognizer Tapped="OnProfileTapped"/>
                     </Grid.GestureRecognizers>
                 </Grid>
+                <Border.Shadow>
+                    <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                </Border.Shadow>
             </Border>
 
             <!-- Избранное -->
@@ -81,6 +87,9 @@
                         <TapGestureRecognizer Tapped="OnFavoritesTapped"/>
                     </Grid.GestureRecognizers>
                 </Grid>
+                <Border.Shadow>
+                    <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                </Border.Shadow>
             </Border>
 
             <!-- Кнопки Помощь / Сайт -->
@@ -104,6 +113,9 @@
                            Margin="14"
                            VerticalOptions="End"/>
                     </Grid>
+                    <Border.Shadow>
+                        <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                    </Border.Shadow>
                 </Border>
 
                 <!-- Сайт -->
@@ -126,6 +138,9 @@
                            Margin="14"
                            VerticalOptions="End"/>
                     </Grid>
+                    <Border.Shadow>
+                        <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                    </Border.Shadow>
                 </Border>
             </Grid>
             <!-- Скрытая кнопка для кассира -->

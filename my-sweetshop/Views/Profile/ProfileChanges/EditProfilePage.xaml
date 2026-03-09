@@ -5,33 +5,21 @@
              x:Class="my_sweetshop.Views.Profile.EditProfilePage"
              x:DataType="viewmodels:EditProfileRootViewModel"
              Shell.NavBarIsVisible="True"
-             Title="EditProfile">
+             Title="Редактировать профиль">
     <Grid RowDefinitions="Auto,*,Auto">
-
-        <!-- Заголовок -->
-        <Grid Padding="16" ColumnDefinitions="Auto,*">
-            <ImageButton Source="back.png"
-                         WidthRequest="28"
-                         HeightRequest="28"
-                         Command="{Binding BackCommand}"/>
-
-            <Label Text="Редактировать профиль"
-                   Grid.Column="1"
-                   VerticalOptions="Center"
-                   FontSize="20"
-                   FontAttributes="Bold"/>
-        </Grid>
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="14">
 
                 <Label Text="Новое имя:" TextColor="Black" FontAttributes="Bold" />
-                <Entry Placeholder="{Binding Profile.NewFirstname}"
+                <Entry Placeholder="{Binding Profile.CurrentFirstname}"
+                    Text="{Binding Profile.NewFirstname, Mode=TwoWay}"
                     TextColor="Black"
                     BackgroundColor="Transparent" />
 
                 <Label Text="Новая фамилия:" TextColor="Black" FontAttributes="Bold" />
-                <Entry Placeholder="{Binding Profile.NewLastname}"
+                <Entry Placeholder="{Binding Profile.CurrentLastname}"
+                    Text="{Binding Profile.NewLastname, Mode=TwoWay}"
                     TextColor="Black"
                     BackgroundColor="Transparent" />
 

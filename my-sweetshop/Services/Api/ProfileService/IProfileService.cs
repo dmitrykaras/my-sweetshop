@@ -7,7 +7,6 @@ namespace my_sweetshop.Services.Api.ProfileService
     {
         Task<UserModel> GetProfileAsync(bool forceRefresh = false);
         Task<bool> UpdateProfileAsync(UpdateProfileDto dto);
-        //Task ConfirmChangeEmail(string newEmail, string code);
         Task RequestChangeEmailAsync(string newEmail);
         void ClearCache(); // Например, при выходе из аккаунта (Logout)
     }

@@ -61,10 +61,6 @@ namespace my_sweetshop.Services.Api
                 errorMessage = await resp.Content.ReadAsStringAsync();
             }
 
-            // 2. Обновляем сессию
-            //var session = MauiProgram.ServiceProvider.GetRequiredService<AuthSession>();
-            //await session.SetSessionAsync(session.Token, newEmail);
-
             throw new Exception(errorMessage);
         }
     }

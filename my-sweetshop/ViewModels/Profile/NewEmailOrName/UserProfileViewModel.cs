@@ -19,7 +19,9 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
         private readonly IProfileService _profileService;
 
         private UserModel _originalUser;
+        private string _currentFirstname;
         private string _newFirstname;
+        private string _currentLastname;
         private string _newLastname;
         private string _newEmail;
         private string _currentEmail;
@@ -47,10 +49,22 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             set => SetProperty(ref _cooldownText, value);
         }
 
+        public string CurrentFirstname
+        {
+            get => _currentFirstname;
+            set => SetProperty(ref _currentFirstname, value);
+        }
+
         public string NewFirstname
         {
             get => _newFirstname;
             set => SetProperty(ref _newFirstname, value);
+        }
+
+        public string CurrentLastname
+        {
+            get => _currentLastname;
+            set => SetProperty(ref _currentLastname, value);
         }
 
         public string NewLastname
@@ -125,8 +139,9 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
                 _originalUser = user;
 
                 // 4. Безопасно заполняем поля
-                NewFirstname = _originalUser.FirstName;
-                NewLastname = _originalUser.LastName;
+                CurrentFirstname = _originalUser.FirstName;
+                CurrentLastname = _originalUser.LastName;
+
 
                 var emailToShow = !string.IsNullOrWhiteSpace(_originalUser.Email)
                                   ? _originalUser.Email
@@ -135,8 +150,6 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
                 CurrentEmail = !string.IsNullOrWhiteSpace(emailToShow)
                                ? emailToShow
                                : "Почта не указана";
-
-                OnPropertyChanged(nameof(CurrentEmail)); // на случай, если сеттер не сработал из-за совпадения строк
             }
             catch (Exception ex)
             {
@@ -153,13 +166,13 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             var _currentUser = await _profileService.GetProfileAsync();
 
             // Валидация
-            if (string.IsNullOrWhiteSpace(NewFirstname) || string.IsNullOrWhiteSpace(NewLastname))
+            if (string.IsNullOrWhiteSpace(NewFirstname) && string.IsNullOrWhiteSpace(NewLastname))
             {
                 await ShowToast("Заполните все поля");
                 return;
             }
 
-            // Проверка на изменения (чтобы не дергать сервер зря)
+            // Проверка на изменения
             if (NewFirstname == _currentUser?.FirstName && NewLastname == _currentUser?.LastName)
             {
                 await ShowToast("Изменений нет");
@@ -180,6 +193,8 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
                 if (success)
                 {
                     await ShowToast("Профиль обновлен");
+                    await LoadUserAsync();
+                    ClearEntryString();
                 }
                 else
                 {
@@ -196,6 +211,16 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             }
         }
 
+        // Очистка полей ввода имени и фамилии 
+        private void ClearEntryString()
+        {
+            // Очищаем данные
+
+            if (NewFirstname != null) NewFirstname = "";
+            if (NewLastname != null) NewLastname = "";
+        }
+
+        // Переход к странице ввода кода врификации и отправка кода
         private async Task GoToChangeEmail()
         {
             if (string.IsNullOrWhiteSpace(NewEmail) || !NewEmail.Contains("@"))

@@ -39,9 +39,10 @@ public class ProfileService : IProfileService
         }
     }
 
+    // Метод обновления данных пользователя 
     public async Task<bool> UpdateProfileAsync(UpdateProfileDto dto)
     {
-        var req = new HttpRequestMessage(HttpMethod.Patch, "profile")
+        var req = new HttpRequestMessage(HttpMethod.Patch, "profile/UpdateProfile")
         {
             Content = JsonContent.Create(dto)
         };
@@ -59,34 +60,11 @@ public class ProfileService : IProfileService
     }
 
     // Запрос на смену почты
-
     public async Task RequestChangeEmailAsync(string newEmail)
-
     {
-
         var dto = new AuthRequestChangeEmailDto { NewEmail = newEmail };
-
         await _httpClient.PostAsJsonAsync("profile/request-change-email", dto);
-
     }
-
-    // Подтверждение смены почты
-    //public async Task ConfirmChangeEmail(string newEmail, string code)
-    //{
-    //    var dto = new AuthConfirmChangeEmailDto { NewEmail = newEmail, Code = code };
-    //    await _httpClient.PostAsJsonAsync("profile/confirm-change-email", dto);
-
-    //    // 1. Обязательно сбрасываем кэш сервиса!
-    //    _cachedUser = null;
-
-    //    // 2. Обновляем сессию
-    //    var session = MauiProgram.ServiceProvider.GetRequiredService<AuthSession>();
-    //    await session.SetSessionAsync(session.Token, newEmail);
-
-    //    // 3. Вызываем загрузку у синглтона
-    //    var vm = MauiProgram.ServiceProvider.GetRequiredService<UserProfileViewModel>();
-    //    await vm.LoadUserAsync();
-    //}
 
     public void ClearCache() => _cachedUser = null;
 }

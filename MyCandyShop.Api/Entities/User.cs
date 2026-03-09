@@ -11,4 +11,6 @@ public class User
     public int Points { get; set; } = 0;
 
     public DateTimeOffset CreatedAt { get; set; }
+
+    public DateTimeOffset? LastProfileUpdate { get; set; }
 }

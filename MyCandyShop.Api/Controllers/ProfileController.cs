@@ -263,42 +263,6 @@ namespace MyCandyShop.Api.Controllers
             });
         }
 
-        // Метод для смены имени и/или фамилии
-        [HttpPatch]
-        public async Task<IActionResult> PatchProfile([FromBody] PatchProfileRequest request)
-        {
-            var userIdStr = User.FindFirstValue("uid");
-            if (!Guid.TryParse(userIdStr, out var userId))
-                return Unauthorized("Invalid token");
-
-            var user = await _db.Users.FirstOrDefaultAsync(x => x.Id == userId);
-            if (user == null)
-                return NotFound("User not found");
-
-            // обновляем только те поля, что пришли
-            var firstName = NormalizeField(request.FirstName);
-            var lastName = NormalizeField(request.LastName);
-
-            if (firstName != null) user.FirstName = firstName;
-            if (lastName != null) user.LastName = lastName;
-
-
-            await _db.SaveChangesAsync();
-
-            return Ok(new
-            {
-                user.Id,
-                user.Email,
-                user.FirstName,
-                user.LastName,
-                user.Points
-            });
-        }
-
-        // Вспомогательный метод для проверки IsNullOrWhiteSpace
-        private string? NormalizeField(string? field) =>
-            string.IsNullOrWhiteSpace(field) ? null : field.Trim();
-
         // Метод для просмотра текущего профиля
         [Authorize]
         [HttpGet("me")]
@@ -325,34 +289,63 @@ namespace MyCandyShop.Api.Controllers
 
         // Метод для смены и имени и фамилии
         [Authorize]
-        [HttpPost("profile")]
+        [HttpPatch("UpdateProfile")]
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
         {
-            var userIdStr = User.FindFirstValue("uid"); // из токена
+            // 1. Получаем ID пользователя из токена
+            var userIdStr = User.FindFirstValue("uid");
             if (!Guid.TryParse(userIdStr, out var userId))
                 return Unauthorized("Invalid token");
 
-            var firstName = request.FirstName.Trim();
-            var lastName = request.LastName.Trim();
-
-            if (firstName.Length < 2 || lastName.Length < 2)
-                return BadRequest("FirstName/LastName must be at least 2 characters");
-
+            // 2. Ищем пользователя
             var user = await _db.Users.FirstOrDefaultAsync(x => x.Id == userId);
-            if (user == null)
-                return NotFound("User not found");
+            if (user == null) return NotFound("Пользователь не найден");
 
-            user.FirstName = firstName;
-            user.LastName = lastName;
+            // Кулдаун 5 минут
+            if (user.LastProfileUpdate.HasValue)
+            {
+                var secondsPassed = (int)(DateTimeOffset.UtcNow - user.LastProfileUpdate.Value).TotalSeconds;
+                int limit = 300; // 5 минут в секундах
 
-            await _db.SaveChangesAsync();
+                if (secondsPassed < limit)
+                {
+                    return BadRequest(new
+                    {
+                        message = $"Изменять профиль можно раз в 5 минут",
+                        retryAfter = limit - secondsPassed
+                    });
+                }
+            }
+
+            // 3. Обновляем только те поля, которые ПРИШЛИ и не пустые
+            bool isChanged = false;
+
+            if (!string.IsNullOrWhiteSpace(request.FirstName) && request.FirstName.Length >= 2)
+            {
+                user.FirstName = request.FirstName.Trim();
+                isChanged = true;
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.LastName) && request.LastName.Length >= 2)
+            {
+                user.LastName = request.LastName.Trim();
+                isChanged = true;
+            }
+
+            // 4. Сохраняем, только если были реальные изменения
+            if (isChanged)
+            {
+                user.LastProfileUpdate = DateTimeOffset.UtcNow;
+                await _db.SaveChangesAsync();
+            }
 
             return Ok(new
             {
                 user.Id,
                 user.Email,
                 user.FirstName,
-                user.LastName
+                user.LastName,
+                nextUpdateAvailable = user.LastProfileUpdate?.AddMinutes(5)
             });
         }
     }

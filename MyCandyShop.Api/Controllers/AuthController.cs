@@ -132,7 +132,6 @@ public class AuthController : ControllerBase
 
         User? user = null;
 
-        // ЗАЛУПА!!!!!!!!!!!!!!!
         if (!string.IsNullOrEmpty(userIdClaim))
         {
             // Залогинен: обновляем почту

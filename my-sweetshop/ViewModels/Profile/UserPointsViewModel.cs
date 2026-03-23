@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.Maui.Controls;
 
 namespace my_sweetshop.ViewModels.Profile
 {
@@ -35,9 +37,27 @@ namespace my_sweetshop.ViewModels.Profile
             try
             {
                 var user = await _userService.GetCurrentUser();
-                TotalPoints = user.Points;
+
+                // Проверяем, удалось ли получить пользователя (например, он не вышел из аккаунта)
+                if (user != null)
+                {
+                    TotalPoints = user.Points;
+                }
+                else
+                {
+                    // Если пользователя нет, можно сбросить баллы в 0
+                    TotalPoints = 0;
+                }
             }
-            finally { IsBusy = false; }
+            catch (Exception ex)
+            {
+                // Защита на случай других непредвиденных ошибок сети или парсинга
+                System.Diagnostics.Debug.WriteLine($"Ошибка при загрузке баллов: {ex.Message}");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
     }
 }

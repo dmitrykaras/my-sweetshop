@@ -1,4 +1,6 @@
-﻿public class AuthSession
+﻿namespace my_sweetshop.Services.Api;
+
+public class AuthSession
 {
     private const string TokenKey = "auth_token";
     private const string EmailKey = "auth_email";
@@ -29,6 +31,8 @@
         Email = null;
         SecureStorage.Remove(TokenKey);
         SecureStorage.Remove(EmailKey);
+
+        Preferences.Default.Remove("is_logged_in");
     }
 
     // Сохраняем токен в памяти и в SecureStorage

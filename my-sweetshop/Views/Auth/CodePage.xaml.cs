@@ -87,10 +87,15 @@ public partial class CodePage : ContentPage
         {
             var resp = await _authApi.VerifyCodeAsync(_email, code);
 
+            // 1. Обновляем сессию в памяти (для текущих запросов)
             await _session.SetTokenAsync(resp.Token);
-            await SecureStorage.SetAsync("access_token", resp.Token);
 
-            await SecureStorage.SetAsync("refresh_token", resp.RefreshToken);
+            // 2. Сохраняем токены в постоянную память (для JwtAuthHandler)
+            await SecureStorage.Default.SetAsync("auth_token", resp.Token);
+            await SecureStorage.Default.SetAsync("refresh_token", resp.RefreshToken);
+
+            // 3. Устанавливаем флаг успешного входа
+            Preferences.Default.Set("is_logged_in", true);
 
             var window = Application.Current?.Windows.FirstOrDefault();
             if (window != null)

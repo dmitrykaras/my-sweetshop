@@ -11,11 +11,37 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="18">
 
-            <!-- Заголовок -->
-            <Label Text="Профиль"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Start" />
+            <!-- Заголовок и кнопка выхода (Grid размещает их на одном уровне) -->
+            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+
+                <!-- Заголовок -->
+                <Label Text="Профиль"
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       VerticalOptions="Center" />
+
+                <!-- Кнопка Выхода -->
+                <Border Grid.Column="1"
+                        BackgroundColor="#FFF0F0"
+                        Stroke="Transparent"
+                        Padding="16, 8"
+                        StrokeShape="RoundRectangle 20"
+                        VerticalOptions="Center">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnLogoutTapped"/>
+                    </Border.GestureRecognizers>
+
+                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                        <!-- Если у вас есть иконка выхода, раскомментируйте строку ниже -->
+                        <!-- <Image Source="logout_icon.png" HeightRequest="18" WidthRequest="18" VerticalOptions="Center"/> -->
+                        <Label Text="Выйти"
+                               TextColor="#E63946"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </Border>
+            </Grid>
 
             <!-- Панель баллов -->
             <Border BackgroundColor="White"

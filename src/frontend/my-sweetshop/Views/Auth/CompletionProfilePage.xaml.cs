@@ -3,6 +3,8 @@ using System.Text;
 using System.Text.Json;
 using my_sweetshop.Models;
 using System.Diagnostics;
+using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
 
 namespace my_sweetshop.Views.Auth;
 
@@ -15,25 +17,29 @@ public partial class CompletionProfilePage : ContentPage
     {
         InitializeComponent();
 
-        // Возможные адреса сервера (позже поменять)
         string baseUrl = DeviceInfo.Platform == DevicePlatform.Android
             ? "http://10.0.2.2:5107/"
             : "http://localhost:5107/";
 
-        _httpClient = new HttpClient
-        {
-            BaseAddress = new Uri(baseUrl)
-        };
-
+        _httpClient = new HttpClient { BaseAddress = new Uri(baseUrl) };
         _email = email;
 
-        // Берем токен из SecureStorage (который выдали после VerifyCode)
-        var token = SecureStorage.GetAsync("access_token").Result;
+        _ = InitAsync(); // fire-and-forget
+    }
+    private async Task InitAsync()
+    {
+        try
+        {
+            var token = await SecureStorage.GetAsync("access_token"); // await вместо .Result
 
-        if (!string.IsNullOrEmpty(token))
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", token);
-
+            if (!string.IsNullOrEmpty(token))
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Ошибка загрузки токена: {ex}");
+        }
     }
 
     // Крестик появляется, если поле заполнено > 1
@@ -78,11 +84,11 @@ public partial class CompletionProfilePage : ContentPage
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             // Относительный путь, BaseAddress уже указан
-            var response = await _httpClient.PatchAsync("profile", content);
+            var response = await _httpClient.PatchAsync("profile/UpdateProfile", content);
 
             if (response.IsSuccessStatusCode)
             {
-                await DisplayAlertAsync("Готово", "Профиль сохранён", "Ок");
+                await ShowToast("Профиль сохранён");
 
                 var shell = MauiProgram.ServiceProvider.GetService<AppShell>();
                 if (Application.Current?.Windows.Count > 0)
@@ -104,5 +110,11 @@ public partial class CompletionProfilePage : ContentPage
         {
             ContinueBtn.IsEnabled = true;
         }
+    }
+
+    async Task ShowToast(string text)
+    {
+        var toast = Toast.Make(text, ToastDuration.Short);
+        await toast.Show();
     }
 }

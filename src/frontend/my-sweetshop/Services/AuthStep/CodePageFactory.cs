@@ -1,6 +1,7 @@
-﻿using my_sweetshop.Views.Auth;
+﻿using my_sweetshop.Services.Api;
+using my_sweetshop.Views.Auth;
 
-namespace my_sweetshop.Services;
+namespace my_sweetshop.Services.AuthStep;
 
 public class CodePageFactory
 {

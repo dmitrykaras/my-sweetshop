@@ -1,4 +1,5 @@
-using my_sweetshop.Services;
+using my_sweetshop.Services.Api;
+using my_sweetshop.Services.AuthStep;
 
 namespace my_sweetshop.Views.Auth;
 

@@ -1,4 +1,5 @@
-using my_sweetshop.Services;
+using my_sweetshop.Services.Api;
+using my_sweetshop.Services.AuthStep;
 
 namespace my_sweetshop.Views.Auth;
 
@@ -86,8 +87,15 @@ public partial class CodePage : ContentPage
         {
             var resp = await _authApi.VerifyCodeAsync(_email, code);
 
+            // 1. Обновляем сессию в памяти (для текущих запросов)
             await _session.SetTokenAsync(resp.Token);
-            await SecureStorage.SetAsync("access_token", resp.Token);
+
+            // 2. Сохраняем токены в постоянную память (для JwtAuthHandler)
+            await SecureStorage.Default.SetAsync("auth_token", resp.Token);
+            await SecureStorage.Default.SetAsync("refresh_token", resp.RefreshToken);
+
+            // 3. Устанавливаем флаг успешного входа
+            Preferences.Default.Set("is_logged_in", true);
 
             var window = Application.Current?.Windows.FirstOrDefault();
             if (window != null)
@@ -166,6 +174,7 @@ public partial class CodePage : ContentPage
         D1.IsEnabled = D2.IsEnabled = D3.IsEnabled = D4.IsEnabled = enabled;
     }
 
+    // Инициализация отсчёта повтроной отправки кода
     private void StartResendCooldown()
     {
         _cooldownActive = true;

@@ -90,7 +90,7 @@ namespace my_sweetshop.Views.Contact
             await Launcher.OpenAsync("https://t.me/MoyaKonditerakaya");
         }
 
-    async Task ShowToast(string text)
+        async Task ShowToast(string text)
         {
             var toast = Toast.Make(text, ToastDuration.Short);
             await toast.Show();

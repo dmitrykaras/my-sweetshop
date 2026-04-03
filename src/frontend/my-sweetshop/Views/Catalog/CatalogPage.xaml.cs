@@ -6,10 +6,10 @@ namespace my_sweetshop.Views.Catalog
 {
     public partial class CatalogPage : ContentPage
     {
-        public CatalogPage()
+        public CatalogPage(CatalogViewModel vm)
         {
             InitializeComponent();
-            BindingContext = new CatalogViewModel();
+            BindingContext = vm;
         }
 
         private async void OnOpenProductClicked(object sender, EventArgs e)

@@ -1,0 +1,87 @@
+# ===============================
+# .NET / Visual Studio / MSBuild
+# ===============================
+## Выходные папки компиляции
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+artifacts/
+
+## Пользовательские настройки и кэш VS
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.userprefs
+*.rsuser
+*.tss
+.localhistory/
+.vshistory/
+
+## NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.fragment.lock.json
+
+# ===============================
+# Мобильная разработка (MAUI / Android / iOS)
+# ===============================
+## Android конкретика
+*.apk
+*.aab
+*.keystore
+*.jks
+**/Android/bin/
+**/Android/obj/
+
+## Apple/Mac конкретика
+*.dmg
+*.app
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ===============================
+# Backend / Web / Tools
+# ===============================
+## Окружение и секреты (ВАЖНО!)
+.env
+.env.*
+!.env.example
+
+## Node.js (если есть скрипты или админка)
+node_modules/
+.ntvs_analysis.dat
+
+## Docker
+.dockerignore
+
+## Редактор VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# ===============================
+# Системный мусор и логи
+# ===============================
+*.log
+*.tmp
+*.bak
+*.stackdump
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/

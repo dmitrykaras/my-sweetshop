@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="my_sweetshop.Views.Main.HomePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:my_sweetshop.ViewModels"
+    x:DataType="vm:HomeViewModel"
+    BackgroundColor="{StaticResource PageBackgroundLight}">
+
+    <!-- Установка контекста данных (ViewModel) для страницы -->
+    <ContentPage.BindingContext>
+        <vm:HomeViewModel />
+    </ContentPage.BindingContext>
+
+    <!-- Основной контейнер с возможностью прокрутки -->
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
+
+            <!-- Кнопка для открытия информации о магазинах -->
+            <Button Text="Узнать, где находятся наши магазины" 
+                    Style="{StaticResource ActionButtonStyle}" 
+                    Command="{Binding OpenStoresCommand}" />
+
+            <!-- Заголовок раздела -->
+            <Label Text="Получайте максимум выгоды" 
+                   FontSize="20" 
+                   TextColor="Black" />
+
+            <!-- Карточка с QR-кодом для скидок -->
+            <Frame CornerRadius="16" Padding="16" BackgroundColor="White" HasShadow="True">
+                <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                    <Label Text="Скидочный QR-код" FontAttributes="Bold" />
+                    <!-- Заглушка для QR-кода (в реальном приложении здесь будет изображение) -->
+                    <BoxView WidthRequest="120" HeightRequest="120" CornerRadius="12" Color="#E0E0E0" />
+                    <Label Text="Покажите кассиру для начисления или списания баллов" 
+                           FontSize="12" 
+                           TextColor="Gray" 
+                           HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Кнопка заказа доставки через Telegram -->
+            <Button Text="Заказать доставку" 
+                    ImageSource="telegram.png" 
+                    ContentLayout="Left,12" 
+                    Style="{StaticResource ActionButtonStyle}" 
+                    Command="{Binding OrderDeliveryCommand}" />
+
+            <!-- Сетка для карточек социальных сетей (2 колонки) -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+
+                <!-- Карточка ВКонтакте -->
+                <Border Grid.Column="0"
+                        Style="{StaticResource CardStyle}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer
+                            Command="{Binding OpenVkCommand}"
+                            Tapped="OnCardTapped"/>
+                    </Border.GestureRecognizers>
+
+                    <!-- Тень для карточки -->
+                    <Border.Shadow>
+                        <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                    </Border.Shadow>
+
+                    <Grid>
+                        <Image Source="vk_bg.png" Aspect="AspectFill" />
+                        <Label Text="Наш блог ВКонтакте"
+                            TextColor="Black"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            Margin="14"
+                            VerticalOptions="End" />
+                    </Grid>
+                </Border>
+
+
+                <!-- Карточка Telegram -->
+                <Border Grid.Column="1"
+                        Style="{StaticResource CardStyle}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer
+                            Command="{Binding OpenTgCommand}"
+                            Tapped="OnCardTapped"/>
+                    </Border.GestureRecognizers>
+
+                    <!-- Тень для карточки -->
+                    <Border.Shadow>
+                        <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                    </Border.Shadow>
+
+                    <Grid>
+                        <Image Source="telegram_bg.png" Aspect="AspectFill" />
+                        <Label Text="Хочу сотрудничать"
+                            TextColor="Black"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            Margin="14"
+                            VerticalOptions="End" />
+                    </Grid>
+                </Border>
+
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,28 @@
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="my_sweetshop.Views.Catalog.ProductPage"
+    Title="Товар"
+    Shell.NavBarIsVisible="True">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
+
+            <Image
+                Source="{Binding ImageUrl}"
+                HeightRequest="600"
+                Aspect="AspectFill" />
+
+            <Label
+                Text="{Binding Name}"
+                FontSize="22"
+                FontAttributes="Bold"
+                HorizontalOptions="Center" />
+
+            <Label
+                Text="{Binding Description}"
+                FontSize="16" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

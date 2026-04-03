@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="my_sweetshop.Views.Profile.Cashier.CashierPage"
+             Title="Сканирования QR-кодов">
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="24">
+            
+            <!-- Заголовок -->
+            <Label Text="Сканирования QR-кодов"
+                   FontSize="22"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Start"/>
+            
+            
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

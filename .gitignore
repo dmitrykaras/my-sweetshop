@@ -1,0 +1,58 @@
+# ===============================
+# Windows / Visual Studio
+# ===============================
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# ===============================
+# Build output
+# ===============================
+bin/
+obj/
+Debug/
+Release/
+x86/
+x64/
+ARM/
+ARM64/
+
+# ===============================
+# .NET / MAUI
+# ===============================
+artifacts/
+project.lock.json
+project.fragment.lock.json
+
+# ===============================
+# Android specific
+# ===============================
+**/Android/bin/
+**/Android/obj/
+
+# APK / AAB
+*.apk
+*.aab
+
+*.keystore
+*.jks
+
+# ===============================
+# Logs / temp
+# ===============================
+*.log
+*.tmp
+*.bak
+
+# ===============================
+# OS
+# ===============================
+Thumbs.db
+.DS_Store
+
+*.docx
+*.sln
+
+*.csproj

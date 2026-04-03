@@ -1,0 +1,51 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="my_sweetshop.Views.Auth.EmailPage"
+             Title="Ввод почты">
+    <Grid Padding="24" RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+
+        <!-- ImageButton в Row 0 -->
+        <ImageButton Grid.Row="0"
+                     Source="close.png"
+                     WidthRequest="26"
+                     HeightRequest="26"
+                     HorizontalOptions="Start"
+                     VerticalOptions="Start"
+                     Clicked="OnClose"
+                     BackgroundColor="Transparent"
+                     InputTransparent="False"/>
+
+        <!-- Заголовок -->
+        <Label Grid.Row="1"
+               Text="Введите email (почту)"
+               FontSize="22"
+               FontAttributes="Bold"
+               Margin="0,18,0,0"/>
+
+        <!-- Email Entry -->
+        <Entry Grid.Row="2"
+               x:Name="EmailEntry"
+               Placeholder="email"
+               Keyboard="Email"
+               Margin="0,16,0,0"
+               IsEnabled="True"
+               HeightRequest="52"
+               BackgroundColor="White"/>
+
+        <!-- Пояснение -->
+        <Label Grid.Row="4"
+               FontSize="12"
+               TextColor="#888"
+               TranslationY="470"
+               Text="Нажимая “Продолжить”, я соглашаюсь на обработку персональных данных согласно Политике и условиям Публичной оферты" />
+
+        <!-- Кнопка -->
+        <Button Grid.Row="5"
+                x:Name="ContinueButton"
+                Text="Продолжить"
+                TextColor="White"
+                CornerRadius="16"
+                HeightRequest="52"
+                Clicked="OnContinue"/>
+    </Grid>
+</ContentPage>

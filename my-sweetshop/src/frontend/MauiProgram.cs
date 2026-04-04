@@ -39,7 +39,7 @@ namespace my_sweetshop
             // 1. Сессия авторизации
             builder.Services.AddSingleton<AuthSession>();
 
-            string apiBaseUrl = DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:5107/" : "http://localhost:5107/";
+            string apiBaseUrl = DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:5000/" : "http://10.0.2.2:5000/";
 
             // 2. HttpClient для рефреша (Строго БЕЗ JwtAuthHandler)
             builder.Services.AddHttpClient("refresh_client", c =>

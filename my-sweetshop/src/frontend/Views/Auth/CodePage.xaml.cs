@@ -101,7 +101,7 @@ public partial class CodePage : ContentPage
             if (window != null)
             {
                 if (resp.NeedsProfile)
-                    window.Page = new NavigationPage(new CompletionProfilePage(_email));
+                    window.Page = new NavigationPage(new CompletionProfilePage(_email, _authApi));
                 else
                     window.Page = MauiProgram.ServiceProvider.GetRequiredService<AppShell>();
             }

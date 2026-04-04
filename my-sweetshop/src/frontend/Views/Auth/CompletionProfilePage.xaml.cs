@@ -1,45 +1,26 @@
+using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+using my_sweetshop.Models;
+using my_sweetshop.Services.Api;
+using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using my_sweetshop.Models;
-using System.Diagnostics;
-using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Core;
 
 namespace my_sweetshop.Views.Auth;
 
 public partial class CompletionProfilePage : ContentPage
 {
-    private readonly HttpClient _httpClient;
+    private readonly AuthApi _authApi;
     private readonly string _email;
 
-    public CompletionProfilePage(string email)
+    public CompletionProfilePage(string email, AuthApi authApi)
     {
         InitializeComponent();
-
-        string baseUrl = DeviceInfo.Platform == DevicePlatform.Android
-            ? "http://10.0.2.2:5107/"
-            : "http://localhost:5107/";
-
-        _httpClient = new HttpClient { BaseAddress = new Uri(baseUrl) };
+        _authApi = authApi;
         _email = email;
 
-        _ = InitAsync(); // fire-and-forget
-    }
-    private async Task InitAsync()
-    {
-        try
-        {
-            var token = await SecureStorage.GetAsync("access_token"); // await вместо .Result
-
-            if (!string.IsNullOrEmpty(token))
-                _httpClient.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", token);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Ошибка загрузки токена: {ex}");
-        }
+        ContinueBtn.IsEnabled = false;
     }
 
     // Крестик появляется, если поле заполнено > 1
@@ -68,46 +49,32 @@ public partial class CompletionProfilePage : ContentPage
     // Нажатие на кнопку продолжить
     private async void OnContinueClicked(object sender, EventArgs e)
     {
+        if (!ContinueBtn.IsEnabled) return;
+
         ContinueBtn.IsEnabled = false;
-
-        var request = new UserProfileRequest
-        {
-            Email = _email,
-            FirstName = FirstNameEntry.Text.Trim(),
-            LastName = LastNameEntry.Text.Trim(),
-            CreatedAt = DateTimeOffset.UtcNow
-        };
-
         try
         {
-            var json = JsonSerializer.Serialize(request);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var firstName = FirstNameEntry.Text.Trim();
+            var lastName = LastNameEntry.Text.Trim();
 
             // Относительный путь, BaseAddress уже указан
-            var response = await _httpClient.PatchAsync("profile/UpdateProfile", content);
+            await _authApi.UpdateProfileAsync(firstName, lastName);
 
-            if (response.IsSuccessStatusCode)
+            await ShowToast("Профиль сохранён");
+
+            // Переход в основное приложение
+            MainThread.BeginInvokeOnMainThread(() =>
             {
-                await ShowToast("Профиль сохранён");
-
-                var shell = MauiProgram.ServiceProvider.GetService<AppShell>();
-                if (Application.Current?.Windows.Count > 0)
+                if (Application.Current != null)
                 {
-                    Application.Current.Windows[0].Page = new AppShell();
+                    Application.Current.MainPage = new AppShell();
                 }
-            }
-            else
-            {
-                var error = await response.Content.ReadAsStringAsync();
-                await DisplayAlertAsync("Ошибка", $"Не удалось сохранить профиль: {error}", "Ок");
-            }
+            });
         }
         catch (Exception ex)
         {
+            Debug.WriteLine($"[MAUI_LOG] Ошибка сохранения профиля: {ex.Message}");
             await DisplayAlertAsync("Ошибка", ex.Message, "Ок");
-        }
-        finally
-        {
             ContinueBtn.IsEnabled = true;
         }
     }

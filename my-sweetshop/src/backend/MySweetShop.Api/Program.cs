@@ -8,8 +8,19 @@ using MySweetShop.Api.IScript;
 using MySweetShop.Api.Options;
 using MySweetShop.Api.Services;
 using System.Text;
+using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Если используем DotNetEnv для локальной разработки
+if (builder.Environment.IsDevelopment())
+{
+    var envPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
+    if (File.Exists(envPath))
+    {
+        DotNetEnv.Env.Load(envPath);
+    }
+}
 
 // Контроллеры и Swagger
 builder.Services.AddControllers();

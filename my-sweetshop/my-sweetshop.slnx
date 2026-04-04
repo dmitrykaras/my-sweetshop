@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="src/backend/MySweetShop.Api/my-sweetshop.api.csproj" />
+  <Project Path="src/frontend/my-sweetshop.csproj">
+    <BuildDependency Project="src/backend/MySweetShop.Api/my-sweetshop.api.csproj" />
+    <Deploy Solution="Debug|*" />
+  </Project>
+</Solution>

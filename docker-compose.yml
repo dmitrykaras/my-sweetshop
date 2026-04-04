@@ -1,0 +1,62 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: mysweetshop-db
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-mysweetshop_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      # Контекст сборки - корень, где лежит этот файл
+      context: . 
+      # Путь к докерфайлу относительно контекста
+      dockerfile: my-sweetshop/src/backend/MySweetShop.Api/Dockerfile
+    container_name: mysweetshop-api
+    environment:
+      # JWT Settings
+      Jwt__Issuer: ${JWT_ISSUER:-MySweetShop.Api}
+      Jwt__Audience: ${JWT_AUDIENCE:-MySweetShop.Mobile}
+      Jwt__Key: ${JWT_KEY}
+      Jwt__ExpiresMinutes: ${JWT_EXPIRES_MINUTES:-30}
+      
+      # Bucket Settings
+      BucketSettings__Name: ${BUCKET_NAME:-mycandeshop}
+      BucketSettings__Endpoint: ${BUCKET_ENDPOINT:-https://s3.buckets.ru/}
+      BucketSettings__AccessKey: ${BUCKET_ACCESS_KEY}
+      BucketSettings__SecretKey: ${BUCKET_SECRET_KEY}
+      BucketSettings__PublicBaseUrl: ${BUCKET_PUBLIC_BASE_URL:-https://cdn.backet.ru/mycandeshop}
+      
+      # Database Connection String (Host = имя сервиса postgres)
+      ConnectionStrings__Default: "Host=postgres;Port=5432;Database=${DB_NAME:-mysweetshop_db};Username=${DB_USER:-postgres};Password=${DB_PASSWORD:-postgres}"
+      
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+    ports:
+      - "5000:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge

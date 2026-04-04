@@ -69,8 +69,6 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             set => SetProperty(ref _profileCooldownText, value);
         }
 
-
-
         public string CurrentFirstname
         {
             get => _currentFirstname;
@@ -108,6 +106,7 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             }
         }
 
+        [EmailAddress(ErrorMessage = "Некорректный формат Email")]
         public string NewEmail
         {
             get => _newEmail;

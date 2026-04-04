@@ -1,5 +1,6 @@
 using my_sweetshop.Services.Api;
 using my_sweetshop.Services.AuthStep;
+using System.ComponentModel.DataAnnotations;
 
 namespace my_sweetshop.Views.Auth;
 
@@ -22,13 +23,26 @@ public partial class EmailPage : ContentPage
 
     private async void OnContinue(object sender, EventArgs e)
     {
-        var email = EmailEntry.Text?.Trim().ToLower();
+        var email = EmailEntry.Text?.Trim();
 
-        if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
+        if (string.IsNullOrWhiteSpace(email))
         {
-            await DisplayAlertAsync("Ошибка", "Введите корректный email", "Ок");
+            await DisplayAlertAsync("", "Введите email", "");
             return;
         }
+
+        var validationModel = new EmailValidationModel { Email = email };
+        var validationContext = new ValidationContext(validationModel);
+        var validationResults = new List<ValidationResult>();
+        bool isValid = Validator.TryValidateObject(validationModel, validationContext, validationResults, validateAllProperties: true);
+
+        if (!isValid)
+        {
+            await DisplayAlertAsync("", "Некорректный формат email", "");
+            return;
+        }
+
+        email = email.ToLower();
 
         ContinueButton.IsEnabled = false;
 
@@ -65,4 +79,9 @@ public partial class EmailPage : ContentPage
         EmailEntry.Focus(); // ставим фокус, клавиатура появится на Android/iOS
     }
 
+    public class EmailValidationModel
+    {
+        [EmailAddress(ErrorMessage = "Некорректный формат email")]
+        public string Email { get; set; }
+    }
 }

@@ -10,6 +10,7 @@ using MySweetShop.Api.Services;
 using System.Text;
 using DotNetEnv;
 
+DotNetEnv.Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
 // Если используем DotNetEnv для локальной разработки
@@ -78,8 +79,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 // Конфигурация базы данных
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                    ?? builder.Configuration.GetConnectionString("Default")
+                    ?? Environment.GetEnvironmentVariable("ConnectionStrings__Default");
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+    options.UseNpgsql(connectionString));
 
 // Сервисы работы с файлами
 builder.Services.Configure<BucketSettings>(builder.Configuration.GetSection("BucketSettings"));

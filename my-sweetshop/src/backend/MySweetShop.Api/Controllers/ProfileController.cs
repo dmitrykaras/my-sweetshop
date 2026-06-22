@@ -14,15 +14,13 @@ namespace MySweetShop.Api.Controllers
     [Route("profile")]
     public class ProfileController : ControllerBase
     {
-        private readonly IObjectStorage _storage;
         private readonly AppDbContext _db;
         private readonly JwtService _jwt;
 
-        public ProfileController(AppDbContext db, JwtService jwt, IObjectStorage storage)
+        public ProfileController(AppDbContext db, JwtService jwt)
         {
             _db = db;
             _jwt = jwt;
-            _storage = storage;
         }
 
         private async Task<User?> GetCurrentUserAsync()
@@ -88,32 +86,32 @@ namespace MySweetShop.Api.Controllers
         }
 
         // Метод для получения израбнные продуктов
-        [Authorize]
-        [HttpGet("favorites")]
-        public async Task<IActionResult> GetFavorites()
-        {
-            var userIdStr = User.FindFirstValue("uid");
-            if (!Guid.TryParse(userIdStr, out var userId))
-                return Unauthorized("Invalid token");
+        //[Authorize]
+        //[HttpGet("favorites")]
+        //public async Task<IActionResult> GetFavorites()
+        //{
+        //    var userIdStr = User.FindFirstValue("uid");
+        //    if (!Guid.TryParse(userIdStr, out var userId))
+        //        return Unauthorized("Invalid token");
 
-            var favorites = await _db.UserFavorites
-                .Where(f => f.UserId == userId)
-                .Include(f => f.Product)
-                .Select(f => new
-                {
-                    f.Product.Id,
-                    f.Product.Name,
-                    f.Product.Description,
-                    f.Product.Price,
-                    ImageUrl = string.IsNullOrEmpty(f.Product.ImageKey)
-                   ? null
-                   : _storage.GetPreSignedUrl(f.Product.ImageKey, TimeSpan.FromHours(6)),
-                    CategoryId = f.Product.CategoryId
-                })
-                .ToListAsync();
+        //    var favorites = await _db.UserFavorites
+        //        .Where(f => f.UserId == userId)
+        //        .Include(f => f.Product)
+        //        .Select(f => new
+        //        {
+        //            f.Product.Id,
+        //            f.Product.Name,
+        //            f.Product.Description,
+        //            f.Product.Price,
+        //            ImageUrl = string.IsNullOrEmpty(f.Product.ImageKey)
+        //           ? null
+        //           : _storage.GetPreSignedUrl(f.Product.ImageKey, TimeSpan.FromHours(6)),
+        //            CategoryId = f.Product.CategoryId
+        //        })
+        //        .ToListAsync();
 
-            return Ok(favorites);
-        }
+        //    return Ok(favorites);
+        //}
 
         // Метод для запроса кода для смены почты
         [Authorize]

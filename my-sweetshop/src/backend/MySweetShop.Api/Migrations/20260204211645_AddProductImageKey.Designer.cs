@@ -187,7 +187,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("aaaa1111-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Миндальный бисквит + хрустящий слой + начинка из вишни и малины + фисташковый мусс",
-                            ImageUrl = "/SeedImages/Desserts/cherry_pistachio.jpeg",
+                            ImageUrl = "/SeedImages/Desserts/cherry_pistachio.webp",
                             Name = "Вишня-фисташка",
                             Price = 500m
                         },
@@ -196,7 +196,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("aaaa1112-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Шоколадный бисквит + хрустящий слой + ганаш + шоколадный мусс",
-                            ImageUrl = "/SeedImages/Desserts/two_chocolates.jpeg",
+                            ImageUrl = "/SeedImages/Desserts/two_chocolates.webp",
                             Name = "Два шоколада",
                             Price = 480m
                         },
@@ -205,7 +205,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("aaaa1113-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Бисквит из грецкого ореха + крем с сыром дорблю + начинка из груши + мусс с белым шоколадом",
-                            ImageUrl = "/SeedImages/Desserts/door_blue_walnut.jpeg",
+                            ImageUrl = "/SeedImages/Desserts/door_blue_walnut.webp",
                             Name = "Дорблю-грецкий орех",
                             Price = 520m
                         },
@@ -214,7 +214,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("aaaa1114-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Шоколадный брауни + креме с молочным шоколадом + мусс с манго и маракуйей",
-                            ImageUrl = "/SeedImages/Desserts/mango_chocolate_passion_fruit.jpeg",
+                            ImageUrl = "/SeedImages/Desserts/mango_chocolate_passion_fruit.webp",
                             Name = "Манго-шоколад-маракуйя",
                             Price = 550m
                         },
@@ -241,7 +241,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("aaaa1117-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Бисквит красный бархат + хрустящий слой + йогуртовый мусс",
-                            ImageUrl = "/SeedImages/Desserts/red_velvet.jpeg",
+                            ImageUrl = "/SeedImages/Desserts/red_velvet.webp",
                             Name = "Красный бархат",
                             Price = 470m
                         },
@@ -312,7 +312,7 @@ namespace MySweetShop.Api.Migrations
                         {
                             Id = new Guid("aaaa1125-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
-                            ImageUrl = "/SeedImages/Desserts/macaron.jpeg",
+                            ImageUrl = "/SeedImages/Desserts/macaron.webp",
                             Name = "Макарон в ассортименте",
                             Price = 250m
                         },
@@ -399,7 +399,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("eeee1111-eeee-1111-eeee-eeeeeeeeeeee"),
                             CategoryId = new Guid("55555555-5555-5555-5555-555555555555"),
                             Description = "Начинки бисквитных тортов: Фруктовый, Красный бархат, Сникерс, Рафаэлло",
-                            ImageUrl = "/SeedImages/WeddingCakes/wedding_cake_with_two_tiers.jpeg",
+                            ImageUrl = "/SeedImages/WeddingCakes/wedding_cake_with_two_tiers.webp",
                             Name = "Свадебный торт 2 яруса",
                             Price = 6000m
                         },
@@ -408,7 +408,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("eeee1112-eeee-1111-eeee-eeeeeeeeeeee"),
                             CategoryId = new Guid("55555555-5555-5555-5555-555555555555"),
                             Description = "Начинки бисквитных тортов: Фруктовый, Красный бархат, Сникерс, Рафаэлло",
-                            ImageUrl = "/SeedImages/WeddingCakes/wedding_cake_has_three_tiers.jpeg",
+                            ImageUrl = "/SeedImages/WeddingCakes/wedding_cake_has_three_tiers.webp",
                             Name = "Свадебный торт 3 яруса",
                             Price = 7500m
                         },
@@ -417,7 +417,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("eeee1113-eeee-1111-eeee-eeeeeeeeeeee"),
                             CategoryId = new Guid("55555555-5555-5555-5555-555555555555"),
                             Description = "Начинки бисквитных тортов: Фруктовый, Красный бархат, Сникерс, Рафаэлло",
-                            ImageUrl = "/SeedImages/WeddingCakes/wedding_cake_cupcakes.jpeg",
+                            ImageUrl = "/SeedImages/WeddingCakes/wedding_cake_cupcakes.webp",
                             Name = "Свадебный торт + капкейки",
                             Price = 8000m
                         },
@@ -443,7 +443,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("ffff1113-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
                             Description = "Макарон в ассортименте и свежие цветы",
-                            ImageUrl = "/SeedImages/Sets/pieces_4_of_pasta_flowers.jpeg",
+                            ImageUrl = "/SeedImages/Sets/pieces_4_of_pasta_flowers.webp",
                             Name = "Макарон 4шт + цветы",
                             Price = 900m
                         },
@@ -470,7 +470,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("ffff1116-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
                             Description = "Макарон в ассортименте + вкуснейший зефир + цветы",
-                            ImageUrl = "/SeedImages/Sets/pcs8_macaroni_8pcs_marshmallows_flowers.jpeg",
+                            ImageUrl = "/SeedImages/Sets/pcs8_macaroni_8pcs_marshmallows_flowers.webp",
                             Name = "Макарон 8шт + зефир 8шт + цветы",
                             Price = 1600m
                         },
@@ -578,7 +578,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("88888888-1111-1111-8888-111111111119"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
                             Description = "Свежевыжатый сок апельсина или грейпфрута",
-                            ImageUrl = "/SeedImages/Drinks/fresh.jpeg",
+                            ImageUrl = "/SeedImages/Drinks/fresh.webp",
                             Name = "Фреш 300 мл.",
                             Price = 250m
                         },
@@ -586,7 +586,7 @@ namespace MySweetShop.Api.Migrations
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111120"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            ImageUrl = "/SeedImages/Drinks/milkshake.jpeg",
+                            ImageUrl = "/SeedImages/Drinks/milkshake.webp",
                             Name = "Молочный коктейль 350 мл.",
                             Price = 270m
                         },
@@ -602,7 +602,7 @@ namespace MySweetShop.Api.Migrations
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111122"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            ImageUrl = "/SeedImages/Drinks/juice.jpeg",
+                            ImageUrl = "/SeedImages/Drinks/juice.webp",
                             Name = "Сок с трубочкой 300 мл.",
                             Price = 150m
                         },
@@ -610,7 +610,7 @@ namespace MySweetShop.Api.Migrations
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111123"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            ImageUrl = "/SeedImages/Drinks/good_orange.jpeg",
+                            ImageUrl = "/SeedImages/Drinks/good_orange.webp",
                             Name = "Добрый апельсин 300 мл.",
                             Price = 200m
                         },
@@ -618,7 +618,7 @@ namespace MySweetShop.Api.Migrations
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111124"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            ImageUrl = "/SeedImages/Drinks/good_cola.jpeg",
+                            ImageUrl = "/SeedImages/Drinks/good_cola.webp",
                             Name = "Добрый кола 300 мл.",
                             Price = 180m
                         },
@@ -642,7 +642,7 @@ namespace MySweetShop.Api.Migrations
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111127"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            ImageUrl = "/SeedImages/Drinks/bonaqua.jpeg",
+                            ImageUrl = "/SeedImages/Drinks/bonaqua.webp",
                             Name = "BonAqua 500 мл.",
                             Price = 270m
                         });

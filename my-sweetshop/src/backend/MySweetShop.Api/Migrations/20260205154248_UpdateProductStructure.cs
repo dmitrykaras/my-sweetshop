@@ -465,14 +465,14 @@ namespace MySweetShop.Api.Migrations
                 keyColumn: "Id",
                 keyValue: new Guid("88888888-1111-1111-8888-111111111119"),
                 columns: new[] { "ImageUrl", "Price" },
-                values: new object[] { "/SeedImages/Drinks/fresh.jpeg", 250m });
+                values: new object[] { "/SeedImages/Drinks/fresh.webp", 250m });
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: new Guid("88888888-1111-1111-8888-111111111120"),
                 columns: new[] { "ImageUrl", "Price" },
-                values: new object[] { "/SeedImages/Drinks/milkshake.jpeg", 270m });
+                values: new object[] { "/SeedImages/Drinks/milkshake.webp", 270m });
 
             migrationBuilder.UpdateData(
                 table: "Products",
@@ -486,21 +486,21 @@ namespace MySweetShop.Api.Migrations
                 keyColumn: "Id",
                 keyValue: new Guid("88888888-1111-1111-8888-111111111122"),
                 columns: new[] { "ImageUrl", "Price" },
-                values: new object[] { "/SeedImages/Drinks/juice.jpeg", 150m });
+                values: new object[] { "/SeedImages/Drinks/juice.webp", 150m });
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: new Guid("88888888-1111-1111-8888-111111111123"),
                 columns: new[] { "ImageUrl", "Price" },
-                values: new object[] { "/SeedImages/Drinks/good_orange.jpeg", 200m });
+                values: new object[] { "/SeedImages/Drinks/good_orange.webp", 200m });
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: new Guid("88888888-1111-1111-8888-111111111124"),
                 columns: new[] { "ImageUrl", "Price" },
-                values: new object[] { "/SeedImages/Drinks/good_cola.jpeg", 180m });
+                values: new object[] { "/SeedImages/Drinks/good_cola.webp", 180m });
 
             migrationBuilder.UpdateData(
                 table: "Products",
@@ -521,35 +521,35 @@ namespace MySweetShop.Api.Migrations
                 keyColumn: "Id",
                 keyValue: new Guid("88888888-1111-1111-8888-111111111127"),
                 columns: new[] { "ImageUrl", "Price" },
-                values: new object[] { "/SeedImages/Drinks/bonaqua.jpeg", 270m });
+                values: new object[] { "/SeedImages/Drinks/bonaqua.webp", 270m });
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: new Guid("aaaa1111-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                 columns: new[] { "ImageUrl", "Price" },
-                values: new object[] { "/SeedImages/Desserts/cherry_pistachio.jpeg", 500m });
+                values: new object[] { "/SeedImages/Desserts/cherry_pistachio.webp", 500m });
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: new Guid("aaaa1112-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                 columns: new[] { "ImageUrl", "Price" },
-                values: new object[] { "/SeedImages/Desserts/two_chocolates.jpeg", 480m });
+                values: new object[] { "/SeedImages/Desserts/two_chocolates.webp", 480m });
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: new Guid("aaaa1113-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                 columns: new[] { "ImageUrl", "Price" },
-                values: new object[] { "/SeedImages/Desserts/door_blue_walnut.jpeg", 520m });
+                values: new object[] { "/SeedImages/Desserts/door_blue_walnut.webp", 520m });
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: new Guid("aaaa1114-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                 columns: new[] { "ImageUrl", "Price" },
-                values: new object[] { "/SeedImages/Desserts/mango_chocolate_passion_fruit.jpeg", 550m });
+                values: new object[] { "/SeedImages/Desserts/mango_chocolate_passion_fruit.webp", 550m });
 
             migrationBuilder.UpdateData(
                 table: "Products",
@@ -570,7 +570,7 @@ namespace MySweetShop.Api.Migrations
                 keyColumn: "Id",
                 keyValue: new Guid("aaaa1117-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                 columns: new[] { "ImageUrl", "Price" },
-                values: new object[] { "/SeedImages/Desserts/red_velvet.jpeg", 470m });
+                values: new object[] { "/SeedImages/Desserts/red_velvet.webp", 470m });
 
             migrationBuilder.UpdateData(
                 table: "Products",
@@ -626,7 +626,7 @@ namespace MySweetShop.Api.Migrations
                 keyColumn: "Id",
                 keyValue: new Guid("aaaa1125-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                 columns: new[] { "ImageUrl", "Price" },
-                values: new object[] { "/SeedImages/Desserts/macaron.jpeg", 250m });
+                values: new object[] { "/SeedImages/Desserts/macaron.webp", 250m });
 
             migrationBuilder.UpdateData(
                 table: "Products",
@@ -696,21 +696,21 @@ namespace MySweetShop.Api.Migrations
                 keyColumn: "Id",
                 keyValue: new Guid("eeee1111-eeee-1111-eeee-eeeeeeeeeeee"),
                 columns: new[] { "ImageUrl", "Price" },
-                values: new object[] { "/SeedImages/WeddingCakes/wedding_cake_with_two_tiers.jpeg", 6000m });
+                values: new object[] { "/SeedImages/WeddingCakes/wedding_cake_with_two_tiers.webp", 6000m });
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: new Guid("eeee1112-eeee-1111-eeee-eeeeeeeeeeee"),
                 columns: new[] { "ImageUrl", "Price" },
-                values: new object[] { "/SeedImages/WeddingCakes/wedding_cake_has_three_tiers.jpeg", 7500m });
+                values: new object[] { "/SeedImages/WeddingCakes/wedding_cake_has_three_tiers.webp", 7500m });
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: new Guid("eeee1113-eeee-1111-eeee-eeeeeeeeeeee"),
                 columns: new[] { "ImageUrl", "Price" },
-                values: new object[] { "/SeedImages/WeddingCakes/wedding_cake_cupcakes.jpeg", 8000m });
+                values: new object[] { "/SeedImages/WeddingCakes/wedding_cake_cupcakes.webp", 8000m });
 
             migrationBuilder.UpdateData(
                 table: "Products",
@@ -731,7 +731,7 @@ namespace MySweetShop.Api.Migrations
                 keyColumn: "Id",
                 keyValue: new Guid("ffff1113-ffff-1111-ffff-ffffffffffff"),
                 columns: new[] { "ImageUrl", "Price" },
-                values: new object[] { "/SeedImages/Sets/pieces_4_of_pasta_flowers.jpeg", 900m });
+                values: new object[] { "/SeedImages/Sets/pieces_4_of_pasta_flowers.webp", 900m });
 
             migrationBuilder.UpdateData(
                 table: "Products",
@@ -752,7 +752,7 @@ namespace MySweetShop.Api.Migrations
                 keyColumn: "Id",
                 keyValue: new Guid("ffff1116-ffff-1111-ffff-ffffffffffff"),
                 columns: new[] { "ImageUrl", "Price" },
-                values: new object[] { "/SeedImages/Sets/pcs8_macaroni_8pcs_marshmallows_flowers.jpeg", 1600m });
+                values: new object[] { "/SeedImages/Sets/pcs8_macaroni_8pcs_marshmallows_flowers.webp", 1600m });
 
             migrationBuilder.UpdateData(
                 table: "Products",

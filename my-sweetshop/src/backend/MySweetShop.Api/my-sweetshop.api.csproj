@@ -32,4 +32,10 @@
     <Folder Include="SeedImages\" />
   </ItemGroup>
 
+    <ItemGroup>
+	    <Content Include="SeedImages\**">
+		    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    </Content>
+    </ItemGroup>
+
 </Project>

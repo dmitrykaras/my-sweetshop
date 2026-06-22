@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using MySweetShop.Api.Data;
 using MySweetShop.Api.Entities;
-using MySweetShop.Api.Services;
 
 namespace MySweetShop.Api.Controllers;
 
@@ -11,64 +10,89 @@ namespace MySweetShop.Api.Controllers;
 public class ProductsController : ControllerBase
 {
     private readonly AppDbContext _db;
-    private readonly IObjectStorage _storage;
-    private readonly ILogger<ProductsController> _logger;
+    private readonly IWebHostEnvironment _env;
 
-    public ProductsController(AppDbContext db, IObjectStorage storage)
+    // Внедряем IWebHostEnvironment вместо старого Storage
+    public ProductsController(AppDbContext db, IWebHostEnvironment env)
     {
         _db = db;
-        _storage = storage;
+        _env = env;
     }
 
+    // Получаем изображения и данные о продуктах
     [HttpGet]
     public async Task<IActionResult> GetProducts()
     {
+        // Динамически формируем базовый URL сервера (схемы + хост)
+        // Например: https://localhost:7001/uploads/ или http://your-vps-ip/uploads/
+        string baseUrl = $"{Request.Scheme}://{Request.Host}/uploads/";
+
         var products = await _db.Products.ToListAsync();
-        var result = products.Select(p => new ProductDto // Используем класс DTO явно
+
+        var result = products.Select(p => new ProductDto
         {
             Id = p.Id,
             Name = p.Name,
             Description = p.Description,
             Price = p.Price,
-            CategoryId = p.CategoryId, // ТЕПЕРЬ ПЕРЕДАЕМ ID КАТЕГОРИИ
+            CategoryId = p.CategoryId,
             ImageUrl = string.IsNullOrEmpty(p.ImageKey)
                 ? null
-                : _storage.GetPreSignedUrl(p.ImageKey, TimeSpan.FromHours(6))
-        });
+                : $"{baseUrl}{p.ImageKey}"
+        }).ToList();
+
         return Ok(result);
     }
 
-    // Метод удаления изображения по его productId 
+    // Отдаём изображения
     [HttpPost("{productId:guid}/image")]
     public async Task<IActionResult> UploadImage(Guid productId, IFormFile file)
     {
         if (file == null || file.Length == 0)
-            throw new ArgumentException("Файл пустой");
+            return BadRequest("Файл пустой");
 
         var product = await _db.Products.FirstOrDefaultAsync(x => x.Id == productId);
         if (product == null) return NotFound();
 
+        // Если у продукта уже было локальное изображение — удаляем его с диска
         if (!string.IsNullOrEmpty(product.ImageKey))
         {
-            try
+            var oldPath = Path.Combine(_env.WebRootPath, "uploads", product.ImageKey);
+            if (System.IO.File.Exists(oldPath))
             {
-                await _storage.DeleteAsync(product.ImageKey);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Не удалось удалить старое изображение: {Key}", product.ImageKey);
+                System.IO.File.Delete(oldPath);
             }
         }
 
-        var folder = $"products/{productId}";
-        var (uploadedKey, url) = await _storage.UploadAsync(file, folder);
-        product.ImageKey = uploadedKey;
+        // Строим пути для сохранения
+        var relativeFolder = Path.Combine("products", productId.ToString());
+        var absoluteFolder = Path.Combine(_env.WebRootPath, "uploads", relativeFolder);
 
+        if (!Directory.Exists(absoluteFolder))
+        {
+            Directory.CreateDirectory(absoluteFolder);
+        }
+
+        // Генерируем уникальное имя файла, чтобы избежать проблем с кэшем
+        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        var absoluteFilePath = Path.Combine(absoluteFolder, fileName);
+
+        // Превращаем системный путь в URL-совместимый (заменяем обратные слэши \ на прямые / для Linux/Windows)
+        var relativeFilePath = Path.Combine(relativeFolder, fileName).Replace('\\', '/');
+
+        // Сохраняем файл на сервере
+        using (var stream = new FileStream(absoluteFilePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        // Записываем относительный путь в БД
+        product.ImageKey = relativeFilePath;
         await _db.SaveChangesAsync();
 
-        return Ok(new { ImageUrl = url });
+        string baseUrl = $"{Request.Scheme}://{Request.Host}/uploads/";
+        return Ok(new { ImageUrl = $"{baseUrl}{relativeFilePath}" });
     }
-
 
     [HttpDelete("{productId:guid}/image")]
     public async Task<IActionResult> DeleteImage(Guid productId)
@@ -78,14 +102,17 @@ public class ProductsController : ControllerBase
         if (product == null) return NotFound("Продукт не найден");
         if (string.IsNullOrEmpty(product.ImageKey)) return BadRequest("У продукта нет изображения");
 
-        // 1. Удаляем физический файл из S3 бакета
-        await _storage.DeleteAsync(product.ImageKey);
+        // Удаляем физический файл с сервера
+        var absolutePath = Path.Combine(_env.WebRootPath, "uploads", product.ImageKey);
+        if (System.IO.File.Exists(absolutePath))
+        {
+            System.IO.File.Delete(absolutePath);
+        }
 
-        // 2. Стираем ключ в базе данных
         product.ImageKey = null;
         await _db.SaveChangesAsync();
 
-        return NoContent(); // Успешно, без возврата данных
+        return NoContent();
     }
 
     [HttpDelete("{productId:guid}")]
@@ -94,13 +121,16 @@ public class ProductsController : ControllerBase
         var product = await _db.Products.FirstOrDefaultAsync(x => x.Id == productId);
         if (product == null) return NotFound();
 
-        // Важно: Сначала удаляем файл из облака
+        // Сначала удаляем файл с диска
         if (!string.IsNullOrEmpty(product.ImageKey))
         {
-            await _storage.DeleteAsync(product.ImageKey);
+            var absolutePath = Path.Combine(_env.WebRootPath, "uploads", product.ImageKey);
+            if (System.IO.File.Exists(absolutePath))
+            {
+                System.IO.File.Delete(absolutePath);
+            }
         }
 
-        // Затем удаляем сам продукт
         _db.Products.Remove(product);
         await _db.SaveChangesAsync();
 

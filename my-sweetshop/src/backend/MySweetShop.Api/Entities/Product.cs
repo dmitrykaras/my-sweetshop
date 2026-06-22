@@ -13,5 +13,5 @@ public class Product
     public decimal? Price { get; set; }
     public string? ImageUrl => string.IsNullOrEmpty(ImageKey)
     ? null
-    : $"https://bucket.ru/{ImageKey}"; // формируем публичный URL
+    : $"https://gobsfqwgldplagtwrlxr.supabase.co/storage/v1/object/public/my-sweetshop/{ImageKey}"; // формируем публичный URL
 }

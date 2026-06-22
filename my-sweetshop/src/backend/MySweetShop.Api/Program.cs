@@ -22,6 +22,7 @@ if (builder.Environment.IsDevelopment())
         DotNetEnv.Env.Load(envPath);
     }
 }
+builder.Configuration.AddEnvironmentVariables();
 
 // Контроллеры и Swagger
 builder.Services.AddControllers();
@@ -86,11 +87,20 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Сервисы работы с файлами
-builder.Services.Configure<BucketSettings>(builder.Configuration.GetSection("BucketSettings"));
-builder.Services.AddSingleton<IObjectStorage, BucketStorage>();
-
 var app = builder.Build();
+
+// Автоматически создаем таблицы в Postgres при каждом запуске сервера
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await dbContext.Database.MigrateAsync();
+
+    // Автосид картинок в режиме разработки
+    if (app.Environment.IsDevelopment())
+    {
+        await ISeedProductImages.SeedAsync(app);
+    }
+}
 
 // Swagger
 if (app.Environment.IsDevelopment())
@@ -109,16 +119,10 @@ if (!app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseStaticFiles(); // разрешение раздачи статических файлов из папки wwwroot
+
 // Маршруты
 app.MapControllers();
-
-// Сценарии для работы с изображениями
-if (args.Contains("--seed-images"))
-{
-    await ISeedProductImages.SeedAsync(app);
-    Console.WriteLine("Done!");
-    return;
-}
 
 if (args.Contains("--clear-images"))
 {
@@ -133,14 +137,4 @@ if (args.Contains("--clear-images"))
     Console.WriteLine("IMAGE KEYS CLEARED");
     return;
 }
-
-if (args.Contains("--delete-all-images"))
-{
-    using var scope = app.Services.CreateScope();
-    var host = scope.ServiceProvider.GetRequiredService<IHost>();
-    await IClearAllProductImages.ClearAsync(host);
-    Console.WriteLine("All images deleted");
-    return;
-}
-
 app.Run();

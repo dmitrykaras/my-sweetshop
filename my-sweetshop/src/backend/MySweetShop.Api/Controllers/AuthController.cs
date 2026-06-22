@@ -17,13 +17,11 @@ public class AuthController : ControllerBase
 {
     private readonly AppDbContext _db;
     private readonly JwtService _jwt;
-    private readonly IObjectStorage _storage;
 
-    public AuthController(AppDbContext db, JwtService jwt, IObjectStorage storage)
+    public AuthController(AppDbContext db, JwtService jwt)
     {
         _db = db;
         _jwt = jwt;
-        _storage = storage;
     }
 
     // Метод для отправки кода

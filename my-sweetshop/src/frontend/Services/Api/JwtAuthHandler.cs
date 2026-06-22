@@ -23,7 +23,7 @@ public class JwtAuthHandler : DelegatingHandler
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
     {
-        // 1. Клонируем запрос ДО первой отправки. 
+        // Клонируем запрос ДО первой отправки. 
         // HttpClient уничтожает тело запроса (Content) после SendAsync, клонировать потом - нельзя.
         var clonedRequestForRetry = await CloneRequestAsync(request);
 

@@ -58,14 +58,14 @@ namespace my_sweetshop.Services.Api
         {
             try
             {
-                // 1. Получаем токен из защищенного хранилища
-                var token = await SecureStorage.GetAsync("access_token");
+                // Получаем токен из защищенного хранилища
+                var token = await SecureStorage.GetAsync("auth_token");
                 if (string.IsNullOrEmpty(token))
                 {
                     throw new Exception("Авторизационный токен не найден. Пожалуйста, войдите снова.");
                 }
 
-                // 2. Подготавливаем данные запроса
+                // Подготавливаем данные запроса
                 var updateData = new
                 {
                     FirstName = firstName,
@@ -75,7 +75,7 @@ namespace my_sweetshop.Services.Api
                 var json = JsonSerializer.Serialize(updateData);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                // 3. Создаем запрос. 
+                // Создаем запрос. 
                 // Используем PATCH для частичного обновления профиля, как в логах Docker.
                 using var request = new HttpRequestMessage(HttpMethod.Patch, "profile/UpdateProfile");
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -83,10 +83,10 @@ namespace my_sweetshop.Services.Api
 
                 Debug.WriteLine($"[MAUI_LOG] AuthApi: Отправка данных профиля на {_http.BaseAddress}profile/UpdateProfile");
 
-                // 4. Отправляем запрос
+                // Отправляем запрос
                 var response = await _http.SendAsync(request);
 
-                // 5. Проверяем результат
+                // Проверяем результат
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();

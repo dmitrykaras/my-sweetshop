@@ -1,4 +1,5 @@
 using my_sweetshop.Services.Api;
+using my_sweetshop.Services.Api.ProfileService;
 using my_sweetshop.Services.AuthStep;
 
 namespace my_sweetshop.Views.Auth;
@@ -73,6 +74,7 @@ public partial class CodePage : ContentPage
         TryVerifyIfComplete();
     }
 
+    // Попытка верификации
     private async void TryVerifyIfComplete()
     {
         if (_verifyCooldownActive) return;
@@ -87,21 +89,24 @@ public partial class CodePage : ContentPage
         {
             var resp = await _authApi.VerifyCodeAsync(_email, code);
 
-            // 1. Обновляем сессию в памяти (для текущих запросов)
+            // Обновляем сессию в памяти (для текущих запросов)
             await _session.SetTokenAsync(resp.Token);
 
-            // 2. Сохраняем токены в постоянную память (для JwtAuthHandler)
+            // Сохраняем токены в постоянную память (для JwtAuthHandler)
             await SecureStorage.Default.SetAsync("auth_token", resp.Token);
             await SecureStorage.Default.SetAsync("refresh_token", resp.RefreshToken);
-
-            // 3. Устанавливаем флаг успешного входа
+            
+            // Устанавливаем флаг успешного входа
             Preferences.Default.Set("is_logged_in", true);
 
             var window = Application.Current?.Windows.FirstOrDefault();
             if (window != null)
             {
                 if (resp.NeedsProfile)
-                    window.Page = new NavigationPage(new CompletionProfilePage(_email, _authApi));
+                {
+                    window.Page = new NavigationPage(new CompletionProfilePage(_email, _authApi, MauiProgram.ServiceProvider));
+                }
+                    
                 else
                     window.Page = MauiProgram.ServiceProvider.GetRequiredService<AppShell>();
             }

@@ -35,20 +35,20 @@ public partial class ProfilePage : ContentPage
 
         try
         {
-            // 1. Очистка сессии
+            // Очистка сессии
             if (authSession != null)
             {
                 // Вызываем ваш метод, который обнуляет Token, Email и чистит SecureStorage
                 await authSession.LogoutAsync();
             }
 
-            // 2. ОЧИСТКА ДАННЫХ
+            // Очистка данных
             // Удаляем токены и флаги авторизации
             SecureStorage.Default.Remove("auth_token");
             SecureStorage.Default.Remove("refresh_token");
             Preferences.Default.Remove("is_logged_in");
 
-            // 3. Смена MainPage в главном потоке
+            // Смена MainPage в главном потоке
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 if (Application.Current != null)

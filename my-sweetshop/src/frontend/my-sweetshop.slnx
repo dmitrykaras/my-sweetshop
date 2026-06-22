@@ -1,3 +1,5 @@
 <Solution>
-  <Project Path="my-sweetshop.csproj" />
+  <Project Path="my-sweetshop.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
 </Solution>

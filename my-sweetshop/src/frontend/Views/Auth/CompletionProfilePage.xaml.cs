@@ -13,12 +13,14 @@ public partial class CompletionProfilePage : ContentPage
 {
     private readonly AuthApi _authApi;
     private readonly string _email;
+    private readonly IServiceProvider _serviceProvider;
 
-    public CompletionProfilePage(string email, AuthApi authApi)
+    public CompletionProfilePage(string email, AuthApi authApi, IServiceProvider serviceProvider)
     {
         InitializeComponent();
         _authApi = authApi;
         _email = email;
+        _serviceProvider = serviceProvider;
 
         ContinueBtn.IsEnabled = false;
     }
@@ -67,7 +69,9 @@ public partial class CompletionProfilePage : ContentPage
             {
                 if (Application.Current != null)
                 {
-                    Application.Current.MainPage = new AppShell();
+                    // Запрашиваем AppShell из DI со всеми свежими зависимостями и токенами
+                    var freshAppShell = _serviceProvider.GetRequiredService<AppShell>();
+                    Application.Current.MainPage = freshAppShell;
                 }
             });
         }

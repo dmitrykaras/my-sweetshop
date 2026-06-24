@@ -1,10 +1,11 @@
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
+using my_sweetshop.Services.Api;
+using my_sweetshop.Services.Api.ProfileService;
 using my_sweetshop.ViewModels.Profile;
 using my_sweetshop.ViewModels.Profile.NewEmailOrName;
 using my_sweetshop.Views.Contact;
 using my_sweetshop.Views.Profile.Cashier;
-using my_sweetshop.Services.Api;
 using System;
 using System.Linq;
 
@@ -13,11 +14,13 @@ namespace my_sweetshop.Views.Profile;
 public partial class ProfilePage : ContentPage
 {
     private int _secretTapCount = 0;
+    private readonly IProfileService _profileService;
 
-    public ProfilePage(EditProfileRootViewModel vm)
+    public ProfilePage(EditProfileRootViewModel vm, IProfileService profileService)
     {
         InitializeComponent();
         BindingContext = vm;
+        _profileService = profileService;
     }
 
     // Метод выхода из аккаунта
@@ -40,6 +43,12 @@ public partial class ProfilePage : ContentPage
             {
                 // Вызываем ваш метод, который обнуляет Token, Email и чистит SecureStorage
                 await authSession.LogoutAsync();
+            }
+
+            // Очищаем кэш профиля
+            if (_profileService != null)
+            {
+                _profileService.ClearCache();
             }
 
             // Очистка данных

@@ -41,13 +41,15 @@ public class ProfileService : IProfileService
     }
 
     // Метод обновления данных пользователя 
-    public async Task<bool> UpdateProfileAsync(UpdateProfileDto dto)
+    public async Task<UserModel?> UpdateProfileAsync(UpdateProfileDto dto)
     {
+        // Формирование запроса к API на обновление данные пользователя
         var req = new HttpRequestMessage(HttpMethod.Patch, "profile/UpdateProfile")
         {
             Content = JsonContent.Create(dto)
         };
 
+        // Отправка запроса
         var response = await _httpClient.SendAsync(req);
 
         if (response.IsSuccessStatusCode)
@@ -55,7 +57,7 @@ public class ProfileService : IProfileService
             // Обновляем кэш сразу, чтобы UI мгновенно "ожил"
             var updated = await response.Content.ReadFromJsonAsync<UserModel>();
             _cachedUser = updated;
-            return true;
+            return updated;
         }
         var errorData = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
         throw new ApiException((int)response.StatusCode, errorData?.Message ?? "Ошибка сервера", errorData);

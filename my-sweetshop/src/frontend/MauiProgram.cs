@@ -64,8 +64,8 @@ namespace my_sweetshop
             })
             .AddHttpMessageHandler<JwtAuthHandler>();
 
-            // Теперь регистрируем сам сервис как AddScoped, внедряя в него настроенный клиент
-            builder.Services.AddScoped<IProfileService>(sp =>
+            // Теперь регистрируем сам сервис как AddSingleton, внедряя в него настроенный клиент
+            builder.Services.AddSingleton<IProfileService>(sp =>
             {
                 var factory = sp.GetRequiredService<IHttpClientFactory>();
                 var httpClient = factory.CreateClient("ProfileClient");
@@ -92,9 +92,9 @@ namespace my_sweetshop
             builder.Services.AddSingleton<EmailCache>();
 
             // Регистрация вью-моделей
-            builder.Services.AddTransient<UserProfileViewModel>();
+            builder.Services.AddSingleton<UserProfileViewModel>(); // AddTransient
             builder.Services.AddTransient<UserPointsViewModel>();
-            builder.Services.AddTransient<EditProfileRootViewModel>();
+            builder.Services.AddTransient<EditProfileRootViewModel>(); // AddSingleton
             builder.Services.AddTransient<NewEmailViewModel>();
             builder.Services.AddTransient<HomeViewModel>();
             builder.Services.AddTransient<CatalogViewModel>();

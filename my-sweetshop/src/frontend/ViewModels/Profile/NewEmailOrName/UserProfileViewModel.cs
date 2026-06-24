@@ -20,7 +20,7 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
         private readonly AuthSession _session;
         private readonly IProfileService _profileService;
 
-        private UserModel _originalUser;
+        private UserModel? _originalUser;
         private string _currentFirstname;
         private string _newFirstname;
         private string _currentLastname;
@@ -132,6 +132,13 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             } 
         }
 
+        private bool _isLoaded;
+        public bool IsLoaded
+        {
+            get => _isLoaded;
+            set => SetProperty(ref _isLoaded, value);
+        }
+
         public ICommand SaveCommand { get; }
         public ICommand GoToChangeEmailCommand { get; }
 
@@ -191,20 +198,20 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             {
                 await _session.InitializeAsync();
 
-                // 1. Получаем данные
+                // Получаем данные
                 var user = await _userService.GetCurrentUser();
 
-                // 2. ПРОВЕРКА: если user пришел null, не идем дальше
+                // ПРОВЕРКА: если user пришел null, не идем дальше
                 if (user == null)
                 {
                     await ShowToast("Данные пользователя не найдены");
                     return;
                 }
 
-                // 3. Сохраняем в оригинальный объект
+                // Сохраняем в оригинальный объект
                 _originalUser = user;
 
-                // 4. Безопасно заполняем поля
+                // Безопасно заполняем поля
                 CurrentFirstname = _originalUser.FirstName;
                 CurrentLastname = _originalUser.LastName;
 
@@ -216,6 +223,7 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
                 CurrentEmail = !string.IsNullOrWhiteSpace(emailToShow)
                                ? emailToShow
                                : "Почта не указана";
+                IsLoaded = true;
             }
             catch (Exception ex)
             {
@@ -224,7 +232,7 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             }
         }
 
-        // Метод сохранения данных
+        // Метод сохранения данных (при нажатии на кнопку сохранить)
         private async Task SaveAsync()
         {
             if (IsBusy) return;
@@ -246,6 +254,8 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             }
 
             IsBusy = true;
+
+            // Попытка сохранить новые данные
             try
             {
                 var dto = new UpdateProfileDto
@@ -254,13 +264,18 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
                     LastName = NewLastname
                 };
 
-                bool success = await _profileService.UpdateProfileAsync(dto);
+                // обновление данные пользователя
+                UserModel? updatedUser = await _profileService.UpdateProfileAsync(dto);
 
-                if (success)
+                if (updatedUser != null)
                 {
+                    CurrentFirstname = updatedUser.FirstName;
+                    CurrentLastname = updatedUser.LastName;
+                    _originalUser = updatedUser;
+
                     await ShowToast("Профиль обновлен");
                     _ = StartCooldown(_profileCooldownSeconds, (v) => IsProfileCooldownActive = v, (t) => ProfileCooldownText = t, false);
-                    await LoadUserAsync();
+                    // await LoadUserAsync();
                     ClearEntryString();
                 }
             }
@@ -324,6 +339,19 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             {
                 await ShowToast("Ошибка отправки кода или слишком много попыток");
             }
+        }
+
+        // Метод очистки полей для выхода
+        public void ClearData()
+        {
+            _originalUser = null;
+            CurrentFirstname = string.Empty;
+            CurrentLastname = string.Empty;
+            CurrentEmail = string.Empty;
+            NewFirstname = string.Empty;
+            NewLastname = string.Empty;
+            NewEmail = string.Empty;
+            IsLoaded = false;
         }
 
         // Метод для отсчёта времени Cooldown

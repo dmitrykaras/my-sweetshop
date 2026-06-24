@@ -23,6 +23,21 @@ public partial class ProfilePage : ContentPage
         _profileService = profileService;
     }
 
+    // Делаем запрос к серверу только, если данные ещё не загужены
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (BindingContext is EditProfileRootViewModel vm && vm.Profile != null)
+        {
+            // Если данные для этой сессии еще НЕ были загружены — дергаем сервер
+            if (!vm.Profile.IsLoaded)
+            {
+                await vm.Profile.LoadUserAsync();
+            }
+        }
+    }
+
     // Метод выхода из аккаунта
     private async void OnLogoutTapped(object sender, EventArgs e)
     {
@@ -42,6 +57,18 @@ public partial class ProfilePage : ContentPage
             if (authSession != null)
             {
                 // Вызываем ваш метод, который обнуляет Token, Email и чистит SecureStorage
+                await authSession.LogoutAsync();
+            }
+
+            // Сбрасываем данные в синглтон-ViewModel
+            if (BindingContext is EditProfileRootViewModel vm)
+            {
+                vm.Profile?.ClearData();
+            }
+
+            // Очистка сессии
+            if (authSession != null)
+            {
                 await authSession.LogoutAsync();
             }
 

@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -21,11 +23,13 @@ services:
 
   api:
     build:
-      # Контекст сборки - корень, где лежит этот файл
       context: . 
-      # Путь к докерфайлу относительно контекста
       dockerfile: my-sweetshop/src/backend/MySweetShop.Api/Dockerfile
     container_name: mysweetshop-api
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
     environment:
       # JWT Settings
       Jwt__Issuer: ${JWT_ISSUER:-MySweetShop.Api}
@@ -33,14 +37,7 @@ services:
       Jwt__Key: ${JWT_KEY}
       Jwt__ExpiresMinutes: ${JWT_EXPIRES_MINUTES:-30}
       
-      # Bucket Settings
-      BucketSettings__Name: ${BUCKET_NAME:-mycandeshop}
-      BucketSettings__Endpoint: ${BUCKET_ENDPOINT:-https://s3.buckets.ru/}
-      BucketSettings__AccessKey: ${BUCKET_ACCESS_KEY}
-      BucketSettings__SecretKey: ${BUCKET_SECRET_KEY}
-      BucketSettings__PublicBaseUrl: ${BUCKET_PUBLIC_BASE_URL:-https://cdn.backet.ru/mycandeshop}
-      
-      # Database Connection String (Host = имя сервиса postgres)
+      # Database Connection
       ConnectionStrings__Default: "Host=postgres;Port=5432;Database=${DB_NAME:-mysweetshop_db};Username=${DB_USER:-postgres};Password=${DB_PASSWORD:-postgres}"
       
       ASPNETCORE_ENVIRONMENT: Development
@@ -50,6 +47,10 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    volumes:
+      # Направляем папку со статикой из контейнера наружу.
+      # Папка "products_images" создастся автоматически в той же директории, где лежит этот docker-compose.yml
+      - ./products_images:/app/wwwroot/uploads
     networks:
       - app-network
     restart: unless-stopped

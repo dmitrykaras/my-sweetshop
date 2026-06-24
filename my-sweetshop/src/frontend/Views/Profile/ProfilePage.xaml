@@ -32,8 +32,6 @@
                     </Border.GestureRecognizers>
 
                     <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                        <!-- Если у вас есть иконка выхода, раскомментируйте строку ниже -->
-                        <!-- <Image Source="logout_icon.png" HeightRequest="18" WidthRequest="18" VerticalOptions="Center"/> -->
                         <Label Text="Выйти"
                                TextColor="#E63946"
                                FontSize="14"

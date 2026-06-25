@@ -9,6 +9,8 @@ namespace my_sweetshop.ViewModels
         public ICommand OrderDeliveryCommand { get; }
         public ICommand OpenVkCommand { get; }
         public ICommand OpenTgCommand { get; }
+        public ICommand OpenCatalogCommand { get; }
+        public ICommand OpenPointsCommand { get; }
 
         public HomeViewModel()
         {
@@ -24,16 +26,19 @@ namespace my_sweetshop.ViewModels
 
             OpenTgCommand = new Command(async () => await SafeOpenUrl("https://t.me/MoyaKonditerakaya"));
             OpenVkCommand = new Command(async () => await SafeOpenUrl("https://vk.com/id196324878"));
+
+            OpenCatalogCommand = new Command(NavigateToCatalog);
+            OpenPointsCommand = new Command(NavigateToPoints);
         }
 
         private async Task SafeOpenUrl(string url)
         {
             try
             {
-                // 1. Пытаемся открыть через системный Launcher (откроет приложение, если есть)
+                // Пытаемся открыть через системный Launcher (откроет приложение, если есть)
                 bool opened = await Launcher.Default.OpenAsync(url);
 
-                // 2. Если Launcher не справился, принудительно открываем в браузере
+                // Если Launcher не справился, принудительно открываем в браузере
                 if (!opened)
                 {
                     await Browser.Default.OpenAsync(url, BrowserLaunchMode.SystemPreferred);
@@ -43,6 +48,36 @@ namespace my_sweetshop.ViewModels
             {
                 System.Diagnostics.Debug.WriteLine($"Ошибка при открытии ссылки: {ex.Message}");
                 // Здесь можно добавить DisplayAlert, если нужно оповестить пользователя
+            }
+        }
+
+        // Логика перехода на вкладку Каталог
+        private void NavigateToCatalog()
+        {
+            var shell = Shell.Current;
+            var tabBar = shell?.Items.FirstOrDefault();
+            if (tabBar == null) return;
+
+            var catalogSection = tabBar.Items.FirstOrDefault(section => section.Title == "Каталог");
+            if (catalogSection != null)
+            {
+                shell.CurrentItem = tabBar;
+                shell.CurrentItem.CurrentItem = catalogSection;
+            }
+        }
+
+        // Логика перехода на вкладку Профиль (Баллы)
+        private void NavigateToPoints()
+        {
+            var shell = Shell.Current;
+            var tabBar = shell?.Items.FirstOrDefault();
+            if (tabBar == null) return;
+
+            var contactSection = tabBar.Items.FirstOrDefault(section => section.Title == "Профиль");
+            if (contactSection != null)
+            {
+                shell.CurrentItem = tabBar;
+                shell.CurrentItem.CurrentItem = contactSection;
             }
         }
     }

@@ -131,15 +131,15 @@
                         </Border.GestureRecognizers>
                         <Grid>
                             <Image Source="cloud_chat_bg.png"
-                           Aspect="AspectFit"
-                           VerticalOptions="Fill"
-                           HorizontalOptions="Fill"/>
+                               Aspect="AspectFit"
+                               VerticalOptions="Fill"
+                               HorizontalOptions="Fill"/>
                             <Label Text="Поддержка"
-                           TextColor="Black"
-                           FontSize="16"
-                           FontAttributes="Bold"
-                           Margin="14"
-                           VerticalOptions="End"/>
+                               TextColor="Black"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               Margin="14"
+                               VerticalOptions="End"/>
                         </Grid>
                         <Border.Shadow>
                             <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />

@@ -1,18 +1,21 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using my_sweetshop.Dtos;
 using my_sweetshop.Models;
 using my_sweetshop.Services.Api;
 using my_sweetshop.Services.Api.ProfileService;
 using my_sweetshop.Services.UserService;
 using my_sweetshop.Views.Profile.ProfileChanges;
-using System.Windows.Input;
-using System.Timers;
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
 {
-    public class UserProfileViewModel : BaseViewModel
+    // ОБЯЗАТЕЛЬНО добавляем partial
+    public partial class UserProfileViewModel : BaseViewModel
     {
         private readonly IUserService _userService;
         private readonly EmailCache _emailCache;
@@ -21,126 +24,51 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
         private readonly IProfileService _profileService;
 
         private UserModel? _originalUser;
-        private string _currentFirstname;
-        private string _newFirstname;
-        private string _currentLastname;
-        private string _newLastname;
-        private string _newEmail;
-        private string _currentEmail;
-
-        // Поля для смены почты
-        private bool _isEmailCooldownActive;
-        private string _emailCooldownText;
-        private int _emailCooldownSeconds = 300;
-
-        // Поля для сохранения профиля (имя/фамилия)
-        private bool _isProfileCooldownActive;
-        private string _profileCooldownText;
-        private int _profileCooldownSeconds = 120;
-
         private DateTime? _emailCooldownEndTime;
         private DateTime? _profileCooldownEndTime;
+        private readonly int _emailCooldownSeconds = 300;
+        private readonly int _profileCooldownSeconds = 120;
 
-        /// <summary>
-        /// Cooldown - для почты и для смены имени и/или фамилии
-        /// </summary>
+        // Генерируемые св-ва
+        // Атрибут [NotifyCanExecuteChangedFor] автоматически заставляет кнопку перепроверять свою доступность при изменении поля
 
-        // Свойства для почты
-        public bool IsEmailCooldownActive
-        {
-            get => _isEmailCooldownActive;
-            set { if (SetProperty(ref _isEmailCooldownActive, value)) ((Command)GoToChangeEmailCommand).ChangeCanExecute(); }
-        }
-        public string EmailCooldownText
-        {
-            get => _emailCooldownText;
-            set => SetProperty(ref _emailCooldownText, value);
-        }
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(GoToChangeEmailCommand))]
+        private bool _isEmailCooldownActive;
 
-        // Свойства для профиля
-        public bool IsProfileCooldownActive
-        {
-            get => _isProfileCooldownActive;
-            set { if (SetProperty(ref _isProfileCooldownActive, value)) ((Command)SaveCommand).ChangeCanExecute(); }
-        }
-        public string ProfileCooldownText
-        {
-            get => _profileCooldownText;
-            set => SetProperty(ref _profileCooldownText, value);
-        }
+        [ObservableProperty]
+        private string _emailCooldownText = string.Empty;
 
-        public string CurrentFirstname
-        {
-            get => _currentFirstname;
-            set => SetProperty(ref _currentFirstname, value);
-        }
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+        private bool _isProfileCooldownActive;
 
-        public string NewFirstname
-        {
-            get => _newFirstname;
-            set
-            {
-                if (SetProperty(ref _newFirstname, value))
-                {
-                    // Уведомляем SaveCommand, что нужно перепроверить CanExecute
-                    ((Command)SaveCommand).ChangeCanExecute();
-                }
-            }
-        }
+        [ObservableProperty]
+        private string _profileCooldownText = string.Empty;
 
-        public string CurrentLastname
-        {
-            get => _currentLastname;
-            set => SetProperty(ref _currentLastname, value);
-        }
+        [ObservableProperty]
+        private string _currentFirstname = string.Empty;
 
-        public string NewLastname
-        {
-            get => _newLastname;
-            set
-            {
-                if (SetProperty(ref _newLastname, value))
-                {
-                    ((Command)SaveCommand).ChangeCanExecute();
-                }
-            }
-        }
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+        private string _newFirstname = string.Empty;
 
-        [EmailAddress(ErrorMessage = "Некорректный формат Email")]
-        public string NewEmail
-        {
-            get => _newEmail;
-            set
-            {
-                if (SetProperty(ref _newEmail, value))
-                {
-                    ((Command)GoToChangeEmailCommand).ChangeCanExecute();
-                }
-            }
-        }
+        [ObservableProperty]
+        private string _currentLastname = string.Empty;
 
-        public string CurrentEmail
-        {
-            get => _currentEmail;
-            set
-            {
-                if (_currentEmail != value)
-                {
-                    _currentEmail = value;
-                    OnPropertyChanged();
-                }
-            } 
-        }
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+        private string _newLastname = string.Empty;
 
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(GoToChangeEmailCommand))]
+        private string _newEmail = string.Empty;
+
+        [ObservableProperty]
+        private string _currentEmail = string.Empty;
+
+        [ObservableProperty]
         private bool _isLoaded;
-        public bool IsLoaded
-        {
-            get => _isLoaded;
-            set => SetProperty(ref _isLoaded, value);
-        }
-
-        public ICommand SaveCommand { get; }
-        public ICommand GoToChangeEmailCommand { get; }
 
         public UserProfileViewModel(IUserService userService, EmailCache emailCache, ChangeEmail changeEmail,
             AuthSession session, IProfileService profileService)
@@ -151,20 +79,9 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             _session = session;
             _profileService = profileService;
 
-            SaveCommand = new Command(
-                execute: async () => await SaveAsync(),
-                canExecute: () => !IsBusy && CanSave() && !IsProfileCooldownActive
-            );
-
-            GoToChangeEmailCommand = new Command(
-                execute: async () => await GoToChangeEmail(),
-                canExecute: () => !IsEmailCooldownActive && IsValidEmail(NewEmail)
-            );
-
             InitializeViewModel();
         }
 
-        // Инициализация VM
         private async void InitializeViewModel()
         {
             IsBusy = true;
@@ -172,99 +89,53 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             IsBusy = false;
         }
 
-        // Вспомогательный метод для валидации кнопки сохранения
         private bool CanSave()
         {
-            // Проверяем, что хотя бы в одном поле есть 2 или более символов
             bool fnValid = !string.IsNullOrWhiteSpace(NewFirstname) && NewFirstname.Length >= 2;
             bool lnValid = !string.IsNullOrWhiteSpace(NewLastname) && NewLastname.Length >= 2;
-
             return fnValid || lnValid;
         }
 
-        // Вспомогательный метод для валидации почты
         private bool IsValidEmail(string email)
         {
-            if (string.IsNullOrWhiteSpace(email))
-                return false;
-
+            if (string.IsNullOrWhiteSpace(email)) return false;
             return new EmailAddressAttribute().IsValid(email);
         }
 
-        // Метод загрузки данных
-        public async Task LoadUserAsync()
-        {
-            try
-            {
-                await _session.InitializeAsync();
+        // Генерируемые команды
 
-                // Получаем данные
-                var user = await _userService.GetCurrentUser();
+        private bool CanExecuteSave() => !IsBusy && CanSave() && !IsProfileCooldownActive;
 
-                // ПРОВЕРКА: если user пришел null, не идем дальше
-                if (user == null)
-                {
-                    await ShowToast("Данные пользователя не найдены");
-                    return;
-                }
-
-                // Сохраняем в оригинальный объект
-                _originalUser = user;
-
-                // Безопасно заполняем поля
-                CurrentFirstname = _originalUser.FirstName;
-                CurrentLastname = _originalUser.LastName;
-
-
-                var emailToShow = !string.IsNullOrWhiteSpace(_originalUser.Email)
-                                  ? _originalUser.Email
-                                  : _session.Email;
-
-                CurrentEmail = !string.IsNullOrWhiteSpace(emailToShow)
-                               ? emailToShow
-                               : "Почта не указана";
-                IsLoaded = true;
-            }
-            catch (Exception ex)
-            {
-                // Логируйте ex, чтобы видеть реальную причину (ошибка сети, 401 и т.д.)
-                await ShowToast("Ошибка загрузки данных");
-            }
-        }
-
-        // Метод сохранения данных (при нажатии на кнопку сохранить)
+        [RelayCommand(CanExecute = nameof(CanExecuteSave))]
         private async Task SaveAsync()
         {
             if (IsBusy) return;
 
             var _currentUser = await _profileService.GetProfileAsync();
 
-            // Валидация
             if (string.IsNullOrWhiteSpace(NewFirstname) && string.IsNullOrWhiteSpace(NewLastname))
             {
                 await ShowToast("Заполните все поля");
                 return;
             }
 
-            // Проверка на изменения
             if (NewFirstname == _currentUser?.FirstName && NewLastname == _currentUser?.LastName)
             {
                 await ShowToast("Изменений нет");
                 return;
             }
 
-            IsBusy = true;
-
-            // Попытка сохранить новые данные
             try
             {
+                IsBusy = true;
+                SaveCommand.NotifyCanExecuteChanged(); // Блокируем кнопку на время отправки
+
                 var dto = new UpdateProfileDto
                 {
                     FirstName = NewFirstname,
                     LastName = NewLastname
                 };
 
-                // обновление данные пользователя
                 UserModel? updatedUser = await _profileService.UpdateProfileAsync(dto);
 
                 if (updatedUser != null)
@@ -275,14 +146,12 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
 
                     await ShowToast("Профиль обновлен");
                     _ = StartCooldown(_profileCooldownSeconds, (v) => IsProfileCooldownActive = v, (t) => ProfileCooldownText = t, false);
-                    // await LoadUserAsync();
                     ClearEntryString();
                 }
             }
             catch (ApiException apiEx)
             {
-                var message = apiEx.Error?.Message ?? apiEx.Message;
-                await ShowToast(message);
+                await ShowToast(apiEx.Error?.Message ?? apiEx.Message);
             }
             catch (Exception)
             {
@@ -291,20 +160,14 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             finally
             {
                 IsBusy = false;
+                SaveCommand.NotifyCanExecuteChanged(); // Разблокируем кнопку
             }
         }
 
-        // Очистка полей ввода имени и фамилии 
-        private void ClearEntryString()
-        {
-            // Очищаем данные
+        private bool CanExecuteGoToChangeEmail() => !IsEmailCooldownActive && IsValidEmail(NewEmail);
 
-            if (NewFirstname != null) NewFirstname = "";
-            if (NewLastname != null) NewLastname = "";
-        }
-
-        // Переход к странице ввода кода врификации и отправка кода
-        private async Task GoToChangeEmail()
+        [RelayCommand(CanExecute = nameof(CanExecuteGoToChangeEmail))]
+        private async Task GoToChangeEmailAsync()
         {
             if (!IsValidEmail(NewEmail))
             {
@@ -314,11 +177,8 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
 
             try
             {
-                // сохраняем новую почту
                 _emailCache.TempEmail = NewEmail;
-
-                // используем текущую почту пользователя
-                var currentEmail = _session.Email ?? NewEmail; // fallback
+                var currentEmail = _session.Email ?? NewEmail;
 
                 if (string.IsNullOrWhiteSpace(currentEmail))
                 {
@@ -326,14 +186,9 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
                     return;
                 }
 
-                // отправка кода
                 await _changeEmail.RequestCodeAsync(currentEmail, NewEmail);
-
-                // переход на страницу ввода кода
                 await Shell.Current.GoToAsync(nameof(NewEmailPage));
-
-                // если запрос прошёл успешно, то запускаем таймер на cooldown
-                await StartCooldown(_emailCooldownSeconds, (v) => IsEmailCooldownActive = v, (t) => EmailCooldownText = t, false);
+                _ = StartCooldown(_emailCooldownSeconds, (v) => IsEmailCooldownActive = v, (t) => EmailCooldownText = t, true);
             }
             catch
             {
@@ -341,7 +196,52 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             }
         }
 
-        // Метод очистки полей для выхода
+        // Методы получения данных
+
+        public async Task LoadUserAsync()
+        {
+            try
+            {
+                IsBusy = true;
+
+                await _session.InitializeAsync();
+                var user = await _userService.GetCurrentUser();
+
+                if (user == null)
+                {
+                    await ShowToast("Данные пользователя не найдены");
+                    return;
+                }
+
+                _originalUser = user;
+                CurrentFirstname = _originalUser.FirstName;
+                CurrentLastname = _originalUser.LastName;
+
+                var emailToShow = !string.IsNullOrWhiteSpace(_originalUser.Email)
+                                  ? _originalUser.Email
+                                  : _session.Email;
+
+                CurrentEmail = !string.IsNullOrWhiteSpace(emailToShow)
+                               ? emailToShow
+                               : "Почта не указана";
+                IsLoaded = true;
+            }
+            catch (Exception)
+            {
+                await ShowToast("Ошибка загрузки данных");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private void ClearEntryString()
+        {
+            NewFirstname = string.Empty;
+            NewLastname = string.Empty;
+        }
+
         public void ClearData()
         {
             _originalUser = null;
@@ -354,12 +254,10 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             IsLoaded = false;
         }
 
-        // Метод для отсчёта времени Cooldown
         private async Task StartCooldown(int seconds, Action<bool> setStatus, Action<string> setText, bool isEmail)
         {
             var endTime = DateTime.Now.AddSeconds(seconds);
 
-            // Сохраняем время окончания
             if (isEmail) _emailCooldownEndTime = endTime;
             else _profileCooldownEndTime = endTime;
 
@@ -375,11 +273,33 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             setText(string.Empty);
             setStatus(false);
         }
-            // Метод вывода
-            async Task ShowToast(string text)
+
+        private async Task ShowToast(string text)
         {
             var toast = Toast.Make(text, ToastDuration.Short);
             await toast.Show();
+        }
+
+        // Команда для обновления, которая гарантированно выключит спиннер
+
+        [RelayCommand]
+        private async Task RefreshPageAsync()
+        {
+            try
+            {
+                await LoadUserAsync();
+            }
+            catch (Exception ex)
+            {
+                await ShowToast("Не удалось обновить данные");
+            }
+            finally
+            {
+                // Выключаем спиннер в конце
+                IsBusy = false;
+
+                IsRefreshing = false; 
+            }
         }
     }
 }

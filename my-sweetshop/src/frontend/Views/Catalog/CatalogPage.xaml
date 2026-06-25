@@ -5,50 +5,53 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Title="Каталог">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="16" Spacing="24">
+    <RefreshView IsRefreshing="{Binding IsRefreshing}"
+                 Command="{Binding RefreshCommand}">
 
-            <!-- Заголовок -->
-            <Label
+        <ScrollView>
+            <VerticalStackLayout Padding="16" Spacing="24">
+
+                <!-- Заголовок -->
+                <Label
                 Text="Каталог товаров"
                 FontSize="22"
                 FontAttributes="Bold"
                 HorizontalOptions="Start" />
 
-            <!-- ================= ДЕСЕРТЫ ================= -->
-            <VerticalStackLayout Spacing="8">
+                <!-- ДЕСЕРТЫ -->
+                <VerticalStackLayout Spacing="8">
 
-                <Label
+                    <Label
                     Text="ДЕСЕРТЫ"
                     FontSize="14"
                     TextColor="#9E9E9E"
                     FontAttributes="Bold" />
 
-                <Border Style="{StaticResource CategoryContainerStyle}">
+                    <Border Style="{StaticResource CategoryContainerStyle}">
 
-                    <CollectionView
+                        <CollectionView
                         ItemsSource="{Binding Desserts}"
                         ItemsLayout="HorizontalList"
                         HorizontalScrollBarVisibility="Never">
 
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
 
-                                <Border Style="{StaticResource ProductCardStyle}">
+                                    <Border Style="{StaticResource ProductCardStyle}">
 
-                                    <VerticalStackLayout Padding="10" Spacing="8">
+                                        <VerticalStackLayout Padding="10" Spacing="8">
 
-                                        <Image
+                                            <Image
                                             Source="{Binding ImageUrl}"
                                             HeightRequest="300"
                                             Aspect="AspectFill" />
 
-                                        <Label
+                                            <Label
                                             Text="{Binding Name}"
                                             HorizontalOptions="Center"
                                             FontAttributes="Bold" />
 
-                                        <Frame
+                                            <Frame
                                             BorderColor="LightGray"
                                             CornerRadius="5"
                                             Padding="0"
@@ -56,7 +59,7 @@
                                             HasShadow="False"
                                             BackgroundColor="Transparent">
 
-                                            <Button
+                                                <Button
                                                 Text="Описание"
                                                 BackgroundColor="White"
                                                 TextColor="Black"
@@ -67,53 +70,53 @@
                                                 Command="{Binding BindingContext.OpenProductCommand,
                                                           Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                 CommandParameter="{Binding .}" />
-                                        </Frame>
-                                    </VerticalStackLayout>
+                                            </Frame>
+                                        </VerticalStackLayout>
 
-                                </Border>
+                                    </Border>
 
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
 
-                    </CollectionView>
+                        </CollectionView>
 
-                </Border>
-            </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
 
-            <!-- ================= МУЖСКИЕ ТОРТЫ ================= -->
-            <VerticalStackLayout Spacing="8">
+                <!-- МУЖСКИЕ ТОРТЫ -->
+                <VerticalStackLayout Spacing="8">
 
-                <Label
+                    <Label
                     Text="МУЖСКИЕ ТОРТЫ"
                     FontSize="14"
                     TextColor="#9E9E9E"
                     FontAttributes="Bold" />
 
-                <Border Style="{StaticResource CategoryContainerStyle}">
+                    <Border Style="{StaticResource CategoryContainerStyle}">
 
-                    <CollectionView
+                        <CollectionView
                         ItemsSource="{Binding MaleCakes}"
                         ItemsLayout="HorizontalList"
                         HorizontalScrollBarVisibility="Never">
 
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
 
-                                <Border Style="{StaticResource ProductCardStyle}">
+                                    <Border Style="{StaticResource ProductCardStyle}">
 
-                                    <VerticalStackLayout Padding="10" Spacing="8">
+                                        <VerticalStackLayout Padding="10" Spacing="8">
 
-                                        <Image
+                                            <Image
                                             Source="{Binding ImageUrl}"
                                             HeightRequest="160"
                                             Aspect="AspectFill" />
 
-                                        <Label
+                                            <Label
                                             Text="{Binding Name}"
                                             HorizontalOptions="Center"
                                             FontAttributes="Bold" />
 
-                                        <Frame
+                                            <Frame
                                             BorderColor="LightGray"
                                             CornerRadius="5"
                                             Padding="0"
@@ -121,7 +124,7 @@
                                             HasShadow="False"
                                             BackgroundColor="Transparent">
 
-                                            <Button
+                                                <Button
                                                 Text="Описание"
                                                 BackgroundColor="White"
                                                 TextColor="Black"
@@ -132,53 +135,53 @@
                                                 Command="{Binding BindingContext.OpenProductCommand,
                                                           Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                 CommandParameter="{Binding .}" />
-                                        </Frame>
-                                    </VerticalStackLayout>
+                                            </Frame>
+                                        </VerticalStackLayout>
 
-                                </Border>
+                                    </Border>
 
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
 
-                    </CollectionView>
+                        </CollectionView>
 
-                </Border>
-            </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
 
-            <!-- ================= ЖЕНСКИЕ ТОРТЫ ================= -->
-            <VerticalStackLayout Spacing="8">
+                <!-- ЖЕНСКИЕ ТОРТЫ -->
+                <VerticalStackLayout Spacing="8">
 
-                <Label
+                    <Label
                     Text="ЖЕНСКИЕ ТОРТЫ"
                     FontSize="14"
                     TextColor="#9E9E9E"
                     FontAttributes="Bold" />
 
-                <Border Style="{StaticResource CategoryContainerStyle}">
+                    <Border Style="{StaticResource CategoryContainerStyle}">
 
-                    <CollectionView
+                        <CollectionView
                         ItemsSource="{Binding FemaleCakes}"
                         ItemsLayout="HorizontalList"
                         HorizontalScrollBarVisibility="Never">
 
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
 
-                                <Border Style="{StaticResource ProductCardStyle}">
+                                    <Border Style="{StaticResource ProductCardStyle}">
 
-                                    <VerticalStackLayout Padding="10" Spacing="8">
+                                        <VerticalStackLayout Padding="10" Spacing="8">
 
-                                        <Image
+                                            <Image
                                             Source="{Binding ImageUrl}"
                                             HeightRequest="160"
                                             Aspect="AspectFill" />
 
-                                        <Label
+                                            <Label
                                             Text="{Binding Name}"
                                             HorizontalOptions="Center"
                                             FontAttributes="Bold" />
 
-                                        <Frame
+                                            <Frame
                                             BorderColor="LightGray"
                                             CornerRadius="5"
                                             Padding="0"
@@ -186,7 +189,7 @@
                                             HasShadow="False"
                                             BackgroundColor="Transparent">
 
-                                            <Button
+                                                <Button
                                                 Text="Описание"
                                                 BackgroundColor="White"
                                                 TextColor="Black"
@@ -197,53 +200,53 @@
                                                 Command="{Binding BindingContext.OpenProductCommand,
                                                           Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                 CommandParameter="{Binding .}" />
-                                        </Frame>
-                                    </VerticalStackLayout>
+                                            </Frame>
+                                        </VerticalStackLayout>
 
-                                </Border>
+                                    </Border>
 
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
 
-                    </CollectionView>
+                        </CollectionView>
 
-                </Border>
-            </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
 
-            <!-- ================= ДЕТСКИЕ ТОРТЫ ================= -->
-            <VerticalStackLayout Spacing="8">
+                <!-- ДЕТСКИЕ ТОРТЫ -->
+                <VerticalStackLayout Spacing="8">
 
-                <Label
+                    <Label
                     Text="ДЕТСКИЕ ТОРТЫ"
                     FontSize="14"
                     TextColor="#9E9E9E"
                     FontAttributes="Bold" />
 
-                <Border Style="{StaticResource CategoryContainerStyle}">
+                    <Border Style="{StaticResource CategoryContainerStyle}">
 
-                    <CollectionView
+                        <CollectionView
                         ItemsSource="{Binding KidsCakes}"
                         ItemsLayout="HorizontalList"
                         HorizontalScrollBarVisibility="Never">
 
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
 
-                                <Border Style="{StaticResource ProductCardStyle}">
+                                    <Border Style="{StaticResource ProductCardStyle}">
 
-                                    <VerticalStackLayout Padding="10" Spacing="8">
+                                        <VerticalStackLayout Padding="10" Spacing="8">
 
-                                        <Image
+                                            <Image
                                             Source="{Binding ImageUrl}"
                                             HeightRequest="160"
                                             Aspect="AspectFill" />
 
-                                        <Label
+                                            <Label
                                             Text="{Binding Name}"
                                             HorizontalOptions="Center"
                                             FontAttributes="Bold" />
 
-                                        <Frame
+                                            <Frame
                                             BorderColor="LightGray"
                                             CornerRadius="5"
                                             Padding="0"
@@ -251,7 +254,7 @@
                                             HasShadow="False"
                                             BackgroundColor="Transparent">
 
-                                            <Button
+                                                <Button
                                                 Text="Описание"
                                                 BackgroundColor="White"
                                                 TextColor="Black"
@@ -262,53 +265,53 @@
                                                 Command="{Binding BindingContext.OpenProductCommand,
                                                           Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                 CommandParameter="{Binding .}" />
-                                        </Frame>
-                                    </VerticalStackLayout>
+                                            </Frame>
+                                        </VerticalStackLayout>
 
-                                </Border>
+                                    </Border>
 
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
 
-                    </CollectionView>
+                        </CollectionView>
 
-                </Border>
-            </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
 
-            <!-- ================= СВАДЕБНЫЕ ТОРТЫ ================= -->
-            <VerticalStackLayout Spacing="8">
+                <!-- СВАДЕБНЫЕ ТОРТЫ -->
+                <VerticalStackLayout Spacing="8">
 
-                <Label
+                    <Label
                     Text="СВАДЕБНЫЕ ТОРТЫ"
                     FontSize="14"
                     TextColor="#9E9E9E"
                     FontAttributes="Bold" />
 
-                <Border Style="{StaticResource CategoryContainerStyle}">
+                    <Border Style="{StaticResource CategoryContainerStyle}">
 
-                    <CollectionView
+                        <CollectionView
                         ItemsSource="{Binding WeddingCakes}"
                         ItemsLayout="HorizontalList"
                         HorizontalScrollBarVisibility="Never">
 
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
 
-                                <Border Style="{StaticResource ProductCardStyle}">
+                                    <Border Style="{StaticResource ProductCardStyle}">
 
-                                    <VerticalStackLayout Padding="10" Spacing="8">
+                                        <VerticalStackLayout Padding="10" Spacing="8">
 
-                                        <Image
+                                            <Image
                                             Source="{Binding ImageUrl}"
                                             HeightRequest="300"
                                             Aspect="AspectFill" />
 
-                                        <Label
+                                            <Label
                                             Text="{Binding Name}"
                                             HorizontalOptions="Center"
                                             FontAttributes="Bold" />
 
-                                        <Frame
+                                            <Frame
                                             BorderColor="LightGray"
                                             CornerRadius="5"
                                             Padding="0"
@@ -316,7 +319,7 @@
                                             HasShadow="False"
                                             BackgroundColor="Transparent">
 
-                                            <Button
+                                                <Button
                                                 Text="Описание"
                                                 BackgroundColor="White"
                                                 TextColor="Black"
@@ -327,53 +330,53 @@
                                                 Command="{Binding BindingContext.OpenProductCommand,
                                                           Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                 CommandParameter="{Binding .}" />
-                                        </Frame>
-                                    </VerticalStackLayout>
+                                            </Frame>
+                                        </VerticalStackLayout>
 
-                                </Border>
+                                    </Border>
 
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
 
-                    </CollectionView>
+                        </CollectionView>
 
-                </Border>
-            </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
 
-            <!-- ================= НАБОРЫ ================= -->
-            <VerticalStackLayout Spacing="8">
+                <!-- НАБОРЫ -->
+                <VerticalStackLayout Spacing="8">
 
-                <Label
+                    <Label
                     Text="НАБОРЫ"
                     FontSize="14"
                     TextColor="#9E9E9E"
                     FontAttributes="Bold" />
 
-                <Border Style="{StaticResource CategoryContainerStyle}">
+                    <Border Style="{StaticResource CategoryContainerStyle}">
 
-                    <CollectionView
+                        <CollectionView
                         ItemsSource="{Binding Sets}"
                         ItemsLayout="HorizontalList"
                         HorizontalScrollBarVisibility="Never">
 
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
 
-                                <Border Style="{StaticResource ProductCardStyle}">
+                                    <Border Style="{StaticResource ProductCardStyle}">
 
-                                    <VerticalStackLayout Padding="10" Spacing="8">
+                                        <VerticalStackLayout Padding="10" Spacing="8">
 
-                                        <Image
+                                            <Image
                                             Source="{Binding ImageUrl}"
                                             HeightRequest="160"
                                             Aspect="AspectFill" />
 
-                                        <Label
+                                            <Label
                                             Text="{Binding Name}"
                                             HorizontalOptions="Center"
                                             FontAttributes="Bold" />
 
-                                        <Frame
+                                            <Frame
                                             BorderColor="LightGray"
                                             CornerRadius="5"
                                             Padding="0"
@@ -381,7 +384,7 @@
                                             HasShadow="False"
                                             BackgroundColor="Transparent">
 
-                                            <Button
+                                                <Button
                                                 Text="Описание"
                                                 BackgroundColor="White"
                                                 TextColor="Black"
@@ -392,53 +395,53 @@
                                                 Command="{Binding BindingContext.OpenProductCommand,
                                                           Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                 CommandParameter="{Binding .}" />
-                                        </Frame>
-                                    </VerticalStackLayout>
+                                            </Frame>
+                                        </VerticalStackLayout>
 
-                                </Border>
+                                    </Border>
 
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
 
-                    </CollectionView>
+                        </CollectionView>
 
-                </Border>
-            </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
 
-            <!-- ================= НАПИТКИ ================= -->
-            <VerticalStackLayout Spacing="8">
+                <!-- НАПИТКИ -->
+                <VerticalStackLayout Spacing="8">
 
-                <Label
+                    <Label
                     Text="НАПИТКИ"
                     FontSize="14"
                     TextColor="#9E9E9E"
                     FontAttributes="Bold" />
 
-                <Border Style="{StaticResource CategoryContainerStyle}">
+                    <Border Style="{StaticResource CategoryContainerStyle}">
 
-                    <CollectionView
+                        <CollectionView
                         ItemsSource="{Binding Drinks}"
                         ItemsLayout="HorizontalList"
                         HorizontalScrollBarVisibility="Never">
 
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
 
-                                <Border Style="{StaticResource ProductCardStyle}">
+                                    <Border Style="{StaticResource ProductCardStyle}">
 
-                                    <VerticalStackLayout Padding="10" Spacing="8">
+                                        <VerticalStackLayout Padding="10" Spacing="8">
 
-                                        <Image
+                                            <Image
                                             Source="{Binding ImageUrl}"
                                             HeightRequest="250"
                                             Aspect="AspectFill" />
 
-                                        <Label
+                                            <Label
                                             Text="{Binding Name}"
                                             HorizontalOptions="Center"
                                             FontAttributes="Bold" />
 
-                                        <Frame
+                                            <Frame
                                             BorderColor="LightGray"
                                             CornerRadius="5"
                                             Padding="0"
@@ -446,7 +449,7 @@
                                             HasShadow="False"
                                             BackgroundColor="Transparent">
 
-                                            <Button
+                                                <Button
                                                 Text="Описание"
                                                 BackgroundColor="White"
                                                 TextColor="Black"
@@ -457,19 +460,20 @@
                                                 Command="{Binding BindingContext.OpenProductCommand,
                                                           Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                 CommandParameter="{Binding .}" />
-                                        </Frame>
-                                    </VerticalStackLayout>
+                                            </Frame>
+                                        </VerticalStackLayout>
 
-                                </Border>
+                                    </Border>
 
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
 
-                    </CollectionView>
+                        </CollectionView>
 
-                </Border>
+                    </Border>
+                </VerticalStackLayout>
+
             </VerticalStackLayout>
-
-        </VerticalStackLayout>
-    </ScrollView>
+        </ScrollView>
+    </RefreshView>
 </ContentPage>

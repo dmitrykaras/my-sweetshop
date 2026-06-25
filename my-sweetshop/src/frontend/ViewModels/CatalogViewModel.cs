@@ -19,13 +19,32 @@ namespace my_sweetshop.ViewModels
         public ObservableCollection<Product> Sets { get; } = new();
         public ObservableCollection<Product> Drinks { get; } = new();
 
+        // Свойство для контроля RefreshView
+        private bool _isRefreshing;
+        public bool IsRefreshing
+        {
+            get => _isRefreshing;
+            set
+            {
+                if (_isRefreshing != value)
+                {
+                    _isRefreshing = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public ICommand OpenProductCommand { get; }
+
+        public ICommand RefreshCommand { get; }
 
         public CatalogViewModel(GetProducts apiService)
         {
             _apiService = apiService; // Теперь DI передает сюда настроенный сервис
 
             OpenProductCommand = new Command<Product>(OpenProduct);
+
+            RefreshCommand = new Command(async () => await LoadDataAsync());
 
             // Сразу запускаем загрузку
             _ = LoadDataAsync();
@@ -67,6 +86,7 @@ namespace my_sweetshop.ViewModels
                         case "77777777-7777-7777-7777-777777777777": Drinks.Add(product); break;
                     }
                 }
+                IsRefreshing = false;
             });
         }
 

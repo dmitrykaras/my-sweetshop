@@ -6,6 +6,7 @@ using my_sweetshop.ViewModels.Profile;
 using my_sweetshop.ViewModels.Profile.NewEmailOrName;
 using my_sweetshop.Views.Contact;
 using my_sweetshop.Views.Profile.Cashier;
+using my_sweetshop.Views.Profile.FavoritesProduct;
 using System;
 using System.Linq;
 
@@ -103,11 +104,13 @@ public partial class ProfilePage : ContentPage
         }
     }
 
+    // Нажатие на профиль чтобы его изменить
     private async void OnProfileTapped(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(EditProfilePage));
     }
 
+    // Нажатие на кноку поддержки
     private async void OnHelpTapped(object sender, EventArgs e)
     {
         var shell = Shell.Current;
@@ -123,18 +126,26 @@ public partial class ProfilePage : ContentPage
         }
     }
 
+    // Нажатие на кнопку сайта
     private async void OnSiteTapped(object sender, EventArgs e)
     {
         await Launcher.OpenAsync("https://mysweetshop.ru");
     }
 
-    private async void OnCashierSecretTapped(object sender, EventArgs e)
+    // Нажатие на кнопку избранного
+    private async void OnFavoritesTapped(object sender, EventArgs e)
     {
-        _secretTapCount++;
-        if (_secretTapCount >= 5)
-        {
-            _secretTapCount = 0;
-            await Shell.Current.GoToAsync(nameof(CashierPage));
-        }
+        await Shell.Current.GoToAsync(nameof(FavoritesPage));
     }
+
+    // TODO: сделать админку для кассиров и тд
+    //private async void OnCashierSecretTapped(object sender, EventArgs e)
+    //{
+    //    _secretTapCount++;
+    //    if (_secretTapCount >= 5)
+    //    {
+    //        _secretTapCount = 0;
+    //        await Shell.Current.GoToAsync(nameof(CashierPage));
+    //    }
+    //}
 }

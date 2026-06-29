@@ -19,7 +19,6 @@ namespace my_sweetshop.ViewModels
             set
             {
                 _categoryKey = value;
-                LoadProducts();
             }
         }
 
@@ -28,31 +27,6 @@ namespace my_sweetshop.ViewModels
         public CategoryViewModel()
         {
             OpenProductCommand = new Command<Product>(OpenProduct);
-        }
-
-        void LoadProducts()
-        {
-            Products.Clear();
-
-            // mock-данные, потом будет сервис / API
-            if (CategoryKey == "Desserts")
-            {
-                Products.Add(new Product
-                {
-                    Id = "1",
-                    Name = "Шоколадный торт",
-                    ImageUrl = "cake1.png",
-                    Description = "Насыщенный шоколадный вкус"
-                });
-
-                Products.Add(new Product
-                {
-                    Id = "2",
-                    Name = "Эклер",
-                    ImageUrl = "eclair.png",
-                    Description = "Классический французский десерт"
-                });
-            }
         }
 
         async void OpenProduct(Product product)

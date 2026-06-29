@@ -14,6 +14,7 @@ using my_sweetshop.Views.Contact;
 using my_sweetshop.Views.Main;
 using my_sweetshop.Views.Profile;
 using my_sweetshop.Views.Profile.Cashier;
+using my_sweetshop.Views.Profile.FavoritesProduct;
 using my_sweetshop.Views.Profile.ProfileChanges;
 
 namespace my_sweetshop
@@ -85,6 +86,9 @@ namespace my_sweetshop
             builder.Services.AddHttpClient<ChangeEmail>(c => c.BaseAddress = new Uri(apiBaseUrl))
                 .AddHttpMessageHandler<JwtAuthHandler>();
 
+            builder.Services.AddHttpClient<GetFavoriteProducts>(c => c.BaseAddress = new Uri(apiBaseUrl))
+                .AddHttpMessageHandler<JwtAuthHandler>();
+
             // Вспомогательные сервисы
             builder.Services.AddSingleton<ApiException>();
             builder.Services.AddSingleton<IUserService, UserService>();
@@ -119,7 +123,7 @@ namespace my_sweetshop
             services.AddTransient<ProfilePage>();
             services.AddTransient<EditProfilePage>();
             services.AddTransient<NewEmailPage>();
-            services.AddTransient<FavoritesProduct>();
+            services.AddTransient<FavoritesPage>();
             services.AddTransient<CashierPage>();
             services.AddTransient<AuthStartPage>();
             services.AddTransient<EmailPage>();

@@ -1,5 +1,6 @@
 ﻿using my_sweetshop.Views.Catalog;
 using my_sweetshop.Views.Profile;
+using my_sweetshop.Views.Profile.FavoritesProduct;
 using my_sweetshop.Views.Profile.ProfileChanges;
 
 namespace my_sweetshop
@@ -14,6 +15,7 @@ namespace my_sweetshop
             Routing.RegisterRoute(nameof(EditProfilePage), typeof(EditProfilePage));
             Routing.RegisterRoute(nameof(NewEmailPage), typeof(NewEmailPage));
             Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
+            Routing.RegisterRoute(nameof(FavoritesPage), typeof(FavoritesPage));
         }
     }
 }

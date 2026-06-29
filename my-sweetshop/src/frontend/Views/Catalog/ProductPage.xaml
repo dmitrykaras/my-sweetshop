@@ -5,6 +5,25 @@
     Title="Товар"
     Shell.NavBarIsVisible="True">
 
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="*, Auto" Padding="0,0,16,0" VerticalOptions="Center">
+            <Label 
+                Text="Товар" 
+                FontSize="20" 
+                FontAttributes="Bold" 
+                VerticalTextAlignment="Center" />
+
+            <ImageButton 
+                Grid.Column="1"
+                x:Name="FavoriteBtn"
+                Clicked="OnFavoriteClicked"
+                WidthRequest="40" 
+                HeightRequest="40" 
+                HorizontalOptions="End" 
+                BackgroundColor="Transparent"/>
+        </Grid>
+    </Shell.TitleView>
+
     <ScrollView>
         <VerticalStackLayout Padding="16" Spacing="16">
 

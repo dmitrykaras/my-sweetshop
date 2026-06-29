@@ -64,7 +64,7 @@ namespace my_sweetshop.ViewModels
                     // Маппинг (превращаем Dto в Product)
                     var product = new Product
                     {
-                        Id = dto.Id.ToString(),
+                        Id = dto.Id,
                         Name = dto.Name,
                         Description = dto.Description ?? "",
                         Price = dto.Price ?? 0,

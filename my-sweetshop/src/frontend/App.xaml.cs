@@ -16,10 +16,10 @@ public partial class App : Application
         _userService = userService;
         _authSession = authSession;
 
-        // 1. Устанавливаем заставку как стартовую страницу
+        // Устанавливаем заставку как стартовую страницу
         MainPage = new SplashPage();
 
-        // 2. Запускаем единый процесс инициализации
+        // Запускаем единый процесс инициализации
         StartWork();
     }
 
@@ -30,10 +30,10 @@ public partial class App : Application
             // Небольшая задержка для отображения индикатора на SplashPage
             await Task.Delay(500);
 
-            // 3. Восстанавливаем сессию (токен) из SecureStorage
+            // Восстанавливаем сессию (токен) из SecureStorage
             await _authSession.InitializeAsync();
 
-            // 4. Если токен есть, проверяем его валидность запросом к профилю
+            // Если токен есть, проверяем его валидность запросом к профилю
             if (_authSession.IsAuthorized)
             {
                 try
@@ -54,7 +54,7 @@ public partial class App : Application
         }
         finally
         {
-            // 5. Переключаем интерфейс
+            // Переключаем интерфейс
             UpdateMainPage();
         }
     }

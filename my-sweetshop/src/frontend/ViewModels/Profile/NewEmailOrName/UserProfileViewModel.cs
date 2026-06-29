@@ -289,7 +289,7 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             {
                 await LoadUserAsync();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await ShowToast("Не удалось обновить данные");
             }

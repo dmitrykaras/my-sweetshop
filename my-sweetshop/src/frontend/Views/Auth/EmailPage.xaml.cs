@@ -16,11 +16,13 @@ public partial class EmailPage : ContentPage
         _codePageFactory = codePageFactory;
     }
 
+    // Нажатие "Назад"
     private async void OnClose(object sender, EventArgs e)
     {
         await Navigation.PopAsync();
     }
 
+    // Нажатие на кнопку "Продолжить"
     private async void OnContinue(object sender, EventArgs e)
     {
         var email = EmailEntry.Text?.Trim();
@@ -79,9 +81,10 @@ public partial class EmailPage : ContentPage
         EmailEntry.Focus(); // ставим фокус, клавиатура появится на Android/iOS
     }
 
+    // Модель валидации почты
     public class EmailValidationModel
     {
         [EmailAddress(ErrorMessage = "Некорректный формат email")]
-        public string Email { get; set; }
+        public required string Email { get; set; }
     }
 }

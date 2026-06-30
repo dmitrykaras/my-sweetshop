@@ -7,6 +7,7 @@ public partial class AuthStartPage : ContentPage
         InitializeComponent();
     }
 
+    // Нажатие на кнопку "Вход / Регистрация"
     private async void OnStartClicked(object sender, EventArgs e)
     {
         var emailPage = MauiProgram.ServiceProvider.GetService<EmailPage>()!;

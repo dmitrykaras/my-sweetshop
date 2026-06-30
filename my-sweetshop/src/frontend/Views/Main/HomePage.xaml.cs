@@ -12,8 +12,8 @@ namespace my_sweetshop.Views.Main
         {
             if (sender is VisualElement v)
             {
-                await v.ScaleTo(0.95, 80);
-                await v.ScaleTo(1, 80);
+                await v.ScaleToAsync(0.95, 80);
+                await v.ScaleToAsync(1, 80);
             }
         }
     }

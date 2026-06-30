@@ -10,18 +10,21 @@ using MySweetShop.Api.Services;
 using System.Text;
 using DotNetEnv;
 
-DotNetEnv.Env.Load();
+var currentDir = Directory.GetCurrentDirectory();
+var envPath = File.Exists(Path.Combine(currentDir, ".env"))
+    ? Path.Combine(currentDir, ".env")
+    : File.Exists(Path.Combine(currentDir, "..", ".env")) // если запустили из подпапки
+        ? Path.Combine(currentDir, "..", ".env")
+        : null;
+
+if (envPath != null)
+{
+    DotNetEnv.Env.Load(envPath);
+}
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Если используем DotNetEnv для локальной разработки
-if (builder.Environment.IsDevelopment())
-{
-    var envPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
-    if (File.Exists(envPath))
-    {
-        DotNetEnv.Env.Load(envPath);
-    }
-}
+// Загружаем переменные среды в конфигурацию .NET
 builder.Configuration.AddEnvironmentVariables();
 
 // Контроллеры и Swagger

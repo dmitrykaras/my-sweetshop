@@ -71,7 +71,7 @@ public partial class CompletionProfilePage : ContentPage
                 {
                     // «апрашиваем AppShell из DI со всеми свежими зависимост€ми и токенами
                     var freshAppShell = _serviceProvider.GetRequiredService<AppShell>();
-                    Application.Current.MainPage = freshAppShell;
+                    Application.Current.Windows[0].Page = freshAppShell;
                 }
             });
         }
@@ -83,6 +83,7 @@ public partial class CompletionProfilePage : ContentPage
         }
     }
 
+    // ќтображение всплывающих уведомлений
     async Task ShowToast(string text)
     {
         var toast = Toast.Make(text, ToastDuration.Short);

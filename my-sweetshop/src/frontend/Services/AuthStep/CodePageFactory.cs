@@ -14,5 +14,6 @@ public class CodePageFactory
         _session = session;
     }
 
+    // Обёртка для удобности (передаём DI сразу в страницу обходя DI в MauiProgram.cs)
     public CodePage Create(string email) => new CodePage(_authApi, _session, email);
 }

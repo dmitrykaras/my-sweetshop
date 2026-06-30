@@ -87,7 +87,7 @@ public partial class NewEmailPage : ContentPage
             }
             // Если успех — здесь обычно идет навигация, которую делает VM
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             ShowError("Ошибка связи с сервером");
             ClearCode();

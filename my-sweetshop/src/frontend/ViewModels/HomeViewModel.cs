@@ -31,6 +31,7 @@ namespace my_sweetshop.ViewModels
             OpenPointsCommand = new Command(NavigateToPoints);
         }
 
+        // Безопасное открытие ссылки
         private async Task SafeOpenUrl(string url)
         {
             try
@@ -55,14 +56,17 @@ namespace my_sweetshop.ViewModels
         private void NavigateToCatalog()
         {
             var shell = Shell.Current;
-            var tabBar = shell?.Items.FirstOrDefault();
+            if (shell == null) return;
+
+            var tabBar = shell.Items.FirstOrDefault();
             if (tabBar == null) return;
 
             var catalogSection = tabBar.Items.FirstOrDefault(section => section.Title == "Каталог");
             if (catalogSection != null)
             {
                 shell.CurrentItem = tabBar;
-                shell.CurrentItem.CurrentItem = catalogSection;
+
+                shell.CurrentItem?.CurrentItem = catalogSection;
             }
         }
 
@@ -70,14 +74,17 @@ namespace my_sweetshop.ViewModels
         private void NavigateToPoints()
         {
             var shell = Shell.Current;
-            var tabBar = shell?.Items.FirstOrDefault();
+            if (shell == null) return;
+
+            var tabBar = shell.Items.FirstOrDefault();
             if (tabBar == null) return;
 
             var contactSection = tabBar.Items.FirstOrDefault(section => section.Title == "Профиль");
             if (contactSection != null)
             {
                 shell.CurrentItem = tabBar;
-                shell.CurrentItem.CurrentItem = contactSection;
+                
+                shell.CurrentItem?.CurrentItem = contactSection;
             }
         }
     }

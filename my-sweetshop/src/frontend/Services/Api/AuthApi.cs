@@ -7,14 +7,9 @@ using System.Text.Json;
 
 namespace my_sweetshop.Services.Api
 {
-    public class AuthApi
+    public class AuthApi(HttpClient http)
     {
-        private readonly HttpClient _http;
-
-        public AuthApi(HttpClient http)
-        {
-            _http = http;
-        }
+        private readonly HttpClient _http = http;
 
         // Запрос кода подтвеждения
         public async Task RequestCodeAsync(string email)

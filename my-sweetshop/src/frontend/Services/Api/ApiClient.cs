@@ -7,16 +7,10 @@ using System.Text.Json;
 
 namespace my_sweetshop.Services.Api
 {
-    public class ApiClient
+    public class ApiClient(HttpClient http, AuthSession session)
     {
-        private readonly HttpClient _http;
-        private readonly AuthSession _session;
-
-        public ApiClient(HttpClient http, AuthSession session)
-        {
-            _http = http;
-            _session = session;
-        }
+        private readonly HttpClient _http = http;
+        private readonly AuthSession _session = session;
 
         public Task<HttpResponseMessage> GetAsync(string url)
             => _http.GetAsync(url);

@@ -101,6 +101,7 @@ public class JwtAuthHandler : DelegatingHandler
         }
     }
 
+    // Клонирование запроса для повторной отправки с уже новым (свежим) токеном
     private async Task<HttpRequestMessage> CloneRequestAsync(HttpRequestMessage request)
     {
         var clone = new HttpRequestMessage(request.Method, request.RequestUri) { Version = request.Version };

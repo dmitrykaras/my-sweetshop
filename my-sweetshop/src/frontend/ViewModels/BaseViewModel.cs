@@ -4,13 +4,14 @@ namespace my_sweetshop.ViewModels
 {
     public partial class BaseViewModel : ObservableObject
     {
+        // Вместо приватных полей объявляем публичные partial свойства
         [ObservableProperty]
-        private bool _isBusy;
+        public partial bool IsBusy { get; set; }
 
         [ObservableProperty]
-        private bool _isRefreshing;
+        public partial bool IsRefreshing { get; set; }
 
         [ObservableProperty]
-        private string _title = string.Empty;
+        public partial string Title { get; set; } = string.Empty;
     }
 }

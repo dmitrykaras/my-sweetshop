@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 
 namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
 {
-    // ОБЯЗАТЕЛЬНО добавляем partial
     public partial class UserProfileViewModel : BaseViewModel
     {
         private readonly IUserService _userService;
@@ -29,46 +28,44 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
         private readonly int _emailCooldownSeconds = 300;
         private readonly int _profileCooldownSeconds = 120;
 
-        // Генерируемые св-ва
-        // Атрибут [NotifyCanExecuteChangedFor] автоматически заставляет кнопку перепроверять свою доступность при изменении поля
+        // Атрибут [NotifyCanExecuteChangedFor] автоматически заставляет команду перепроверять свою доступность
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(GoToChangeEmailCommand))]
+        public partial bool IsEmailCooldownActive { get; set; }
+
+        [ObservableProperty]
+        public partial string EmailCooldownText { get; set; } = string.Empty;
+
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+        public partial bool IsProfileCooldownActive { get; set; }
+
+        [ObservableProperty]
+        public partial string ProfileCooldownText { get; set; } = string.Empty;
+
+        [ObservableProperty]
+        public partial string CurrentFirstname { get; set; } = string.Empty;
+
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+        public partial string NewFirstname { get; set; } = string.Empty;
+
+        [ObservableProperty]
+        public partial string CurrentLastname { get; set; } = string.Empty;
+
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+        public partial string NewLastname { get; set; } = string.Empty;
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(GoToChangeEmailCommand))]
-        private bool _isEmailCooldownActive;
+        public partial string NewEmail { get; set; } = string.Empty;
 
         [ObservableProperty]
-        private string _emailCooldownText = string.Empty;
+        public partial string CurrentEmail { get; set; } = string.Empty;
 
         [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-        private bool _isProfileCooldownActive;
-
-        [ObservableProperty]
-        private string _profileCooldownText = string.Empty;
-
-        [ObservableProperty]
-        private string _currentFirstname = string.Empty;
-
-        [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-        private string _newFirstname = string.Empty;
-
-        [ObservableProperty]
-        private string _currentLastname = string.Empty;
-
-        [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-        private string _newLastname = string.Empty;
-
-        [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(GoToChangeEmailCommand))]
-        private string _newEmail = string.Empty;
-
-        [ObservableProperty]
-        private string _currentEmail = string.Empty;
-
-        [ObservableProperty]
-        private bool _isLoaded;
+        public partial bool IsLoaded { get; set; }
 
         public UserProfileViewModel(IUserService userService, EmailCache emailCache, ChangeEmail changeEmail,
             AuthSession session, IProfileService profileService)
@@ -103,9 +100,9 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
         }
 
         // Генерируемые команды
-
         private bool CanExecuteSave() => !IsBusy && CanSave() && !IsProfileCooldownActive;
 
+        // Сохранение изменений профиля
         [RelayCommand(CanExecute = nameof(CanExecuteSave))]
         private async Task SaveAsync()
         {
@@ -140,8 +137,8 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
 
                 if (updatedUser != null)
                 {
-                    CurrentFirstname = updatedUser.FirstName;
-                    CurrentLastname = updatedUser.LastName;
+                    CurrentFirstname = updatedUser.FirstName!;
+                    CurrentLastname = updatedUser.LastName!;
                     _originalUser = updatedUser;
 
                     await ShowToast("Профиль обновлен");
@@ -166,6 +163,7 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
 
         private bool CanExecuteGoToChangeEmail() => !IsEmailCooldownActive && IsValidEmail(NewEmail);
 
+        // Валидация и логика доступности почты для её смены
         [RelayCommand(CanExecute = nameof(CanExecuteGoToChangeEmail))]
         private async Task GoToChangeEmailAsync()
         {
@@ -197,7 +195,6 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
         }
 
         // Методы получения данных
-
         public async Task LoadUserAsync()
         {
             try
@@ -214,8 +211,8 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
                 }
 
                 _originalUser = user;
-                CurrentFirstname = _originalUser.FirstName;
-                CurrentLastname = _originalUser.LastName;
+                CurrentFirstname = _originalUser.FirstName!;
+                CurrentLastname = _originalUser.LastName!;
 
                 var emailToShow = !string.IsNullOrWhiteSpace(_originalUser.Email)
                                   ? _originalUser.Email
@@ -236,12 +233,14 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             }
         }
 
+        // Очистка полей имени и фамилии
         private void ClearEntryString()
         {
             NewFirstname = string.Empty;
             NewLastname = string.Empty;
         }
 
+        // Очистка данных
         public void ClearData()
         {
             _originalUser = null;
@@ -254,6 +253,7 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             IsLoaded = false;
         }
 
+        // Запуск кулдауна
         private async Task StartCooldown(int seconds, Action<bool> setStatus, Action<string> setText, bool isEmail)
         {
             var endTime = DateTime.Now.AddSeconds(seconds);
@@ -274,6 +274,7 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             setStatus(false);
         }
 
+        // Всплывающие уведомления
         private async Task ShowToast(string text)
         {
             var toast = Toast.Make(text, ToastDuration.Short);
@@ -281,7 +282,6 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
         }
 
         // Команда для обновления, которая гарантированно выключит спиннер
-
         [RelayCommand]
         private async Task RefreshPageAsync()
         {

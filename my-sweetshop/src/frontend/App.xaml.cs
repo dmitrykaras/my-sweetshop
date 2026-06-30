@@ -16,11 +16,14 @@ public partial class App : Application
         _userService = userService;
         _authSession = authSession;
 
-        // Устанавливаем заставку как стартовую страницу
-        MainPage = new SplashPage();
-
         // Запускаем единый процесс инициализации
         StartWork();
+    }
+
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        // Создаем окно и сразу задаем ему корневую страницу
+        return new Window(new SplashPage());
     }
 
     private async void StartWork()
@@ -59,26 +62,28 @@ public partial class App : Application
         }
     }
 
-    // Универсальный метод переключения между Shell и Авторизацией.
+    // Универсальный метод переключения между Shell и Авторизацией
     public void UpdateMainPage()
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {
-            if (_authSession.IsAuthorized)
+            var currentWindow = Application.Current?.Windows.Count > 0
+            ? Application.Current.Windows[0]
+            : null;
+
+            if (currentWindow != null)
             {
-                // Основное приложение
-                MainPage = new AppShell();
-            }
-            else
-            {
-                // Стек авторизации
-                MainPage = new NavigationPage(new AuthStartPage());
+                if (_authSession.IsAuthorized)
+                {
+                    // Основное приложение
+                    currentWindow.Page = new AppShell();
+                }
+                else
+                {
+                    // Стек авторизации
+                    currentWindow.Page = new NavigationPage(new AuthStartPage());
+                }
             }
         });
-    }
-
-    protected override void OnStart()
-    {
-        // Вся логика теперь управляется через StartWork
     }
 }

@@ -27,22 +27,34 @@
                    TextColor="Black" />
 
             <!-- Карточка с QR-кодом для скидок -->
-            <Frame CornerRadius="16" Padding="16" BackgroundColor="White" HasShadow="True">
+            <Border Padding="16" 
+                Background="White">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+
+                <Border.Shadow>
+                    <Shadow Offset="0,2"
+                        Radius="5"
+                        Opacity="0.15"
+                        Brush="Black" />
+                </Border.Shadow>
+
                 <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
                     <Label Text="Скидочный QR-код" FontAttributes="Bold" HorizontalOptions="Center" />
 
                     <Image Source="universal_secret_qr.png" 
-               WidthRequest="150" 
-               HeightRequest="150" 
-               HorizontalOptions="Center"
-               Aspect="AspectFit" />
+                       WidthRequest="150" 
+                       HeightRequest="150" 
+                       HorizontalOptions="Center"
+                       Aspect="AspectFit" />
 
                     <Label Text="Покажите кассиру для начисления или списания баллов" 
-               FontSize="12" 
-               TextColor="Gray" 
-               HorizontalTextAlignment="Center" />
+                       FontSize="12" 
+                       TextColor="Gray" 
+                       HorizontalTextAlignment="Center" />
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Кнопка заказа доставки через Telegram -->
             <Button Text="Заказать доставку" 

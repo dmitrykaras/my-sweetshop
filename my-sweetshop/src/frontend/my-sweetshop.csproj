@@ -75,7 +75,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Views\Profile\FavoritesProduct\FavoritesPage.xaml">
+	  <MauiXaml Update="Views\Profile\FavoritesPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Profile\ProfileChanges\EditProfilePage.xaml">

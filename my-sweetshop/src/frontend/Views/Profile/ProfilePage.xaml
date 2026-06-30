@@ -15,7 +15,7 @@
         <ScrollView>
             <VerticalStackLayout Padding="20" Spacing="18">
 
-                <!-- Заголовок и кнопка выхода (Grid размещает их на одном уровне) -->
+                <!-- Заголовок и кнопка выхода -->
                 <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
 
                     <!-- Заголовок -->
@@ -120,7 +120,7 @@
                     </Border.Shadow>
                 </Border>
 
-                <!-- Кнопки Помощь / Сайт -->
+                <!-- Кнопки Помощь/Сайт -->
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="14">
                     <!-- Помощь -->
                     <Border Style="{StaticResource CardStyle}"

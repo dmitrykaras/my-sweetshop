@@ -55,12 +55,12 @@ project.fragment.lock.json
 # ===============================
 # Backend / Web / Tools
 # ===============================
-## Окружение и секреты (ВАЖНО!)
+## Окружение и секреты
 .env
 .env.*
 !.env.example
 
-## Node.js (если есть скрипты или админка)
+## Node.js
 node_modules/
 .ntvs_analysis.dat
 

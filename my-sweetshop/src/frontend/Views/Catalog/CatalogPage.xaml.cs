@@ -12,6 +12,7 @@ namespace my_sweetshop.Views.Catalog
             BindingContext = vm;
         }
 
+        // Нажатие на кнопку "Описание"
         private async void OnOpenProductClicked(object sender, EventArgs e)
         {
             await Shell.Current.GoToAsync(nameof(ProductPage));

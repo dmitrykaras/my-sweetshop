@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MySweetShop.Api.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MySweetShop.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260628084903_FixPendingChanges")]
+    partial class FixPendingChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -165,6 +168,9 @@ namespace MySweetShop.Api.Migrations
                     b.Property<string>("ImageKey")
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsFavorite")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -184,6 +190,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("aaaa1111-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Миндальный бисквит + хрустящий слой + начинка из вишни и малины + фисташковый мусс",
+                            IsFavorite = false,
                             Name = "Вишня-фисташка"
                         },
                         new
@@ -191,6 +198,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("aaaa1112-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Шоколадный бисквит + хрустящий слой + ганаш + шоколадный мусс",
+                            IsFavorite = false,
                             Name = "Два шоколада"
                         },
                         new
@@ -198,6 +206,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("aaaa1113-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Бисквит из грецкого ореха + крем с сыром дорблю + начинка из груши + мусс с белым шоколадом",
+                            IsFavorite = false,
                             Name = "Дорблю-грецкий орех"
                         },
                         new
@@ -205,6 +214,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("aaaa1114-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Шоколадный брауни + креме с молочным шоколадом + мусс с манго и маракуйей",
+                            IsFavorite = false,
                             Name = "Манго-шоколад-маракуйя"
                         },
                         new
@@ -212,6 +222,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("aaaa1115-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Авторский Наполеон с нежным сливочным кремом на белом бельгийском шоколаде",
+                            IsFavorite = false,
                             Name = "Наполеон"
                         },
                         new
@@ -219,6 +230,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("aaaa1116-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Основа из песочного печенья + крем чиз с добавлением смородины + смородина в украшении сверху",
+                            IsFavorite = false,
                             Name = "Чизкейк чёрная смородина"
                         },
                         new
@@ -226,6 +238,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("aaaa1117-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Бисквит красный бархат + хрустящий слой + йогуртовый мусс",
+                            IsFavorite = false,
                             Name = "Красный бархат"
                         },
                         new
@@ -233,6 +246,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("aaaa1118-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Нежнейшее безе + взбитые сливки + ягоды по сезону",
+                            IsFavorite = false,
                             Name = "Павлова"
                         },
                         new
@@ -240,6 +254,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("aaaa1119-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Миндальный тарт + солёная карамель + микс орехов",
+                            IsFavorite = false,
                             Name = "Тарт с орехами"
                         },
                         new
@@ -247,6 +262,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("aaaa1120-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Миндальный тарт + крем чиз + ягоды",
+                            IsFavorite = false,
                             Name = "Тарт с ягодами"
                         },
                         new
@@ -254,6 +270,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("aaaa1121-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Хрустящая трубочка + нежный крем с солёной карамелью",
+                            IsFavorite = false,
                             Name = "Трубочка"
                         },
                         new
@@ -261,6 +278,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("aaaa1122-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Вкус: Ванильная, Шоколадкая, Фисташковая",
+                            IsFavorite = false,
                             Name = "Картошка в ассортименте"
                         },
                         new
@@ -268,6 +286,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("aaaa1123-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Нежнейший эклер с заварным кремом. Вкус: Ванильный, Шоколадный, Карамельный, Фисташковый",
+                            IsFavorite = false,
                             Name = "Эклер в ассортименте"
                         },
                         new
@@ -275,30 +294,35 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("aaaa1124-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Три вида орехов с воздушными рисовыми шариками, хрустящей вафлей в бельгийском шоколаде",
+                            IsFavorite = false,
                             Name = "Батончик ореховый"
                         },
                         new
                         {
                             Id = new Guid("aaaa1125-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            IsFavorite = false,
                             Name = "Макарон в ассортименте"
                         },
                         new
                         {
                             Id = new Guid("aaaa1126-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            IsFavorite = false,
                             Name = "Ириска"
                         },
                         new
                         {
                             Id = new Guid("aaaa1127-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            IsFavorite = false,
                             Name = "Пончик"
                         },
                         new
                         {
                             Id = new Guid("aaaa1128-aaaa-1111-aaaa-aaaaaaaaaaaa"),
                             CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            IsFavorite = false,
                             Name = "Эстерхази"
                         },
                         new
@@ -306,6 +330,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("bbbb1111-bbbb-1111-bbbb-bbbbbbbbbbbb"),
                             CategoryId = new Guid("22222222-2222-2222-2222-222222222222"),
                             Description = "Начинки муссовых тортов: Зайкина радость, Новый медовик, Бейлиз, Два шоколада, Шоколад-манго-маракуйя, Клубника-персик-сливки, Груша-карамель, Фундук-карамель, Вишнёвый или клубничный йогурт",
+                            IsFavorite = false,
                             Name = "Муссовый торт"
                         },
                         new
@@ -313,6 +338,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("bbbb1112-bbbb-1111-bbbb-bbbbbbbbbbbb"),
                             CategoryId = new Guid("22222222-2222-2222-2222-222222222222"),
                             Description = "Начинки бисквитных тортов: Фруктовый, Красный бархат, Сникерс, Рафаэлло",
+                            IsFavorite = false,
                             Name = "Бисквитный торт"
                         },
                         new
@@ -320,6 +346,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("cccc1111-cccc-1111-cccc-cccccccccccc"),
                             CategoryId = new Guid("33333333-3333-3333-3333-333333333333"),
                             Description = "Начинки муссовых тортов: Зайкина радость, Новый медовик, Бейлиз, Два шоколада, Шоколад-манго-маракуйя, Клубника-персик-сливки, Груша-карамель, Фундук-карамель, Вишнёвый или клубничный йогурт",
+                            IsFavorite = false,
                             Name = "Муссовый торт"
                         },
                         new
@@ -327,6 +354,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("cccc1112-cccc-1111-cccc-cccccccccccc"),
                             CategoryId = new Guid("33333333-3333-3333-3333-333333333333"),
                             Description = "Начинки бисквитных тортов: Фруктовый, Красный бархат, Сникерс, Рафаэлло",
+                            IsFavorite = false,
                             Name = "Бисквитный торт"
                         },
                         new
@@ -334,6 +362,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("dddd1111-dddd-1111-dddd-dddddddddddd"),
                             CategoryId = new Guid("44444444-4444-4444-4444-444444444444"),
                             Description = "Начинки муссовых тортов: Зайкина радость, Новый медовик, Бейлиз, Два шоколада, Шоколад-манго-маракуйя, Клубника-персик-сливки, Груша-карамель, Фундук-карамель, Вишнёвый или клубничный йогурт",
+                            IsFavorite = false,
                             Name = "Муссовый торт"
                         },
                         new
@@ -341,6 +370,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("dddd1112-dddd-1111-dddd-dddddddddddd"),
                             CategoryId = new Guid("44444444-4444-4444-4444-444444444444"),
                             Description = "Начинки бисквитных тортов: Фруктовый, Красный бархат, Сникерс, Рафаэлло",
+                            IsFavorite = false,
                             Name = "Бисквитный торт"
                         },
                         new
@@ -348,6 +378,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("eeee1111-eeee-1111-eeee-eeeeeeeeeeee"),
                             CategoryId = new Guid("55555555-5555-5555-5555-555555555555"),
                             Description = "Начинки бисквитных тортов: Фруктовый, Красный бархат, Сникерс, Рафаэлло",
+                            IsFavorite = false,
                             Name = "Свадебный торт 2 яруса"
                         },
                         new
@@ -355,6 +386,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("eeee1112-eeee-1111-eeee-eeeeeeeeeeee"),
                             CategoryId = new Guid("55555555-5555-5555-5555-555555555555"),
                             Description = "Начинки бисквитных тортов: Фруктовый, Красный бархат, Сникерс, Рафаэлло",
+                            IsFavorite = false,
                             Name = "Свадебный торт 3 яруса"
                         },
                         new
@@ -362,12 +394,14 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("eeee1113-eeee-1111-eeee-eeeeeeeeeeee"),
                             CategoryId = new Guid("55555555-5555-5555-5555-555555555555"),
                             Description = "Начинки бисквитных тортов: Фруктовый, Красный бархат, Сникерс, Рафаэлло",
+                            IsFavorite = false,
                             Name = "Свадебный торт + капкейки"
                         },
                         new
                         {
                             Id = new Guid("ffff1111-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
+                            IsFavorite = false,
                             Name = "Трюфель 9шт"
                         },
                         new
@@ -375,6 +409,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("ffff1112-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
                             Description = "4 любых пирожных на ваш выбор в одном наборе",
+                            IsFavorite = false,
                             Name = "Ассорти из 4-х пирожных"
                         },
                         new
@@ -382,6 +417,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("ffff1113-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
                             Description = "Макарон в ассортименте и свежие цветы",
+                            IsFavorite = false,
                             Name = "Макарон 4шт + цветы"
                         },
                         new
@@ -389,6 +425,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("ffff1114-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
                             Description = "Макарон 6шт в ассортименте и свежайшие цветы",
+                            IsFavorite = false,
                             Name = "Макарон 6шт + цветы"
                         },
                         new
@@ -396,6 +433,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("ffff1115-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
                             Description = "Макарон и зефир в ассортименте и цветы на выбор",
+                            IsFavorite = false,
                             Name = "Макарон 6шт + зефир 9шт + цветы"
                         },
                         new
@@ -403,6 +441,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("ffff1116-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
                             Description = "Макарон в ассортименте + вкуснейший зефир + цветы",
+                            IsFavorite = false,
                             Name = "Макарон 8шт + зефир 8шт + цветы"
                         },
                         new
@@ -410,12 +449,14 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("ffff1117-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
                             Description = "Внешний вид может отличаться",
+                            IsFavorite = false,
                             Name = "Капкейк 4шт"
                         },
                         new
                         {
                             Id = new Guid("ffff1118-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
+                            IsFavorite = false,
                             Name = "Капкейки 6шт"
                         },
                         new
@@ -423,6 +464,7 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("ffff1119-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
                             Description = "Внешний вид может отличаться",
+                            IsFavorite = false,
                             Name = "Капкейки 9шт + макарон 6шт"
                         },
                         new
@@ -430,54 +472,63 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("ffff1120-ffff-1111-ffff-ffffffffffff"),
                             CategoryId = new Guid("66666666-6666-6666-6666-666666666666"),
                             Description = "Внешний вид может отличаться",
+                            IsFavorite = false,
                             Name = "Капкейк 12шт"
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111111"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
+                            IsFavorite = false,
                             Name = "Эспрессо 30 мл."
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111112"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
+                            IsFavorite = false,
                             Name = "Двойной эспрессо"
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111113"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
+                            IsFavorite = false,
                             Name = "Американо 130 мл."
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111114"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
+                            IsFavorite = false,
                             Name = "Капучино 250/300 мл."
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111115"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
+                            IsFavorite = false,
                             Name = "Латте 250/300 мл."
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111116"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
+                            IsFavorite = false,
                             Name = "Латте макиато 250/300 мл."
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111117"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
+                            IsFavorite = false,
                             Name = "Флэт Уайт 250/300 мл."
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111118"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
+                            IsFavorite = false,
                             Name = "Чай в ассортименте 350 мл."
                         },
                         new
@@ -485,54 +536,63 @@ namespace MySweetShop.Api.Migrations
                             Id = new Guid("88888888-1111-1111-8888-111111111119"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
                             Description = "Свежевыжатый сок апельсина или грейпфрута",
+                            IsFavorite = false,
                             Name = "Фреш 300 мл."
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111120"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
+                            IsFavorite = false,
                             Name = "Молочный коктейль 350 мл."
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111121"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
+                            IsFavorite = false,
                             Name = "Горячий шоколад 250 мл."
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111122"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
+                            IsFavorite = false,
                             Name = "Сок с трубочкой 300 мл."
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111123"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
+                            IsFavorite = false,
                             Name = "Добрый апельсин 300 мл."
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111124"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
+                            IsFavorite = false,
                             Name = "Добрый кола 300 мл."
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111125"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
+                            IsFavorite = false,
                             Name = "Спрайт 500 мл."
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111126"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
+                            IsFavorite = false,
                             Name = "Pulpy 500 мл."
                         },
                         new
                         {
                             Id = new Guid("88888888-1111-1111-8888-111111111127"),
                             CategoryId = new Guid("77777777-7777-7777-7777-777777777777"),
+                            IsFavorite = false,
                             Name = "BonAqua 500 мл."
                         });
                 });
@@ -604,18 +664,21 @@ namespace MySweetShop.Api.Migrations
 
             modelBuilder.Entity("UserFavorite", b =>
                 {
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("UserId", "ProductId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserFavorites");
                 });

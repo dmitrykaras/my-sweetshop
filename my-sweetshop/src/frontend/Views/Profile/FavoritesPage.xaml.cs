@@ -29,7 +29,7 @@ namespace my_sweetshop.Views.Profile.FavoritesProduct
         {
             try
             {
-                // Достаем токен
+                // Запрашиваем токен
                 string? token = await SecureStorage.Default.GetAsync("auth_token");
 
                 if (string.IsNullOrEmpty(token))

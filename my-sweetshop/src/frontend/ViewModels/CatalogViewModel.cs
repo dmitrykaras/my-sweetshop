@@ -50,6 +50,7 @@ namespace my_sweetshop.ViewModels
             _ = LoadDataAsync();
         }
 
+        // Загрузка данных продуктов
         private async Task LoadDataAsync()
         {
             var dtos = await _apiService.GetProductsAsync();
@@ -64,8 +65,8 @@ namespace my_sweetshop.ViewModels
                     // Маппинг (превращаем Dto в Product)
                     var product = new Product
                     {
-                        Id = dto.Id,
-                        Name = dto.Name,
+                        Id = dto.Id!,
+                        Name = dto.Name!,
                         Description = dto.Description ?? "",
                         Price = dto.Price ?? 0,
                         ImageUrl = dto.ImageUrl ?? "placeholder.png",
@@ -90,12 +91,14 @@ namespace my_sweetshop.ViewModels
             });
         }
 
+        // Очистка всех категорий
         private void ClearAll()
         {
             Desserts.Clear(); MaleCakes.Clear(); FemaleCakes.Clear();
             KidsCakes.Clear(); WeddingCakes.Clear(); Sets.Clear(); Drinks.Clear();
         }
 
+        // Нажатие на товар
         async void OpenProduct(Product product)
         {
             await Shell.Current.GoToAsync(nameof(ProductPage), new Dictionary<string, object>

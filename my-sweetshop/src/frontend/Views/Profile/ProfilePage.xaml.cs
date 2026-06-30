@@ -14,7 +14,6 @@ namespace my_sweetshop.Views.Profile;
 
 public partial class ProfilePage : ContentPage
 {
-    private int _secretTapCount = 0;
     private readonly IProfileService _profileService;
 
     public ProfilePage(EditProfileRootViewModel vm, IProfileService profileService)
@@ -31,7 +30,7 @@ public partial class ProfilePage : ContentPage
 
         if (BindingContext is EditProfileRootViewModel vm && vm.Profile != null)
         {
-            // Если данные для этой сессии еще НЕ были загружены — дергаем сервер
+            // Если данные для этой сессии еще не были загружены — запрашиваем у сервера
             if (!vm.Profile.IsLoaded)
             {
                 await vm.Profile.LoadUserAsync();
@@ -42,12 +41,16 @@ public partial class ProfilePage : ContentPage
     // Метод выхода из аккаунта
     private async void OnLogoutTapped(object sender, EventArgs e)
     {
+        // Получаем текущую страницу активного окна для проверки
+        var currentPage = this.Window?.Page;
+
         // Проверка на случай, если процесс выхода уже запущен
-        if (Application.Current?.MainPage is not Shell && Application.Current?.MainPage is not NavigationPage)
+        if (currentPage is not Shell && currentPage is not NavigationPage)
             return;
 
         bool confirm = await DisplayAlertAsync("Выход", "Вы действительно хотите выйти из профиля?", "Выйти", "Отмена");
-        var authSession = Handler.MauiContext.Services.GetService<my_sweetshop.Services.Api.AuthSession>();
+
+        var authSession = Handler?.MauiContext?.Services.GetService<my_sweetshop.Services.Api.AuthSession>();
 
         if (!confirm)
             return;
@@ -67,12 +70,6 @@ public partial class ProfilePage : ContentPage
                 vm.Profile?.ClearData();
             }
 
-            // Очистка сессии
-            if (authSession != null)
-            {
-                await authSession.LogoutAsync();
-            }
-
             // Очищаем кэш профиля
             if (_profileService != null)
             {
@@ -85,16 +82,22 @@ public partial class ProfilePage : ContentPage
             SecureStorage.Default.Remove("refresh_token");
             Preferences.Default.Remove("is_logged_in");
 
-            // Смена MainPage в главном потоке
+            // Смена страницы в главном потоке
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                if (Application.Current != null)
+                // Используем Window текущей страницы
+                if (this.Window != null)
                 {
-                    // Создаем чистую страницу авторизации
                     var authPage = new my_sweetshop.Views.Auth.AuthStartPage();
 
-                    // Установка новой главной страницы полностью выгружает старый Shell из памяти
-                    Application.Current.MainPage = new NavigationPage(authPage);
+                    // Меняем корневую страницу окна. Это выгрузит старый Shell из памяти
+                    this.Window.Page = new NavigationPage(authPage);
+                }
+                // Резервный вариант, если Window почему-то не привязан
+                else if (Application.Current?.Windows.Count > 0)
+                {
+                    var authPage = new my_sweetshop.Views.Auth.AuthStartPage();
+                    Application.Current.Windows[0].Page = new NavigationPage(authPage);
                 }
             });
         }
@@ -137,15 +140,4 @@ public partial class ProfilePage : ContentPage
     {
         await Shell.Current.GoToAsync(nameof(FavoritesPage));
     }
-
-    // TODO: сделать админку для кассиров и тд
-    //private async void OnCashierSecretTapped(object sender, EventArgs e)
-    //{
-    //    _secretTapCount++;
-    //    if (_secretTapCount >= 5)
-    //    {
-    //        _secretTapCount = 0;
-    //        await Shell.Current.GoToAsync(nameof(CashierPage));
-    //    }
-    //}
 }

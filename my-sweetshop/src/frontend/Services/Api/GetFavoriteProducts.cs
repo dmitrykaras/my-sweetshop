@@ -42,7 +42,7 @@ public class GetFavoriteProducts
 
             return new List<Product>();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return new List<Product>();
         }
@@ -75,7 +75,7 @@ public class GetFavoriteProducts
             }
             return false;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return false;
         }

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Mvvm.Input;
 using my_sweetshop.Dtos;
 using my_sweetshop.Services.Api;
 using my_sweetshop.Views.Profile;
@@ -7,13 +8,12 @@ using System.Windows.Input;
 
 namespace my_sweetshop.ViewModels.Profile.NewEmailOrName;
 
-public class NewEmailViewModel : BaseViewModel
+public partial class NewEmailViewModel : BaseViewModel
 {
     // Сервис для API
     private readonly AuthApi _authApi;
     private readonly ChangeEmail _changeEmail;
     private readonly AuthSession _session;
-
     private readonly EmailCache _emailCache;
 
     // Почта, на которую отправлен код
@@ -22,9 +22,7 @@ public class NewEmailViewModel : BaseViewModel
     // Кулдаун на повторный ввод кода
     public bool VerifyCooldownActive { get; private set; }
 
-    // Команды для кнопок в XAML
-    public ICommand ConfirmCodeCommand { get; }
-    public ICommand ResendCommand { get; }
+    // Генератор сам создаст VerifyCodeCommand и ResendCodeCommand.
 
     public NewEmailViewModel(ChangeEmail changeEmail, AuthSession session, AuthApi authApi, EmailCache emailCache)
     {
@@ -38,19 +36,26 @@ public class NewEmailViewModel : BaseViewModel
 
         // Сообщение пользователю о том, что код отправлен
         ShowToast($"На почту {Email} отправлено письмо с кодом подтверждения");
-        
     }
 
     // Логика проверки кода
+    [RelayCommand]
     public async Task<VerifyResult> VerifyCodeAsync(string code)
     {
+        // Проверяем токен и временную почту перед началом операции
+        if (string.IsNullOrEmpty(_session.Token))
+            return VerifyResult.Fail("Сессия истекла. Пожалуйста, авторизуйтесь заново.");
+
+        if (string.IsNullOrEmpty(_emailCache.TempEmail))
+            return VerifyResult.Fail("Временный адрес почты не найден.");
+
         try
         {
             // меняем почту на новую
-            await _changeEmail.VerifyCodeForChangeEmail(_emailCache.TempEmail!, code, _session.Token);
+            await _changeEmail.VerifyCodeForChangeEmail(_emailCache.TempEmail, code, _session.Token);
 
             // обновляем сессию
-            await _session.SetSessionAsync(_session.Token!, _emailCache.TempEmail!);
+            await _session.SetSessionAsync(_session.Token, _emailCache.TempEmail!);
 
             _emailCache.TempEmail = null;
 
@@ -65,6 +70,7 @@ public class NewEmailViewModel : BaseViewModel
     }
 
     // Попытка повторной отправки
+    [RelayCommand]
     public async Task<bool> ResendCodeAsync()
     {
         try
@@ -80,42 +86,17 @@ public class NewEmailViewModel : BaseViewModel
         }
     }
 
-    // Обработка ошибок API
-    private VerifyResult HandleVerifyError(ApiException apiEx)
-    {
-        var err = apiEx.Error;
-
-        if (err == null)
-            return VerifyResult.Fail(apiEx.Message);
-
-        // Неверный код
-        if (err.Error == "invalid_code")
-        {
-            var attemptsLeft = err.AttemptsLeft ?? 0;
-            return VerifyResult.Fail($"Неверный код. Осталось попыток: {attemptsLeft}");
-        }
-
-        // Слишком много попыток
-        if (err.Error == "too_many_attempts")
-        {
-            VerifyCooldownActive = true;
-            return VerifyResult.Fail("Попытки закончились. Попробуйте позже.");
-        }
-
-        return VerifyResult.Fail(err.Message);
-    }
-
     // Вспомогательная функция для toast
     private void ShowToast(string text)
     {
         var toast = Toast.Make(text, ToastDuration.Short);
         toast.Show();
     }
-}
 
-// Результат проверки кода
-public record VerifyResult(bool Success, string ErrorMessage)
-{
-    public static VerifyResult Successful() => new(true, "");
-    public static VerifyResult Fail(string msg) => new(false, msg);
+    // Запись результата верификации
+    public record VerifyResult(bool Success, string ErrorMessage)
+    {
+        public static VerifyResult Successful() => new(true, "");
+        public static VerifyResult Fail(string msg) => new(false, msg);
+    }
 }

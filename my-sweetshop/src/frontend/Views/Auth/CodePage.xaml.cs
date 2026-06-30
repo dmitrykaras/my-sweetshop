@@ -31,8 +31,10 @@ public partial class CodePage : ContentPage
         StartResendCooldown();
     }
 
+    // Кнопка назад
     private async void OnBack(object sender, EventArgs e) => await Navigation.PopAsync();
 
+    // Попытка повторной отправки кода
     private async void OnResendTapped(object sender, EventArgs e)
     {
         if (_cooldownActive) return;
@@ -49,6 +51,7 @@ public partial class CodePage : ContentPage
         }
     }
 
+    // Поля (квадраты) для кода
     private void OnDigitChanged(object sender, TextChangedEventArgs e)
     {
         if (_isClearing) return;
@@ -128,6 +131,7 @@ public partial class CodePage : ContentPage
         }
     }
 
+    // Логика обработки и отображения ошибок
     private void HandleVerifyApiError(ApiException apiEx)
     {
         var err = apiEx.Error;
@@ -159,12 +163,14 @@ public partial class CodePage : ContentPage
         ShowError(err.Message);
     }
 
+    // Отображения ошибок
     private void ShowError(string text)
     {
         ErrorLabel.Text = text;
         ErrorLabel.IsVisible = true;
     }
 
+    // Очистка кода в поле ввода
     private void ClearCode()
     {
         _isClearing = true;
@@ -172,6 +178,7 @@ public partial class CodePage : ContentPage
         _isClearing = false;
     }
 
+    // Вспомогательный метод для перемещения между квадратами кода
     private void SetInputsEnabled(bool enabled)
     {
         D1.IsEnabled = D2.IsEnabled = D3.IsEnabled = D4.IsEnabled = enabled;
@@ -203,6 +210,7 @@ public partial class CodePage : ContentPage
         });
     }
 
+    // Кулдаун кнопки
     private void StartVerifyCooldown(int seconds)
     {
         if (seconds <= 0)

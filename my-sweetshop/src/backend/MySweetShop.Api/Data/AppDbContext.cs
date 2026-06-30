@@ -3,9 +3,8 @@ using MySweetShop.Api.Entities;
 
 namespace MySweetShop.Api.Data;
 
-public class AppDbContext : DbContext
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
     public DbSet<User> Users => Set<User>();
     public DbSet<EmailVerificationCode> EmailVerificationCodes => Set<EmailVerificationCode>();
     public DbSet<EmailChangeCode> EmailChangeCodes => Set<EmailChangeCode>();
@@ -17,10 +16,13 @@ public class AppDbContext : DbContext
 
     public DbSet<RefreshToken> RefreshTokens { get; set; }
 
-
+    // Метод создания категорий
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<UserFavorite>()
+            .HasKey(uf => new { uf.UserId, uf.ProductId });
 
         // Категории
         var dessertId = Guid.Parse("11111111-1111-1111-1111-111111111111");

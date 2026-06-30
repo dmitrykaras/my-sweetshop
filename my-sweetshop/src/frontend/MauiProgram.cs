@@ -96,9 +96,9 @@ namespace my_sweetshop
             builder.Services.AddSingleton<EmailCache>();
 
             // Регистрация вью-моделей
-            builder.Services.AddSingleton<UserProfileViewModel>(); // AddTransient
+            builder.Services.AddSingleton<UserProfileViewModel>();
             builder.Services.AddTransient<UserPointsViewModel>();
-            builder.Services.AddTransient<EditProfileRootViewModel>(); // AddSingleton
+            builder.Services.AddTransient<EditProfileRootViewModel>();
             builder.Services.AddTransient<NewEmailViewModel>();
             builder.Services.AddTransient<HomeViewModel>();
             builder.Services.AddTransient<CatalogViewModel>();

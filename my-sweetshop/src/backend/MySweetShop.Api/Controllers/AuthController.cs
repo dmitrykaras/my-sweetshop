@@ -13,16 +13,10 @@ namespace MySweetShop.Api.Controllers;
 
 [ApiController]
 [Route("auth")]
-public class AuthController : ControllerBase
+public class AuthController(AppDbContext db, JwtService jwt) : ControllerBase
 {
-    private readonly AppDbContext _db;
-    private readonly JwtService _jwt;
-
-    public AuthController(AppDbContext db, JwtService jwt)
-    {
-        _db = db;
-        _jwt = jwt;
-    }
+    private readonly AppDbContext _db = db;
+    private readonly JwtService _jwt = jwt;
 
     // Метод для отправки кода
     [HttpPost("request-code")]
@@ -30,7 +24,7 @@ public class AuthController : ControllerBase
     {
         var email = request.Email.Trim().ToLower();
 
-        if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
+        if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
             return BadRequest("Invalid email");
 
         // cooldown: 2 минуты
@@ -76,7 +70,7 @@ public class AuthController : ControllerBase
         var email = request.Email?.Trim().ToLower();
         var code = request.Code?.Trim();
 
-        if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
+        if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
             return BadRequest(new ApiErrorResponse { Error = "invalid_email", Message = "Invalid email" });
 
         if (string.IsNullOrWhiteSpace(code) || code.Length != 4 || !code.All(char.IsDigit))
@@ -165,7 +159,7 @@ public class AuthController : ControllerBase
             }
         }
 
-        // 1. ГЕНЕРИРУЕМ REFRESH TOKEN
+        // Генерируем refresh token
         var refreshTokenEntity = new RefreshToken
         {
             Id = Guid.NewGuid(),
@@ -176,19 +170,19 @@ public class AuthController : ControllerBase
             IsUsed = false
         };
 
-        // 2. СОХРАНЯЕМ В БАЗУ
+        // Сохраняем в базу
         _db.RefreshTokens.Add(refreshTokenEntity);
         await _db.SaveChangesAsync();
 
-        // 3. ФОРМИРУЕМ JWT
+        // Формируем Jwt
         var token = string.IsNullOrEmpty(userIdClaim) ? _jwt.CreateToken(user) : null;
         var needsProfile = string.IsNullOrWhiteSpace(user.FirstName) || string.IsNullOrWhiteSpace(user.LastName);
 
-        // 4. ВОЗВРАЩАЕМ ВСЁ КЛИЕНТУ
+        // Возвращаем всё клиенту
         return Ok(new
         {
             token,
-            refreshToken = refreshTokenEntity.Token, // Обязательно добавляем это поле!
+            refreshToken = refreshTokenEntity.Token,
             user = new
             {
                 user.Id,
@@ -212,10 +206,10 @@ public class AuthController : ControllerBase
         if (oldRefresh == null || oldRefresh.IsUsed || oldRefresh.ExpiresAt < DateTime.UtcNow)
             return Unauthorized();
 
-        // 1. Помечаем старый как использованный
+        // Помечаем старый как использованный
         oldRefresh.IsUsed = true;
 
-        // 2. Создаем НОВЫЙ Refresh Token (Rotation)
+        // Создаем новый Refresh Token
         var newRefresh = new RefreshToken
         {
             Token = Guid.NewGuid().ToString("N"),
@@ -224,7 +218,7 @@ public class AuthController : ControllerBase
             IsUsed = false
         };
 
-        // 3. Генерируем новый JWT
+        // Генерируем новый JWT
         var newJwt = _jwt.CreateToken(oldRefresh.User);
 
         _db.RefreshTokens.Add(newRefresh);

@@ -13,16 +13,19 @@ namespace my_sweetshop.Services.UserService
             _api = api;
         }
 
-        public Task<UserModel> GetCurrentUser()
+        // Запрос на получения данных пользователя
+        public Task<UserModel?> GetCurrentUser()
         {
             return _api.GetProfileAsync(forceRefresh: true);
         }
 
+        // Запрос на смену имени и/или фамилии
         public Task UpdateProfileAsync(UpdateProfileDto dto)
         {
             return _api.UpdateProfileAsync(dto);
         }
 
+        // Запрос на смену почты
         public async Task ChangeEmailAsync(string newEmail)
         {
             await _api.RequestChangeEmailAsync(newEmail);

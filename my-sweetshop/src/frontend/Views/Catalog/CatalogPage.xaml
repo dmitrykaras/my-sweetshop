@@ -11,58 +11,44 @@
         <ScrollView>
             <VerticalStackLayout Padding="16" Spacing="24">
 
-                <!-- Заголовок -->
                 <Label
-                Text="Каталог товаров"
-                FontSize="22"
-                FontAttributes="Bold"
-                HorizontalOptions="Start" />
+                    Text="Каталог товаров"
+                    FontSize="22"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Start" />
 
-                <!-- ДЕСЕРТЫ -->
                 <VerticalStackLayout Spacing="8">
-
                     <Label
-                    Text="ДЕСЕРТЫ"
-                    FontSize="14"
-                    TextColor="#9E9E9E"
-                    FontAttributes="Bold" />
+                        Text="ДЕСЕРТЫ"
+                        FontSize="14"
+                        TextColor="#9E9E9E"
+                        FontAttributes="Bold" />
 
                     <Border Style="{StaticResource CategoryContainerStyle}">
-
                         <CollectionView
-                        ItemsSource="{Binding Desserts}"
-                        ItemsLayout="HorizontalList"
-                        HorizontalScrollBarVisibility="Never">
-
+                            ItemsSource="{Binding Desserts}"
+                            ItemsLayout="HorizontalList"
+                            HorizontalScrollBarVisibility="Never">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-
                                     <Border Style="{StaticResource ProductCardStyle}">
-
                                         <VerticalStackLayout Padding="10" Spacing="8">
-
                                             <Image
-                                            Source="{Binding ImageUrl}"
-                                            HeightRequest="300"
-                                            Aspect="AspectFill" />
-
+                                                Source="{Binding ImageUrl}"
+                                                HeightRequest="300"
+                                                Aspect="AspectFill" />
                                             <Label
-                                            Text="{Binding Name}"
-                                            HorizontalOptions="Center"
-                                            FontAttributes="Bold" />
+                                                Text="{Binding Name}"
+                                                HorizontalOptions="Center"
+                                                FontAttributes="Bold" />
 
-                                            <Frame
-                                            BorderColor="LightGray"
-                                            CornerRadius="5"
-                                            Padding="0"
-                                            Margin="0"
-                                            HasShadow="False"
-                                            BackgroundColor="Transparent">
-
-                                                <Button
+                                            <Button
                                                 Text="Описание"
                                                 BackgroundColor="White"
                                                 TextColor="Black"
+                                                BorderColor="LightGray"
+                                                BorderWidth="1"
+                                                CornerRadius="5"
                                                 HorizontalOptions="Center"
                                                 FontAttributes="Bold"
                                                 FontSize="15"
@@ -70,64 +56,46 @@
                                                 Command="{Binding BindingContext.OpenProductCommand,
                                                           Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                 CommandParameter="{Binding .}" />
-                                            </Frame>
                                         </VerticalStackLayout>
-
                                     </Border>
-
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
-
                         </CollectionView>
-
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- МУЖСКИЕ ТОРТЫ -->
                 <VerticalStackLayout Spacing="8">
-
                     <Label
-                    Text="МУЖСКИЕ ТОРТЫ"
-                    FontSize="14"
-                    TextColor="#9E9E9E"
-                    FontAttributes="Bold" />
+                        Text="МУЖСКИЕ ТОРТЫ"
+                        FontSize="14"
+                        TextColor="#9E9E9E"
+                        FontAttributes="Bold" />
 
                     <Border Style="{StaticResource CategoryContainerStyle}">
-
                         <CollectionView
-                        ItemsSource="{Binding MaleCakes}"
-                        ItemsLayout="HorizontalList"
-                        HorizontalScrollBarVisibility="Never">
-
+                            ItemsSource="{Binding MaleCakes}"
+                            ItemsLayout="HorizontalList"
+                            HorizontalScrollBarVisibility="Never">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-
                                     <Border Style="{StaticResource ProductCardStyle}">
-
                                         <VerticalStackLayout Padding="10" Spacing="8">
-
                                             <Image
-                                            Source="{Binding ImageUrl}"
-                                            HeightRequest="160"
-                                            Aspect="AspectFill" />
-
+                                                Source="{Binding ImageUrl}"
+                                                HeightRequest="160"
+                                                Aspect="AspectFill" />
                                             <Label
-                                            Text="{Binding Name}"
-                                            HorizontalOptions="Center"
-                                            FontAttributes="Bold" />
+                                                Text="{Binding Name}"
+                                                HorizontalOptions="Center"
+                                                FontAttributes="Bold" />
 
-                                            <Frame
-                                            BorderColor="LightGray"
-                                            CornerRadius="5"
-                                            Padding="0"
-                                            Margin="0"
-                                            HasShadow="False"
-                                            BackgroundColor="Transparent">
-
-                                                <Button
+                                            <Button
                                                 Text="Описание"
                                                 BackgroundColor="White"
                                                 TextColor="Black"
+                                                BorderColor="LightGray"
+                                                BorderWidth="1"
+                                                CornerRadius="5"
                                                 HorizontalOptions="Center"
                                                 FontAttributes="Bold"
                                                 FontSize="15"
@@ -135,64 +103,46 @@
                                                 Command="{Binding BindingContext.OpenProductCommand,
                                                           Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                 CommandParameter="{Binding .}" />
-                                            </Frame>
                                         </VerticalStackLayout>
-
                                     </Border>
-
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
-
                         </CollectionView>
-
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- ЖЕНСКИЕ ТОРТЫ -->
                 <VerticalStackLayout Spacing="8">
-
                     <Label
-                    Text="ЖЕНСКИЕ ТОРТЫ"
-                    FontSize="14"
-                    TextColor="#9E9E9E"
-                    FontAttributes="Bold" />
+                        Text="ЖЕНСКИЕ ТОРТЫ"
+                        FontSize="14"
+                        TextColor="#9E9E9E"
+                        FontAttributes="Bold" />
 
                     <Border Style="{StaticResource CategoryContainerStyle}">
-
                         <CollectionView
-                        ItemsSource="{Binding FemaleCakes}"
-                        ItemsLayout="HorizontalList"
-                        HorizontalScrollBarVisibility="Never">
-
+                            ItemsSource="{Binding FemaleCakes}"
+                            ItemsLayout="HorizontalList"
+                            HorizontalScrollBarVisibility="Never">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-
                                     <Border Style="{StaticResource ProductCardStyle}">
-
                                         <VerticalStackLayout Padding="10" Spacing="8">
-
                                             <Image
-                                            Source="{Binding ImageUrl}"
-                                            HeightRequest="160"
-                                            Aspect="AspectFill" />
-
+                                                Source="{Binding ImageUrl}"
+                                                HeightRequest="160"
+                                                Aspect="AspectFill" />
                                             <Label
-                                            Text="{Binding Name}"
-                                            HorizontalOptions="Center"
-                                            FontAttributes="Bold" />
+                                                Text="{Binding Name}"
+                                                HorizontalOptions="Center"
+                                                FontAttributes="Bold" />
 
-                                            <Frame
-                                            BorderColor="LightGray"
-                                            CornerRadius="5"
-                                            Padding="0"
-                                            Margin="0"
-                                            HasShadow="False"
-                                            BackgroundColor="Transparent">
-
-                                                <Button
+                                            <Button
                                                 Text="Описание"
                                                 BackgroundColor="White"
                                                 TextColor="Black"
+                                                BorderColor="LightGray"
+                                                BorderWidth="1"
+                                                CornerRadius="5"
                                                 HorizontalOptions="Center"
                                                 FontAttributes="Bold"
                                                 FontSize="15"
@@ -200,64 +150,46 @@
                                                 Command="{Binding BindingContext.OpenProductCommand,
                                                           Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                 CommandParameter="{Binding .}" />
-                                            </Frame>
                                         </VerticalStackLayout>
-
                                     </Border>
-
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
-
                         </CollectionView>
-
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- ДЕТСКИЕ ТОРТЫ -->
                 <VerticalStackLayout Spacing="8">
-
                     <Label
-                    Text="ДЕТСКИЕ ТОРТЫ"
-                    FontSize="14"
-                    TextColor="#9E9E9E"
-                    FontAttributes="Bold" />
+                        Text="ДЕТСКИЕ ТОРТЫ"
+                        FontSize="14"
+                        TextColor="#9E9E9E"
+                        FontAttributes="Bold" />
 
                     <Border Style="{StaticResource CategoryContainerStyle}">
-
                         <CollectionView
-                        ItemsSource="{Binding KidsCakes}"
-                        ItemsLayout="HorizontalList"
-                        HorizontalScrollBarVisibility="Never">
-
+                            ItemsSource="{Binding KidsCakes}"
+                            ItemsLayout="HorizontalList"
+                            HorizontalScrollBarVisibility="Never">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-
                                     <Border Style="{StaticResource ProductCardStyle}">
-
                                         <VerticalStackLayout Padding="10" Spacing="8">
-
                                             <Image
-                                            Source="{Binding ImageUrl}"
-                                            HeightRequest="160"
-                                            Aspect="AspectFill" />
-
+                                                Source="{Binding ImageUrl}"
+                                                HeightRequest="160"
+                                                Aspect="AspectFill" />
                                             <Label
-                                            Text="{Binding Name}"
-                                            HorizontalOptions="Center"
-                                            FontAttributes="Bold" />
+                                                Text="{Binding Name}"
+                                                HorizontalOptions="Center"
+                                                FontAttributes="Bold" />
 
-                                            <Frame
-                                            BorderColor="LightGray"
-                                            CornerRadius="5"
-                                            Padding="0"
-                                            Margin="0"
-                                            HasShadow="False"
-                                            BackgroundColor="Transparent">
-
-                                                <Button
+                                            <Button
                                                 Text="Описание"
                                                 BackgroundColor="White"
                                                 TextColor="Black"
+                                                BorderColor="LightGray"
+                                                BorderWidth="1"
+                                                CornerRadius="5"
                                                 HorizontalOptions="Center"
                                                 FontAttributes="Bold"
                                                 FontSize="15"
@@ -265,64 +197,46 @@
                                                 Command="{Binding BindingContext.OpenProductCommand,
                                                           Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                 CommandParameter="{Binding .}" />
-                                            </Frame>
                                         </VerticalStackLayout>
-
                                     </Border>
-
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
-
                         </CollectionView>
-
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- СВАДЕБНЫЕ ТОРТЫ -->
                 <VerticalStackLayout Spacing="8">
-
                     <Label
-                    Text="СВАДЕБНЫЕ ТОРТЫ"
-                    FontSize="14"
-                    TextColor="#9E9E9E"
-                    FontAttributes="Bold" />
+                        Text="СВАДЕБНЫЕ ТОРТЫ"
+                        FontSize="14"
+                        TextColor="#9E9E9E"
+                        FontAttributes="Bold" />
 
                     <Border Style="{StaticResource CategoryContainerStyle}">
-
                         <CollectionView
-                        ItemsSource="{Binding WeddingCakes}"
-                        ItemsLayout="HorizontalList"
-                        HorizontalScrollBarVisibility="Never">
-
+                            ItemsSource="{Binding WeddingCakes}"
+                            ItemsLayout="HorizontalList"
+                            HorizontalScrollBarVisibility="Never">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-
                                     <Border Style="{StaticResource ProductCardStyle}">
-
                                         <VerticalStackLayout Padding="10" Spacing="8">
-
                                             <Image
-                                            Source="{Binding ImageUrl}"
-                                            HeightRequest="300"
-                                            Aspect="AspectFill" />
-
+                                                Source="{Binding ImageUrl}"
+                                                HeightRequest="300"
+                                                Aspect="AspectFill" />
                                             <Label
-                                            Text="{Binding Name}"
-                                            HorizontalOptions="Center"
-                                            FontAttributes="Bold" />
+                                                Text="{Binding Name}"
+                                                HorizontalOptions="Center"
+                                                FontAttributes="Bold" />
 
-                                            <Frame
-                                            BorderColor="LightGray"
-                                            CornerRadius="5"
-                                            Padding="0"
-                                            Margin="0"
-                                            HasShadow="False"
-                                            BackgroundColor="Transparent">
-
-                                                <Button
+                                            <Button
                                                 Text="Описание"
                                                 BackgroundColor="White"
                                                 TextColor="Black"
+                                                BorderColor="LightGray"
+                                                BorderWidth="1"
+                                                CornerRadius="5"
                                                 HorizontalOptions="Center"
                                                 FontAttributes="Bold"
                                                 FontSize="15"
@@ -330,64 +244,46 @@
                                                 Command="{Binding BindingContext.OpenProductCommand,
                                                           Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                 CommandParameter="{Binding .}" />
-                                            </Frame>
                                         </VerticalStackLayout>
-
                                     </Border>
-
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
-
                         </CollectionView>
-
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- НАБОРЫ -->
                 <VerticalStackLayout Spacing="8">
-
                     <Label
-                    Text="НАБОРЫ"
-                    FontSize="14"
-                    TextColor="#9E9E9E"
-                    FontAttributes="Bold" />
+                        Text="НАБОРЫ"
+                        FontSize="14"
+                        TextColor="#9E9E9E"
+                        FontAttributes="Bold" />
 
                     <Border Style="{StaticResource CategoryContainerStyle}">
-
                         <CollectionView
-                        ItemsSource="{Binding Sets}"
-                        ItemsLayout="HorizontalList"
-                        HorizontalScrollBarVisibility="Never">
-
+                            ItemsSource="{Binding Sets}"
+                            ItemsLayout="HorizontalList"
+                            HorizontalScrollBarVisibility="Never">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-
                                     <Border Style="{StaticResource ProductCardStyle}">
-
                                         <VerticalStackLayout Padding="10" Spacing="8">
-
                                             <Image
-                                            Source="{Binding ImageUrl}"
-                                            HeightRequest="160"
-                                            Aspect="AspectFill" />
-
+                                                Source="{Binding ImageUrl}"
+                                                HeightRequest="160"
+                                                Aspect="AspectFill" />
                                             <Label
-                                            Text="{Binding Name}"
-                                            HorizontalOptions="Center"
-                                            FontAttributes="Bold" />
+                                                Text="{Binding Name}"
+                                                HorizontalOptions="Center"
+                                                FontAttributes="Bold" />
 
-                                            <Frame
-                                            BorderColor="LightGray"
-                                            CornerRadius="5"
-                                            Padding="0"
-                                            Margin="0"
-                                            HasShadow="False"
-                                            BackgroundColor="Transparent">
-
-                                                <Button
+                                            <Button
                                                 Text="Описание"
                                                 BackgroundColor="White"
                                                 TextColor="Black"
+                                                BorderColor="LightGray"
+                                                BorderWidth="1"
+                                                CornerRadius="5"
                                                 HorizontalOptions="Center"
                                                 FontAttributes="Bold"
                                                 FontSize="15"
@@ -395,64 +291,46 @@
                                                 Command="{Binding BindingContext.OpenProductCommand,
                                                           Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                 CommandParameter="{Binding .}" />
-                                            </Frame>
                                         </VerticalStackLayout>
-
                                     </Border>
-
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
-
                         </CollectionView>
-
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- НАПИТКИ -->
                 <VerticalStackLayout Spacing="8">
-
                     <Label
-                    Text="НАПИТКИ"
-                    FontSize="14"
-                    TextColor="#9E9E9E"
-                    FontAttributes="Bold" />
+                        Text="НАПИТКИ"
+                        FontSize="14"
+                        TextColor="#9E9E9E"
+                        FontAttributes="Bold" />
 
                     <Border Style="{StaticResource CategoryContainerStyle}">
-
                         <CollectionView
-                        ItemsSource="{Binding Drinks}"
-                        ItemsLayout="HorizontalList"
-                        HorizontalScrollBarVisibility="Never">
-
+                            ItemsSource="{Binding Drinks}"
+                            ItemsLayout="HorizontalList"
+                            HorizontalScrollBarVisibility="Never">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-
                                     <Border Style="{StaticResource ProductCardStyle}">
-
                                         <VerticalStackLayout Padding="10" Spacing="8">
-
                                             <Image
-                                            Source="{Binding ImageUrl}"
-                                            HeightRequest="250"
-                                            Aspect="AspectFill" />
-
+                                                Source="{Binding ImageUrl}"
+                                                HeightRequest="250"
+                                                Aspect="AspectFill" />
                                             <Label
-                                            Text="{Binding Name}"
-                                            HorizontalOptions="Center"
-                                            FontAttributes="Bold" />
+                                                Text="{Binding Name}"
+                                                HorizontalOptions="Center"
+                                                FontAttributes="Bold" />
 
-                                            <Frame
-                                            BorderColor="LightGray"
-                                            CornerRadius="5"
-                                            Padding="0"
-                                            Margin="0"
-                                            HasShadow="False"
-                                            BackgroundColor="Transparent">
-
-                                                <Button
+                                            <Button
                                                 Text="Описание"
                                                 BackgroundColor="White"
                                                 TextColor="Black"
+                                                BorderColor="LightGray"
+                                                BorderWidth="1"
+                                                CornerRadius="5"
                                                 HorizontalOptions="Center"
                                                 FontAttributes="Bold"
                                                 FontSize="15"
@@ -460,16 +338,11 @@
                                                 Command="{Binding BindingContext.OpenProductCommand,
                                                           Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                 CommandParameter="{Binding .}" />
-                                            </Frame>
                                         </VerticalStackLayout>
-
                                     </Border>
-
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
-
                         </CollectionView>
-
                     </Border>
                 </VerticalStackLayout>
 

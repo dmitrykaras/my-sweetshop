@@ -8,10 +8,10 @@ public class Product
     public Guid CategoryId { get; set; }
     public required string Name { get; set; }
     public Category Category { get; set; } = default!;
-    public string? Description { get; set; } 
+    public string? Description { get; set; }
     public string? ImageKey { get; set; }
     public decimal? Price { get; set; }
-    public string? ImageUrl => string.IsNullOrEmpty(ImageKey)
-    ? null
-    : $"https://gobsfqwgldplagtwrlxr.supabase.co/storage/v1/object/public/my-sweetshop/{ImageKey}"; // формируем публичный URL
+    //public string? ImageUrl => string.IsNullOrEmpty(ImageKey)
+    //? null
+    //: $"https://gobsfqwgldplagtwrlxr.supabase.co/storage/v1/object/public/my-sweetshop/{ImageKey}";
 }

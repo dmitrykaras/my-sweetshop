@@ -14,6 +14,7 @@ namespace my_sweetshop.Services.Api
             _httpClient = httpClient;
         }
 
+        // Метод получения продуктов
         public async Task<List<ProductDto>> GetProductsAsync()
         {
             try

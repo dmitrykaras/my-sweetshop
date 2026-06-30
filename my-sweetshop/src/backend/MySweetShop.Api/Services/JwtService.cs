@@ -8,22 +8,18 @@ using MySweetShop.Api.Options;
 
 namespace MySweetShop.Api.Services;
 
-public class JwtService
+public class JwtService(IOptions<JwtOptions> opt)
 {
-    private readonly JwtOptions _opt;
+    private readonly JwtOptions _opt = opt.Value;
 
-    public JwtService(IOptions<JwtOptions> opt)
-    {
-        _opt = opt.Value;
-    }
-
+    // Метод создания токена
     public string CreateToken(User user)
     {
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()), // ID пользователя
-            new Claim("uid", user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email), // Email
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()), // ID пользователя
+            new("uid", user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Email, user.Email), // Email
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_opt.Key));

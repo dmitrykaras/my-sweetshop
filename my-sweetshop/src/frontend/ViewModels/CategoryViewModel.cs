@@ -12,7 +12,7 @@ namespace my_sweetshop.ViewModels
 
         public ICommand OpenProductCommand { get; }
 
-        private string _categoryKey;
+        private string _categoryKey = string.Empty;
         public string CategoryKey
         {
             get => _categoryKey;
@@ -29,6 +29,7 @@ namespace my_sweetshop.ViewModels
             OpenProductCommand = new Command<Product>(OpenProduct);
         }
 
+        // Метод открытия страницы продукта из каталога
         async void OpenProduct(Product product)
         {
             await Shell.Current.GoToAsync(
@@ -39,6 +40,7 @@ namespace my_sweetshop.ViewModels
                 });
         }
 
+        // Метод получение названий категорий
         string GetCategoryTitle(string key) => key switch
         {
             "Desserts" => "ДЕСЕРТЫ",

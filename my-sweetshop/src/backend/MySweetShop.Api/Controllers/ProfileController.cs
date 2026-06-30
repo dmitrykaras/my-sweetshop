@@ -12,16 +12,10 @@ namespace MySweetShop.Api.Controllers
 {
     [ApiController]
     [Route("profile")]
-    public class ProfileController : ControllerBase
+    public class ProfileController(AppDbContext db, JwtService jwt) : ControllerBase
     {
-        private readonly AppDbContext _db;
-        private readonly JwtService _jwt;
-
-        public ProfileController(AppDbContext db, JwtService jwt)
-        {
-            _db = db;
-            _jwt = jwt;
-        }
+        private readonly AppDbContext _db = db;
+        private readonly JwtService _jwt = jwt;
 
         private async Task<User?> GetCurrentUserAsync()
         {
@@ -85,34 +79,6 @@ namespace MySweetShop.Api.Controllers
             return Ok();
         }
 
-        // Метод для получения израбнные продуктов
-        //[Authorize]
-        //[HttpGet("favorites")]
-        //public async Task<IActionResult> GetFavorites()
-        //{
-        //    var userIdStr = User.FindFirstValue("uid");
-        //    if (!Guid.TryParse(userIdStr, out var userId))
-        //        return Unauthorized("Invalid token");
-
-        //    var favorites = await _db.UserFavorites
-        //        .Where(f => f.UserId == userId)
-        //        .Include(f => f.Product)
-        //        .Select(f => new
-        //        {
-        //            f.Product.Id,
-        //            f.Product.Name,
-        //            f.Product.Description,
-        //            f.Product.Price,
-        //            ImageUrl = string.IsNullOrEmpty(f.Product.ImageKey)
-        //           ? null
-        //           : _storage.GetPreSignedUrl(f.Product.ImageKey, TimeSpan.FromHours(6)),
-        //            CategoryId = f.Product.CategoryId
-        //        })
-        //        .ToListAsync();
-
-        //    return Ok(favorites);
-        //}
-
         // Метод для запроса кода для смены почты
         [Authorize]
         [HttpPost("request-code-for-change-email")]
@@ -125,7 +91,7 @@ namespace MySweetShop.Api.Controllers
             var Email = request.Email.Trim().ToLower();
             var newEmail = request.NewEmail.Trim().ToLower();
 
-            if (string.IsNullOrWhiteSpace(Email) || !Email.Contains("@"))
+            if (string.IsNullOrWhiteSpace(Email) || !Email.Contains('@'))
                 return BadRequest("Invalid email");
 
             // проверка на то, что Email уже занят 
@@ -218,7 +184,7 @@ namespace MySweetShop.Api.Controllers
 
             entity.IsUsed = true;
 
-            // проверяем что email не заняли пока мы подтверждали
+            // Проверяем что email не заняли пока мы подтверждали
             var taken = await _db.Users.AnyAsync(x => x.Email == newEmail);
             if (taken)
                 return BadRequest("Email already used");
@@ -290,12 +256,12 @@ namespace MySweetShop.Api.Controllers
         [HttpPatch("UpdateProfile")]
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
         {
-            // 1. Получаем ID пользователя из токена
+            // Получаем ID пользователя из токена
             var userIdStr = User.FindFirstValue("uid");
             if (!Guid.TryParse(userIdStr, out var userId))
                 return Unauthorized("Invalid token");
 
-            // 2. Ищем пользователя
+            // Ищем пользователя
             var user = await _db.Users.FirstOrDefaultAsync(x => x.Id == userId);
             if (user == null) return NotFound("Пользователь не найден");
 
@@ -315,7 +281,7 @@ namespace MySweetShop.Api.Controllers
                 }
             }
 
-            // 3. Обновляем только те поля, которые ПРИШЛИ и не пустые
+            // Обновляем только те поля, которые ПРИШЛИ и не пустые
             bool isChanged = false;
 
             if (!string.IsNullOrWhiteSpace(request.FirstName) && request.FirstName.Length >= 2)
@@ -330,7 +296,7 @@ namespace MySweetShop.Api.Controllers
                 isChanged = true;
             }
 
-            // 4. Сохраняем, только если были реальные изменения
+            // Сохраняем, только если были реальные изменения
             if (isChanged)
             {
                 user.LastProfileUpdate = DateTimeOffset.UtcNow;

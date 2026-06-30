@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:my_sweetshop.ViewModels.Profile"
+             x:Class="my_sweetshop.Views.Profile.EditProfilePage"
+             x:DataType="viewmodels:EditProfileRootViewModel"
+             Shell.NavBarIsVisible="True"
+             Title="Редактировать профиль">
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="14">
+
+                <Label Text="Новое имя:" TextColor="Black" FontAttributes="Bold" />
+                <Entry Placeholder="{Binding Profile.CurrentFirstname}"
+                    Text="{Binding Profile.NewFirstname, Mode=TwoWay}"
+                    TextColor="Black"
+                    BackgroundColor="Transparent" />
+
+                <Label Text="Новая фамилия:" TextColor="Black" FontAttributes="Bold" />
+                <Entry Placeholder="{Binding Profile.CurrentLastname}"
+                    Text="{Binding Profile.NewLastname, Mode=TwoWay}"
+                    TextColor="Black"
+                    BackgroundColor="Transparent" />
+
+                <Label Text="Новая почта:" TextColor="Black" FontAttributes="Bold" />
+                <Entry Text="{Binding Profile.NewEmail, Mode=OneWayToSource}"
+                    Placeholder="Введите новый адрес"
+                    TextColor="Black"
+                    Keyboard="Email" />
+
+                <Button Text="Сменить почту"
+                Command="{Binding Profile.GoToChangeEmailCommand}">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding Profile.IsEmailCooldownActive}" Value="True">
+                            <Setter Property="Opacity" Value="0.4" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
+                <Label Text="{Binding Profile.EmailCooldownText}"
+                   IsVisible="{Binding Profile.IsEmailCooldownActive}"
+                   TextColor="#888" FontSize="12" HorizontalOptions="Center"/>
+
+                <Grid HeightRequest="40"/>
+
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Border Grid.Row="2" 
+               Padding="20,10" 
+               BackgroundColor="White" 
+               Stroke="Transparent">
+            <Border.Shadow>
+                <Shadow Opacity="0" />
+            </Border.Shadow>
+            <VerticalStackLayout>
+                <Label Text="{Binding Profile.ProfileCooldownText}"
+                   IsVisible="{Binding Profile.IsProfileCooldownActive}"
+                   TextColor="#888" FontSize="12" HorizontalOptions="Center" Margin="0,0,0,5"/>
+
+                <Button Text="Сохранить"
+                Command="{Binding Profile.SaveCommand}"
+                HorizontalOptions="Fill"
+                HeightRequest="50"
+                CornerRadius="10"
+                FontAttributes="Bold">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding Profile.IsProfileCooldownActive}" Value="True">
+                            <Setter Property="Opacity" Value="0.5" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentPage>

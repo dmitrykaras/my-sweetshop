@@ -1,0 +1,39 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="my_sweetshop.Views.Profile.FavoritesProduct.FavoritesPage"
+             Shell.NavBarIsVisible="True"
+             Title="Избранные товары">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <CollectionView Grid.Row="1" x:Name="FavoritesCollection" SelectionMode="None">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="10" VerticalItemSpacing="10" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Padding="0" 
+                        Margin="8" 
+                        Background="White" 
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 8">
+
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnProductTapped" CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+
+                        <Border.Shadow>
+                            <Shadow Brush="Black" Offset="2,2" Radius="5" Opacity="0.15" />
+                        </Border.Shadow>
+
+                        <VerticalStackLayout>
+                            <Image Source="{Binding ImageUrl}" HeightRequest="150" Aspect="AspectFill" />
+                            <Label Text="{Binding Name}" Padding="8" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewmodels="clr-namespace:my_sweetshop.ViewModels.Profile"
+    x:Class="my_sweetshop.Views.Profile.ProfilePage"
+    x:DataType="viewmodels:EditProfileRootViewModel"
+    Title="Профиль"
+    BackgroundColor="{StaticResource PageBackgroundLight}">
+
+    <RefreshView IsRefreshing="{Binding Profile.IsRefreshing}"
+                 Command="{Binding Profile.RefreshPageCommand}"
+                 RefreshColor="#E63946">
+        
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="18">
+
+                <!-- Заголовок и кнопка выхода -->
+                <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+
+                    <!-- Заголовок -->
+                    <Label Text="Профиль"
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       VerticalOptions="Center" />
+
+                    <!-- Кнопка Выхода -->
+                    <Border Grid.Column="1"
+                        BackgroundColor="#FFF0F0"
+                        Stroke="Transparent"
+                        Padding="16, 8"
+                        StrokeShape="RoundRectangle 20"
+                        VerticalOptions="Center">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnLogoutTapped"/>
+                        </Border.GestureRecognizers>
+
+                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                            <Label Text="Выйти"
+                               TextColor="#E63946"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                    </Border>
+                </Grid>
+
+                <!-- Панель баллов -->
+                <Border BackgroundColor="White"
+                    Stroke="Transparent"
+                    Padding="16"
+                    StrokeShape="RoundRectangle 14">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="{Binding Points.TotalPoints, TargetNullValue='Не указано', FallbackValue='Загрузка...'}"
+                           FontSize="28"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Start" />
+
+                        <Label Text="Копите баллы при покупках"
+                           FontSize="13"
+                           TextColor="Gray" />
+                    </VerticalStackLayout>
+                    <Border.Shadow>
+                        <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                    </Border.Shadow>
+                </Border>
+
+                <!-- Профиль пользователя -->
+                <Border BackgroundColor="White"
+                    Stroke="Transparent"
+                    Padding="14"
+                    StrokeShape="RoundRectangle 12">
+                    <Grid ColumnDefinitions="40,*">
+                        <Image Source="user.png"
+                           HeightRequest="24"
+                           WidthRequest="24"
+                           VerticalOptions="Center"/>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Text="{Binding Profile.CurrentFirstname, TargetNullValue='Не указано', FallbackValue='Загрузка...'}"
+                               FontSize="15"
+                               FontAttributes="Bold"/>
+                            <Label 
+                            Text="{Binding Profile.CurrentEmail}"
+                            FontSize="13"
+                            TextColor="Gray"/>
+                        </VerticalStackLayout>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnProfileTapped"/>
+                        </Grid.GestureRecognizers>
+                    </Grid>
+                    <Border.Shadow>
+                        <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                    </Border.Shadow>
+                </Border>
+
+                <!-- Избранное -->
+                <Border BackgroundColor="White"
+                    Stroke="Transparent"
+                    Padding="14"
+                    StrokeShape="RoundRectangle 12">
+                    <Grid ColumnDefinitions="40,*">
+                        <Image Source="favorites.png"
+                           HeightRequest="24"
+                           WidthRequest="24"
+                           VerticalOptions="Center"/>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Text="Избранное"
+                               FontSize="15"
+                               FontAttributes="Bold"/>
+                            <Label Text="Ваши любимые товары"
+                               FontSize="13"
+                               TextColor="Gray"/>
+                        </VerticalStackLayout>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnFavoritesTapped"/>
+                        </Grid.GestureRecognizers>
+                    </Grid>
+                    <Border.Shadow>
+                        <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                    </Border.Shadow>
+                </Border>
+
+                <!-- Кнопки Помощь/Сайт -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="14">
+                    <!-- Помощь -->
+                    <Border Style="{StaticResource CardStyle}"
+                    HeightRequest="140"
+                    StrokeShape="RoundRectangle 14">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnHelpTapped"/>
+                        </Border.GestureRecognizers>
+                        <Grid>
+                            <Image Source="cloud_chat_bg.png"
+                               Aspect="AspectFit"
+                               VerticalOptions="Fill"
+                               HorizontalOptions="Fill"/>
+                            <Label Text="Поддержка"
+                               TextColor="Black"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               Margin="14"
+                               VerticalOptions="End"/>
+                        </Grid>
+                        <Border.Shadow>
+                            <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                        </Border.Shadow>
+                    </Border>
+
+                    <!-- Сайт -->
+                    <Border Style="{StaticResource CardStyle}"
+                    HeightRequest="140"
+                    StrokeShape="RoundRectangle 14"
+                    Grid.Column="1">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnSiteTapped"/>
+                        </Border.GestureRecognizers>
+                        <Grid>
+                            <Image Source="website.png"
+                           Aspect="AspectFit"
+                           VerticalOptions="Fill"
+                           HorizontalOptions="Fill"/>
+                            <Label Text="Сайт"
+                           TextColor="Black"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           Margin="14"
+                           VerticalOptions="End"/>
+                        </Grid>
+                        <Border.Shadow>
+                            <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                        </Border.Shadow>
+                    </Border>
+                </Grid>
+                <!-- Скрытая кнопка для кассира -->
+                <Label Text=" " x:Name="CashierHiddenTrigger">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer NumberOfTapsRequired="5"
+                                          Tapped="OnCashierSecretTapped"/>
+                    </Label.GestureRecognizers>
+                </Label>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>

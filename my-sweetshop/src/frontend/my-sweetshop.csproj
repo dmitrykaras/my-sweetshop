@@ -1,0 +1,155 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+
+		<AllowMissingPrunePackageData>true</AllowMissingPrunePackageData>
+
+		<AndroidGenerateResourceDesigner>false</AndroidGenerateResourceDesigner>
+		<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+		<AndroidUseDesignerAssemblyConsolidator>false</AndroidUseDesignerAssemblyConsolidator>
+
+		<SuppressTrimAnalysisWarnings>true</SuppressTrimAnalysisWarnings>
+
+		<OutputType>Exe</OutputType>
+		<RootNamespace>my_sweetshop</RootNamespace>
+		<UseMaui>true</UseMaui>
+		<SingleProject>true</SingleProject>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<ApplicationTitle>my-sweetshop</ApplicationTitle>
+		<ApplicationId>com.companyname.mysweetshop</ApplicationId>
+		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationVersion>1</ApplicationVersion>
+		<WindowsPackageType>None</WindowsPackageType>
+
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+		<UserSecretsId>25b47317-d33a-4ce4-9af9-a4356d940788</UserSecretsId>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-android|AnyCPU'">
+	  <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- App Icon -->
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+
+		<!-- Splash Screen -->
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+
+		<!-- Все изображения верхнего уровня -->
+		<MauiImage Include="Resources\Images\*.png" />
+		<MauiImage Include="Resources\Images\*.jpg" />
+
+		<!-- Изображения из подпапки icons -->
+		<MauiImage Include="Resources\Images\icons\*.png" />
+		<MauiImage Include="Resources\Images\icons\*.jpg" />
+
+		<!-- Custom Fonts -->
+		<MauiFont Include="Resources\Fonts\*" />
+
+		<!-- Raw Assets -->
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Resources\Images\icons\calculator.svg" />
+	  <None Remove="Resources\Images\icons\cancel.svg" />
+	  <None Remove="Resources\Images\icons\cloud_chat_bg.svg" />
+	  <None Remove="Resources\Images\icons\copy.svg" />
+	  <None Remove="Resources\Images\icons\favorites.svg" />
+	  <None Remove="Resources\Images\icons\favorite_image1.svg" />
+	  <None Remove="Resources\Images\icons\favorite_image2.svg" />
+	  <None Remove="Resources\Images\icons\instagram.svg" />
+	  <None Remove="Resources\Images\icons\location.svg" />
+	  <None Remove="Resources\Images\icons\log_out.svg" />
+	  <None Remove="Resources\Images\icons\page_transition.svg" />
+	  <None Remove="Resources\Images\icons\phone.svg" />
+	  <None Remove="Resources\Images\icons\points.svg" />
+	  <None Remove="Resources\Images\icons\points_bg.svg" />
+	  <None Remove="Resources\Images\icons\shopping_cart.svg" />
+	  <None Remove="Resources\Images\icons\tab_catalog.svg" />
+	  <None Remove="Resources\Images\icons\tab_catalog_bg.svg" />
+	  <None Remove="Resources\Images\icons\tab_contact.svg" />
+	  <None Remove="Resources\Images\icons\tab_home.svg" />
+	  <None Remove="Resources\Images\icons\tab_profile.svg" />
+	  <None Remove="Resources\Images\icons\telegram.svg" />
+	  <None Remove="Resources\Images\icons\telegram1.svg" />
+	  <None Remove="Resources\Images\icons\telegram_bg.svg" />
+	  <None Remove="Resources\Images\icons\user.svg" />
+	  <None Remove="Resources\Images\icons\viber.svg" />
+	  <None Remove="Resources\Images\icons\vk.svg" />
+	  <None Remove="Resources\Images\icons\vk_bg.svg" />
+	  <None Remove="Resources\Images\icons\website.svg" />
+	  <None Remove="Resources\Images\icons\whatsapp.svg" />
+	  <None Remove="Resources\Images\logo_1.svg" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiImage Include="Resources\Images\icons\calculator.svg" />
+	  <MauiImage Include="Resources\Images\icons\cancel.svg" />
+	  <MauiImage Include="Resources\Images\icons\cloud_chat_bg.svg" />
+	  <MauiImage Include="Resources\Images\icons\copy.svg" />
+	  <MauiImage Include="Resources\Images\icons\favorites.svg" />
+	  <MauiImage Include="Resources\Images\icons\favorite_image1.svg" />
+	  <MauiImage Include="Resources\Images\icons\favorite_image2.svg" />
+	  <MauiImage Include="Resources\Images\icons\instagram.svg" />
+	  <MauiImage Include="Resources\Images\icons\location.svg" />
+	  <MauiImage Include="Resources\Images\icons\log_out.svg" />
+	  <MauiImage Include="Resources\Images\icons\page_transition.svg" />
+	  <MauiImage Include="Resources\Images\icons\phone.svg" />
+	  <MauiImage Include="Resources\Images\icons\points.svg" />
+	  <MauiImage Include="Resources\Images\icons\points_bg.svg" />
+	  <MauiImage Include="Resources\Images\icons\shopping_cart.svg" />
+	  <MauiImage Include="Resources\Images\icons\tab_catalog.svg" />
+	  <MauiImage Include="Resources\Images\icons\tab_catalog_bg.svg" />
+	  <MauiImage Include="Resources\Images\icons\tab_contact.svg" />
+	  <MauiImage Include="Resources\Images\icons\tab_home.svg" />
+	  <MauiImage Include="Resources\Images\icons\tab_profile.svg" />
+	  <MauiImage Include="Resources\Images\icons\telegram.svg" />
+	  <MauiImage Include="Resources\Images\icons\telegram1.svg" />
+	  <MauiImage Include="Resources\Images\icons\telegram_bg.svg" />
+	  <MauiImage Include="Resources\Images\icons\user.svg" />
+	  <MauiImage Include="Resources\Images\icons\viber.svg" />
+	  <MauiImage Include="Resources\Images\icons\vk.svg" />
+	  <MauiImage Include="Resources\Images\icons\vk_bg.svg" />
+	  <MauiImage Include="Resources\Images\icons\website.svg" />
+	  <MauiImage Include="Resources\Images\icons\whatsapp.svg" />
+	  <MauiImage Include="Resources\Images\logo_1.svg" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Maui" Version="14.0.0" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="10.0.3" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.30" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Views\Profile\ProfileChanges\EditProfilePage.xaml.cs">
+	    <DependentUpon>EditProfilePage.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="Views\Profile\FavoritesPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Profile\ProfileChanges\EditProfilePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Profile\ProfileChanges\NewEmailPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
+</Project>

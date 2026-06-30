@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: mysweetshop-db
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-mysweetshop_db}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: . 
+      dockerfile: my-sweetshop/src/backend/MySweetShop.Api/Dockerfile
+    container_name: mysweetshop-api
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      # JWT Settings
+      Jwt__Issuer: ${JWT_ISSUER:-MySweetShop.Api}
+      Jwt__Audience: ${JWT_AUDIENCE:-MySweetShop.Mobile}
+      Jwt__Key: ${JWT_KEY}
+      Jwt__ExpiresMinutes: ${JWT_EXPIRES_MINUTES:-30}
+      
+      # Database Connection
+      ConnectionStrings__Default: "Host=postgres;Port=5432;Database=${DB_NAME:-mysweetshop_db};Username=${DB_USER:-postgres};Password=${DB_PASSWORD:-postgres}"
+      
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+    ports:
+      - "5000:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      # Направляем папку со статикой из контейнера наружу.
+      # Папка "products_images" создастся автоматически в той же директории, где лежит этот docker-compose.yml
+      - ./products_images:/app/wwwroot/uploads
+    networks:
+      - app-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge

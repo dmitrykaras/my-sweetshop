@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="my_sweetshop.Views.Main.HomePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:my_sweetshop.ViewModels"
+    x:DataType="vm:HomeViewModel"
+    BackgroundColor="{StaticResource PageBackgroundLight}">
+
+    <!-- Установка контекста данных (ViewModel) для страницы -->
+    <ContentPage.BindingContext>
+        <vm:HomeViewModel />
+    </ContentPage.BindingContext>
+
+    <!-- Основной контейнер с возможностью прокрутки -->
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
+
+            <!-- Кнопка для открытия информации о магазинах -->
+            <Button Text="Узнать, где находятся наши магазины" 
+                    Style="{StaticResource ActionButtonStyle}" 
+                    Command="{Binding OpenStoresCommand}" />
+
+            <!-- Заголовок раздела -->
+            <Label Text="Получайте максимум выгоды" 
+                   FontSize="20" 
+                   TextColor="Black" />
+
+            <!-- Карточка с QR-кодом для скидок -->
+            <Border Padding="16" 
+                Background="White">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+
+                <Border.Shadow>
+                    <Shadow Offset="0,2"
+                        Radius="5"
+                        Opacity="0.15"
+                        Brush="Black" />
+                </Border.Shadow>
+
+                <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                    <Label Text="Скидочный QR-код" FontAttributes="Bold" HorizontalOptions="Center" />
+
+                    <Image Source="universal_secret_qr.png" 
+                       WidthRequest="150" 
+                       HeightRequest="150" 
+                       HorizontalOptions="Center"
+                       Aspect="AspectFit" />
+
+                    <Label Text="Покажите кассиру для начисления или списания баллов" 
+                       FontSize="12" 
+                       TextColor="Gray" 
+                       HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Кнопка заказа доставки через Telegram -->
+            <Button Text="Заказать доставку" 
+                    ImageSource="telegram.png" 
+                    ContentLayout="Left,12" 
+                    Style="{StaticResource ActionButtonStyle}" 
+                    Command="{Binding OrderDeliveryCommand}" />
+
+            <!-- Сетка для карточек социальных сетей (2 колонки) -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+
+                <!-- Карточка ВКонтакте -->
+                <Border Grid.Column="0"
+                        Style="{StaticResource CardStyle}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer
+                            Command="{Binding OpenVkCommand}"
+                            Tapped="OnCardTapped"/>
+                    </Border.GestureRecognizers>
+
+                    <!-- Тень для карточки -->
+                    <Border.Shadow>
+                        <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                    </Border.Shadow>
+
+                    <Grid>
+                        <Image Source="vk_bg.png" Aspect="AspectFill" />
+                        <Label Text="Наш блог ВКонтакте"
+                            TextColor="Black"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            Margin="14"
+                            VerticalOptions="End" />
+                    </Grid>
+                </Border>
+
+
+                <!-- Карточка Telegram -->
+                <Border Grid.Column="1"
+                        Style="{StaticResource CardStyle}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer
+                            Command="{Binding OpenTgCommand}"
+                            Tapped="OnCardTapped"/>
+                    </Border.GestureRecognizers>
+
+                    <!-- Тень для карточки -->
+                    <Border.Shadow>
+                        <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                    </Border.Shadow>
+
+                    <Grid>
+                        <Image Source="telegram_bg.png" Aspect="AspectFill" />
+                        <Label Text="Хочу сотрудничать"
+                            TextColor="Black"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            Margin="14"
+                            VerticalOptions="End" />
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+
+                <!-- Карточка каталога -->
+                <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenCatalogCommand}"/>
+                    </Border.GestureRecognizers>
+                    <Border.Shadow>
+                        <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                    </Border.Shadow>
+                    <Grid>
+                        <Image Source="tab_catalog_bg.png" Aspect="AspectFill" />
+                        <Label Text="Каталог товаров" TextColor="Black" FontSize="16" FontAttributes="Bold" Margin="14" VerticalOptions="End" />
+                    </Grid>
+                </Border>
+
+                <!-- Карточка баллов -->
+                <Border Grid.Column="1" Style="{StaticResource CardStyle}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenPointsCommand}"/>
+                    </Border.GestureRecognizers>
+                    <Border.Shadow>
+                        <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                    </Border.Shadow>
+                    <Grid>
+                        <Image Source="points_bg.png" Aspect="AspectFill" />
+                        <Label Text="Ваши баллы" TextColor="Black" FontSize="16" FontAttributes="Bold" Margin="14" VerticalOptions="End" />
+                    </Grid>
+                </Border>
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

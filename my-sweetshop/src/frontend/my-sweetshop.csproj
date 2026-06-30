@@ -60,6 +60,72 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Images\icons\calculator.svg" />
+	  <None Remove="Resources\Images\icons\cancel.svg" />
+	  <None Remove="Resources\Images\icons\cloud_chat_bg.svg" />
+	  <None Remove="Resources\Images\icons\copy.svg" />
+	  <None Remove="Resources\Images\icons\favorites.svg" />
+	  <None Remove="Resources\Images\icons\favorite_image1.svg" />
+	  <None Remove="Resources\Images\icons\favorite_image2.svg" />
+	  <None Remove="Resources\Images\icons\instagram.svg" />
+	  <None Remove="Resources\Images\icons\location.svg" />
+	  <None Remove="Resources\Images\icons\log_out.svg" />
+	  <None Remove="Resources\Images\icons\page_transition.svg" />
+	  <None Remove="Resources\Images\icons\phone.svg" />
+	  <None Remove="Resources\Images\icons\points.svg" />
+	  <None Remove="Resources\Images\icons\points_bg.svg" />
+	  <None Remove="Resources\Images\icons\shopping_cart.svg" />
+	  <None Remove="Resources\Images\icons\tab_catalog.svg" />
+	  <None Remove="Resources\Images\icons\tab_catalog_bg.svg" />
+	  <None Remove="Resources\Images\icons\tab_contact.svg" />
+	  <None Remove="Resources\Images\icons\tab_home.svg" />
+	  <None Remove="Resources\Images\icons\tab_profile.svg" />
+	  <None Remove="Resources\Images\icons\telegram.svg" />
+	  <None Remove="Resources\Images\icons\telegram1.svg" />
+	  <None Remove="Resources\Images\icons\telegram_bg.svg" />
+	  <None Remove="Resources\Images\icons\user.svg" />
+	  <None Remove="Resources\Images\icons\viber.svg" />
+	  <None Remove="Resources\Images\icons\vk.svg" />
+	  <None Remove="Resources\Images\icons\vk_bg.svg" />
+	  <None Remove="Resources\Images\icons\website.svg" />
+	  <None Remove="Resources\Images\icons\whatsapp.svg" />
+	  <None Remove="Resources\Images\logo_1.svg" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiImage Include="Resources\Images\icons\calculator.svg" />
+	  <MauiImage Include="Resources\Images\icons\cancel.svg" />
+	  <MauiImage Include="Resources\Images\icons\cloud_chat_bg.svg" />
+	  <MauiImage Include="Resources\Images\icons\copy.svg" />
+	  <MauiImage Include="Resources\Images\icons\favorites.svg" />
+	  <MauiImage Include="Resources\Images\icons\favorite_image1.svg" />
+	  <MauiImage Include="Resources\Images\icons\favorite_image2.svg" />
+	  <MauiImage Include="Resources\Images\icons\instagram.svg" />
+	  <MauiImage Include="Resources\Images\icons\location.svg" />
+	  <MauiImage Include="Resources\Images\icons\log_out.svg" />
+	  <MauiImage Include="Resources\Images\icons\page_transition.svg" />
+	  <MauiImage Include="Resources\Images\icons\phone.svg" />
+	  <MauiImage Include="Resources\Images\icons\points.svg" />
+	  <MauiImage Include="Resources\Images\icons\points_bg.svg" />
+	  <MauiImage Include="Resources\Images\icons\shopping_cart.svg" />
+	  <MauiImage Include="Resources\Images\icons\tab_catalog.svg" />
+	  <MauiImage Include="Resources\Images\icons\tab_catalog_bg.svg" />
+	  <MauiImage Include="Resources\Images\icons\tab_contact.svg" />
+	  <MauiImage Include="Resources\Images\icons\tab_home.svg" />
+	  <MauiImage Include="Resources\Images\icons\tab_profile.svg" />
+	  <MauiImage Include="Resources\Images\icons\telegram.svg" />
+	  <MauiImage Include="Resources\Images\icons\telegram1.svg" />
+	  <MauiImage Include="Resources\Images\icons\telegram_bg.svg" />
+	  <MauiImage Include="Resources\Images\icons\user.svg" />
+	  <MauiImage Include="Resources\Images\icons\viber.svg" />
+	  <MauiImage Include="Resources\Images\icons\vk.svg" />
+	  <MauiImage Include="Resources\Images\icons\vk_bg.svg" />
+	  <MauiImage Include="Resources\Images\icons\website.svg" />
+	  <MauiImage Include="Resources\Images\icons\whatsapp.svg" />
+	  <MauiImage Include="Resources\Images\logo_1.svg" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="14.0.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />

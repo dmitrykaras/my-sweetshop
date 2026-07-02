@@ -32,23 +32,23 @@
   <tr>
     <td width="25%" align="center"><b>Главный экран</b><br/><img src="/screenshots/HomePage_image.png" width="100%"/></td>
     <td width="25%" align="center"><b>Каталог</b><br/><img src="/screenshots/CatalogPage_image3.png" width="100%"/></td>
-    <td width="25%" align="center"><b>Детали товара</b><br/><img src="/screenshots/CatalogPage_image.png" width="100%"/></td>
-    <td width="25%" align="center"><b>Избранное</b><br/><img src="/screenshots/SplashScreen_image.png" width="100%"/></td>
+    <td width="25%" align="center"><b>Детали товара</b><br/><img src="/screenshots/ProductPage_image.png" width="100%"/></td>
+    <td width="33%" align="center"><b>Сплеш-скрин</b><br/><img src="/screenshots/SplashScreen_image.png" width="100%"/></td>
   </tr>
 </table>
 
 </details>
 
 <details>
-<summary>🏪 Поддержка</summary>
+<summary>🏪 Поддержка и избранное</summary>
 
 <br>
 
 <table width="100%">
   <tr>
-    <td width="33%" align="center"><b>Экран поддержка</b><br/><img src="/screenshots/ContactPage_image.png" width="100%"/></td>
-    <td width="33%" align="center"><b>Экран поддержки</b><br/><img src="/screenshots/ProductPage_image.png" width="100%"/></td>
-    <td width="33%" align="center"><b>Сплеш-скрин</b><br/><img src="/screenshots/SplashScreen_image.png" width="100%"/></td>
+    <td width="25%" align="center"><b>Экран поддержки</b><br/><img src="/screenshots/ContactPage_image.png" width="100%"/></td>
+    <td width="25%" align="center"><b>Избранное</b><br/><img src="/screenshots/FavoritePage_image.png" width="100%"/></td>
+    <td width="25%" align="center"><b>Избранное</b><br/><img src="/screenshots/FavoritePage_image2.png" width="100%"/></td>
   </tr>
 </table>
 
@@ -75,7 +75,7 @@
 - **MVVM Pattern** — для разделения логики и представления.
 - **HttpClient / System.Text.Json** — для работы с API и десериализации DTO.
 ### **Backend & Database**
-- **.NET Web API (C# 13)** — архитектура серверной части.
+- **.NET Web API (ASP.NET Core, C# 13)** — архитектура серверной части.
 - **Entity Framework Core** — ORM для работы с данными.
 - **PostgreSQL** — хранение основных данных и логов/метаданных.
 - **Docker** — контейнеризация бэкенда для быстрой развертки.

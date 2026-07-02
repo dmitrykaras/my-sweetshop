@@ -28,7 +28,8 @@
 
             <!-- Карточка с QR-кодом для скидок -->
             <Border Padding="16" 
-                Background="White">
+                Background="White"
+                Stroke="Transparent">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="16" />
                 </Border.StrokeShape>

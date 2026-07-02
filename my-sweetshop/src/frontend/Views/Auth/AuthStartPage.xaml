@@ -2,7 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="my_sweetshop.Views.Auth.AuthStartPage"
-             Title="Добро пожаловать">
+             Title="Добро пожаловать"
+             Shell.TitleColor="Black">
     <Grid Padding="24" RowDefinitions="Auto,*,Auto">
 
         <VerticalStackLayout Grid.Row="1" Spacing="18" VerticalOptions="Center">
@@ -18,6 +19,7 @@
 
         <Button Grid.Row="2"
             Text="Вход / Регистрация"
+            BackgroundColor="#0066CC"
             TextColor="White"
             CornerRadius="16"
             HeightRequest="52"

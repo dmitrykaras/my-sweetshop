@@ -53,6 +53,7 @@
                 Grid.Row="2"
                 Text="Продолжить"
                 TextColor="White"
+                BackgroundColor="#0066CC"
                 CornerRadius="16"
                 HeightRequest="52"
                 HorizontalOptions="Center"

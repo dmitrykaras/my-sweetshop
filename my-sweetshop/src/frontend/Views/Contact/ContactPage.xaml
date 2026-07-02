@@ -157,7 +157,7 @@
             <HorizontalStackLayout Spacing="12" Padding="0,0,0,0">
 
                 <!-- Телефон -->
-                <Border StrokeShape="26" BackgroundColor="White" HeightRequest="52" WidthRequest="52" Padding="5">
+                <Border StrokeShape="26" BackgroundColor="White" HeightRequest="52" WidthRequest="52" Padding="5" Stroke="Transparent">
                     <Image Source="phone.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="Center">
                         <Image.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnCall"/>
@@ -166,7 +166,7 @@
                 </Border>
 
                 <!-- Instagram -->
-                <Border StrokeShape="26" BackgroundColor="White" HeightRequest="52" WidthRequest="52" Padding="-2">
+                <Border StrokeShape="26" BackgroundColor="White" HeightRequest="52" WidthRequest="52" Padding="-2" Stroke="Transparent">
                     <Image Source="instagram.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="Center">
                         <Image.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnInstagram"/>
@@ -175,7 +175,7 @@
                 </Border>
 
                 <!-- WhatsApp -->
-                <Border StrokeShape="26" BackgroundColor="White" HeightRequest="52" WidthRequest="52" Padding="-1">
+                <Border StrokeShape="26" BackgroundColor="White" HeightRequest="52" WidthRequest="52" Padding="-1" Stroke="Transparent">
                     <Image Source="whatsapp.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="Center">
                         <Image.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnWhatsapp"/>
@@ -184,7 +184,7 @@
                 </Border>
 
                 <!-- Viber -->
-                <Border StrokeShape="26" BackgroundColor="White" HeightRequest="52" WidthRequest="52" Padding="0">
+                <Border StrokeShape="26" BackgroundColor="White" HeightRequest="52" WidthRequest="52" Padding="0" Stroke="Transparent">
                     <Image Source="viber.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="Center">
                         <Image.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnViber"/>
@@ -193,7 +193,7 @@
                 </Border>
 
                 <!-- VK -->
-                <Border StrokeShape="26" BackgroundColor="White" HeightRequest="52" WidthRequest="52" Padding="-1">
+                <Border StrokeShape="26" BackgroundColor="White" HeightRequest="52" WidthRequest="52" Padding="-1" Stroke="Transparent">
                     <Image Source="vk.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="Center">
                         <Image.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnVk"/>
@@ -202,7 +202,7 @@
                 </Border>
 
                 <!-- Telegram -->
-                <Border StrokeShape="26" BackgroundColor="White" HeightRequest="52" WidthRequest="52" Padding="-1">
+                <Border StrokeShape="26" BackgroundColor="White" HeightRequest="52" WidthRequest="52" Padding="-1" Stroke="Transparent">
                     <Image Source="telegram1.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="Center">
                         <Image.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnTelegram"/>

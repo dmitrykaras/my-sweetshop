@@ -43,6 +43,7 @@
         <Button Grid.Row="5"
                 x:Name="ContinueButton"
                 Text="Продолжить"
+                BackgroundColor="#0066CC"
                 TextColor="White"
                 CornerRadius="16"
                 HeightRequest="52"

@@ -30,10 +30,16 @@
                     Keyboard="Email" />
 
                 <Button Text="Сменить почту"
-                Command="{Binding Profile.GoToChangeEmailCommand}">
+                    BackgroundColor="#B3D4FF" TextColor="#507090"
+                    HorizontalOptions="Fill"
+                    HeightRequest="50"
+                    CornerRadius="10"
+                    FontAttributes="Bold"
+                    Command="{Binding Profile.GoToChangeEmailCommand}">
                     <Button.Triggers>
                         <DataTrigger TargetType="Button" Binding="{Binding Profile.IsEmailCooldownActive}" Value="True">
-                            <Setter Property="Opacity" Value="0.4" />
+                            <Setter Property="BackgroundColor" Value="#0066CC" />
+                            <Setter Property="TextColor" Value="White" />
                         </DataTrigger>
                     </Button.Triggers>
                 </Button>
@@ -61,14 +67,16 @@
                    TextColor="#888" FontSize="12" HorizontalOptions="Center" Margin="0,0,0,5"/>
 
                 <Button Text="Сохранить"
-                Command="{Binding Profile.SaveCommand}"
-                HorizontalOptions="Fill"
-                HeightRequest="50"
-                CornerRadius="10"
-                FontAttributes="Bold">
+                    BackgroundColor="#B3D4FF" TextColor="#507090"
+                    Command="{Binding Profile.SaveCommand}"
+                    HorizontalOptions="Fill"
+                    HeightRequest="50"
+                    CornerRadius="10"
+                    FontAttributes="Bold">
                     <Button.Triggers>
-                        <DataTrigger TargetType="Button" Binding="{Binding Profile.IsProfileCooldownActive}" Value="True">
-                            <Setter Property="Opacity" Value="0.5" />
+                        <DataTrigger TargetType="Button" Binding="{Binding Profile.IsProfileCooldownActive}" Value="False">
+                            <Setter Property="BackgroundColor" Value="#0066CC" />
+                            <Setter Property="TextColor" Value="White" />
                         </DataTrigger>
                     </Button.Triggers>
                 </Button>

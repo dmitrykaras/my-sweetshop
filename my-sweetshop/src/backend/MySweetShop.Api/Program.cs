@@ -141,3 +141,5 @@ if (args.Contains("--clear-images"))
     return;
 }
 app.Run();
+
+public partial class Program { }

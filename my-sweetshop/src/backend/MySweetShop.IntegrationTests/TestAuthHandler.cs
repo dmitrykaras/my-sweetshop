@@ -18,13 +18,19 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        // Если в тесте передан заголовок X-Test-UserId - берём его, иначе используем дефолтный GUID
-        var userId = Context.Request.Headers["X-Test-UserId"].FirstOrDefault()
-            ?? "11111111-1111-1111-1111-111111111111";
+        // Если заголовок X-Test-UserId не передан — считаем пользователя неавторизованным
+        if (!Context.Request.Headers.TryGetValue("X-Test-UserId", out var userIdHeader)
+            || string.IsNullOrEmpty(userIdHeader))
+        {
+            return Task.FromResult(AuthenticateResult.Fail("No test user ID header provided"));
+        }
+
+        var userId = userIdHeader.ToString();
 
         var claims = new[]
         {
             // Именно это значение вытягивается через User.FindFirstValue(ClaimTypes.NameIdentifier)
+            new Claim("uid", userId),
             new Claim(ClaimTypes.NameIdentifier, userId),
             new Claim(ClaimTypes.Name, "TestUser")
         };

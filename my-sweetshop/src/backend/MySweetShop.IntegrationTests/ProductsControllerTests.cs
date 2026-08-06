@@ -1,12 +1,8 @@
-﻿using Amazon.S3.Model;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using MySweetShop.Api.Data;
 using MySweetShop.Api.Entities;
 using System.Net.Http.Json;
-using System.Runtime.InteropServices;
-using Xunit;
 
 public class ProductsControllerTests : IClassFixture<CustomWebApplicationFactory<Program>>
 {

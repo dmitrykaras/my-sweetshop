@@ -428,6 +428,197 @@ public class ProductsControllerTests : IClassFixture<CustomWebApplicationFactory
 
             Assert.Null(favorite);
         }
+    }
 
+    [Fact(DisplayName = "POST /products/{id}/image - возвращает 404 Not Found, если продукт не существует")]
+    public async Task UploadImage_Returns404NotFound_WhenProductDoesNotExist()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        using var content = new MultipartFormDataContent();
+        var byteContent = new ByteArrayContent(new byte[] { 0xFF, 0xD8 });
+        byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+        content.Add(byteContent, "file", "test.jpg");
+
+        // Act
+        var response = await client.PostAsync($"/products/{Guid.NewGuid()}/image", content);
+
+        // Assert
+        Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact(DisplayName = "POST /products/{id}/image - перезаписывает старое изображение при повторной загрузке")]
+    public async Task UploadImage_ReplacesOldImage_WhenImageAlreadyExists()
+    {
+        // Arrange
+        Guid productId = Guid.NewGuid();
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var category = await db.Categories.FirstAsync();
+
+            db.Products.Add(new Product
+            {
+                Id = productId,
+                Name = "Товар со старой картинкой",
+                Price = 500,
+                CategoryId = category.Id,
+                ImageKey = "products/old_image.jpg"
+            });
+            await db.SaveChangesAsync();
+        }
+
+        var client = _factory.CreateClient();
+        using var content = new MultipartFormDataContent();
+        var byteContent = new ByteArrayContent(new byte[] { 0xFF, 0xD8 });
+        byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+        content.Add(byteContent, "file", "new-cake.jpg");
+
+        // Act
+        var response = await client.PostAsync($"/products/{productId}/image", content);
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+
+        using (var scope = _factory.Services.CreateAsyncScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var updatedProduct = await db.Products.FirstAsync(p => p.Id == productId);
+
+            Assert.NotEqual("products/old_image.jpg", updatedProduct.ImageKey);
+            Assert.Contains(productId.ToString(), updatedProduct.ImageKey);
+        }
+    }
+
+    [Fact(DisplayName = "DELETE /products/{id}/image - возвращает 404 Not Found, если продукт не найден")]
+    public async Task DeleteImage_Returns404NotFound_WhenProductDoesNotExist()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+
+        // Act
+        var response = await client.DeleteAsync($"/products/{Guid.NewGuid()}/image");
+
+        // Assert
+        Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact(DisplayName = "DELETE /products/{id} - удаляет товар и связанную картинку")]
+    public async Task DeleteProduct_DeletesProductAndImage_WhenProductHasImage()
+    {
+        // Arrange
+        Guid productId = Guid.NewGuid();
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var category = await db.Categories.FirstAsync();
+
+            db.Products.Add(new Product
+            {
+                Id = productId,
+                Name = "Товар с картинкой для удаления",
+                Price = 1000,
+                CategoryId = category.Id,
+                ImageKey = "products/image_to_delete.jpg"
+            });
+            await db.SaveChangesAsync();
+        }
+
+        var client = _factory.CreateClient();
+
+        // Act
+        var response = await client.DeleteAsync($"/products/{productId}");
+
+        // Assert
+        Assert.Equal(System.Net.HttpStatusCode.NoContent, response.StatusCode);
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var product = await db.Products.FirstOrDefaultAsync(p => p.Id == productId);
+            Assert.Null(product);
+        }
+    }
+
+    [Fact(DisplayName = "POST /products/{id}/toggle-favorite - возвращает 404 Not Found, если продукт не существует")]
+    public async Task ToggleFavorite_Returns404NotFound_WhenProductDoesNotExist()
+    {
+        // Arrange
+        Guid userId = Guid.NewGuid();
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Add("X-Test-UserId", userId.ToString());
+
+        // Act
+        var response = await client.PostAsync($"/products/{Guid.NewGuid()}/toggle-favorite", null);
+
+        // Assert
+        Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact(DisplayName = "GET /products - возвращает IsFavorite = true для авторизованного пользователя")]
+    public async Task GetProducts_ReturnsIsFavoriteTrue_WhenUserIsAuthenticatedAndHasFavorite()
+    {
+        // Arrange
+        Guid productId = Guid.NewGuid();
+        Guid userId = Guid.NewGuid();
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var category = await db.Categories.FirstAsync();
+
+            db.Users.Add(new User
+            {
+                Id = userId,
+                Email = $"user_{userId}@test.com",
+                CreatedAt = DateTimeOffset.UtcNow
+            });
+
+            db.Products.Add(new Product
+            {
+                Id = productId,
+                Name = "Избранный товар в каталоге",
+                Price = 900,
+                CategoryId = category.Id
+            });
+
+            db.UserFavorites.Add(new UserFavorite
+            {
+                UserId = userId,
+                ProductId = productId
+            });
+
+            await db.SaveChangesAsync();
+        }
+
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Add("X-Test-UserId", userId.ToString());
+
+        // Act
+        var response = await client.GetAsync("/products");
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var products = await response.Content.ReadFromJsonAsync<List<ProductDto>>();
+
+        Assert.NotNull(products);
+        var targetProduct = products.FirstOrDefault(p => p.Id == productId);
+        Assert.NotNull(targetProduct);
+        Assert.True(targetProduct.IsFavorite);
+    }
+
+    [Fact(DisplayName = "GET /products/favorites - возвращает 401 Unauthorized для неавторизованного пользователя")]
+    public async Task GetFavoriteProducts_Returns401Unauthorized_WhenNotAuthenticated()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+
+        // Act
+        var response = await client.GetAsync("/products/favorites");
+
+        // Assert
+        Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
     }
 }

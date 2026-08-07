@@ -1,0 +1,38 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Скачиваем код твоего репозитория на виртуальную машину
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 2. Устанавливаем нужную версию .NET SDK
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x' # Замени на свою версию (например, 7.0.x), если используешь другую
+
+    # 3. Восстанавливаем NuGet пакеты
+    - name: Restore dependencies
+      run: dotnet restore
+
+    # 4. Собираем проект
+    - name: Build project
+      run: dotnet build --no-restore --configuration Release
+
+    # 5. Запускаем твои xUnit тесты
+    - name: Run tests
+      run: dotnet test --no-build --configuration Release --verbosity normal
+
+    # 6. Проверяем, что Docker-образ собирается без ошибок
+    - name: Test Docker build
+      run: docker build -t my-sweetshop-api:test .

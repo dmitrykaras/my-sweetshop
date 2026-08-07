@@ -8,5 +8,5 @@ public class RefreshToken
     public User User { get; set; } = null!;
     public DateTime ExpiresAt { get; set; }
     public bool IsUsed { get; set; }
-    public DateTimeOffset CreatedAt { get; internal set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

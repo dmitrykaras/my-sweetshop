@@ -5,6 +5,8 @@ VisualStudioVersion = 18.3.11505.172
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "my-sweetshop.api", "MySweetShop.Api\my-sweetshop.api.csproj", "{2E667A29-EA24-0448-1535-67D72747FBB6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySweetShop.IntegrationTests", "MySweetShop.IntegrationTests\MySweetShop.IntegrationTests.csproj", "{BBE9DA3A-C7B3-47F9-B43E-C2009B0EE2DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,8 +17,15 @@ Global
 		{2E667A29-EA24-0448-1535-67D72747FBB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E667A29-EA24-0448-1535-67D72747FBB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E667A29-EA24-0448-1535-67D72747FBB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBE9DA3A-C7B3-47F9-B43E-C2009B0EE2DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBE9DA3A-C7B3-47F9-B43E-C2009B0EE2DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBE9DA3A-C7B3-47F9-B43E-C2009B0EE2DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBE9DA3A-C7B3-47F9-B43E-C2009B0EE2DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {04012E22-0DC1-4873-8F99-8FA140C7D434}
 	EndGlobalSection
 EndGlobal

@@ -87,6 +87,6 @@ ehthumbs.db
 $RECYCLE.BIN/
 
 products_images/
-coveragereport/
+**/coveragereport/
 TestResults/
 wwwroot

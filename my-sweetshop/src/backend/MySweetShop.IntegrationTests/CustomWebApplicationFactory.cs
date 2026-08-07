@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System.Collections.Generic; // Добавлено для Dictionary
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration; // Добавлено для IConfigurationBuilder
 using Microsoft.Extensions.DependencyInjection;
 using MySweetShop.Api.Data;
 using Testcontainers.PostgreSql;
@@ -14,9 +16,15 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
             .WithUsername("postgres")
             .WithPassword("postgres")
             .Build();
+
     public async Task InitializeAsync()
     {
         await _dbContainer.StartAsync();
+
+        // Гарантируем, что в пустой базе Testcontainers создадутся таблицы
+        using var scope = Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await dbContext.Database.EnsureCreatedAsync();
     }
 
     new public async Task DisposeAsync()
@@ -26,6 +34,19 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        // Настройка окружения: изолируем тесты от appsettings.json
+        builder.ConfigureAppConfiguration((context, config) =>
+        {
+            config.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Jwt:Key"] = "SUPER_SECRET_DUMMY_KEY_FOR_INTEGRATION_TESTS_ONLY!",
+                ["Jwt:Issuer"] = "MySweetShop.Api",
+                ["Jwt:Audience"] = "MySweetShop.Mobile",
+                ["Jwt:ExpiresMinutes"] = "30"
+            });
+        });
+
+        // Настройка сервисов
         builder.ConfigureServices(services =>
         {
             // Поменяет базовую схему аутентификации на тестовую

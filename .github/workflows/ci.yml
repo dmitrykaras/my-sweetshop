@@ -10,6 +10,10 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./my-sweetshop/src/backend
+
     steps:
     # 1. Скачиваем код твоего репозитория на виртуальную машину
     - name: Checkout repository
@@ -19,7 +23,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x' # Замени на свою версию (например, 7.0.x), если используешь другую
+        dotnet-version: '8.0.x'
 
     # 3. Восстанавливаем NuGet пакеты
     - name: Restore dependencies
@@ -29,10 +33,19 @@ jobs:
     - name: Build project
       run: dotnet build --no-restore --configuration Release
 
-    # 5. Запускаем твои xUnit тесты
+    # 5. Запускаем твои xUnit тесты с генерацией отчета
     - name: Run tests
-      run: dotnet test --no-build --configuration Release --verbosity normal
+      run: dotnet test --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
+
+    # 5.1 Сохраняем отчет о тестах в артефакты (выполнится, даже если тесты упадут)
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: "**/TestResults/*.trx"
 
     # 6. Проверяем, что Docker-образ собирается без ошибок
     - name: Test Docker build
-      run: docker build -t my-sweetshop-api:test .
+      working-directory: .
+      run: docker build -t my-sweetshop-api:test -f my-sweetshop/src/backend/MySweetShop.Api/Dockerfile .

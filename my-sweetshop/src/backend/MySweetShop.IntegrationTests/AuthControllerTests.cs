@@ -1,10 +1,11 @@
-﻿using System.Net;
-using System.Net.Http.Json;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using MySweetShop.Api.Contracts;
 using MySweetShop.Api.Data;
 using MySweetShop.Api.Entities;
 using MySweetShop.Api.Services;
+using System.Net;
+using System.Net.Http.Json;
 using Xunit;
 
 public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory<Program>>
@@ -254,6 +255,140 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory<Pro
         }
     }
 
+    [Fact(DisplayName = "POST /auth/verify-code - возвращает 400 Bad Request, если код не найден")]
+    public async Task VerifyCode_Returns400_WhenCodeNotFound()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var request = new { Email = $"notfound_{Guid.NewGuid()}@sweetshop.test", Code = "1234" };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/auth/verify-code", request);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var result = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
+        Assert.Equal("code_not_found", result?.Error);
+    }
+
+    [Fact(DisplayName = "POST /auth/verify-code - возвращает 400 Bad Request, если код уже использован")]
+    public async Task VerifyCode_Returns400_WhenCodeAlreadyUsed()
+    {
+        // Arrange
+        string email = $"used_code_{Guid.NewGuid()}@sweetshop.test";
+        string code = "1234";
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            db.EmailVerificationCodes.Add(new EmailVerificationCode
+            {
+                Id = Guid.NewGuid(),
+                Email = email,
+                CodeHash = HashService.Sha256($"{email}:{code}"),
+                CreatedAt = DateTimeOffset.UtcNow,
+                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(10),
+                IsUsed = true // Код уже помечен как использованный
+            });
+            await db.SaveChangesAsync();
+        }
+
+        var client = _factory.CreateClient();
+        var request = new { Email = email, Code = code };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/auth/verify-code", request);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var result = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
+        Assert.Equal("code_already_used", result?.Error);
+    }
+
+    [Fact(DisplayName = "POST /auth/verify-code - возвращает 400 Bad Request, если код истек")]
+    public async Task VerifyCode_Returns400_WhenCodeExpired()
+    {
+        // Arrange
+        string email = $"expired_code_{Guid.NewGuid()}@sweetshop.test";
+        string code = "1234";
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            db.EmailVerificationCodes.Add(new EmailVerificationCode
+            {
+                Id = Guid.NewGuid(),
+                Email = email,
+                CodeHash = HashService.Sha256($"{email}:{code}"),
+                CreatedAt = DateTimeOffset.UtcNow.AddMinutes(-20),
+                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(-10), // Время вышло
+                IsUsed = false
+            });
+            await db.SaveChangesAsync();
+        }
+
+        var client = _factory.CreateClient();
+        var request = new { Email = email, Code = code };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/auth/verify-code", request);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var result = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
+        Assert.Equal("code_expired", result?.Error);
+    }
+
+    [Fact(DisplayName = "POST /auth/verify-code - авторизует существующего пользователя без создания нового")]
+    public async Task VerifyCode_AuthenticatesExistingUser_WhenUserAlreadyExists()
+    {
+        // Arrange
+        string email = $"existing_user_{Guid.NewGuid()}@sweetshop.test";
+        string code = "1111";
+        Guid existingUserId = Guid.NewGuid();
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            // Создаем пользователя заранее
+            db.Users.Add(new User
+            {
+                Id = existingUserId,
+                Email = email,
+                CreatedAt = DateTimeOffset.UtcNow,
+                FirstName = "John",
+                LastName = "Doe"
+            });
+
+            db.EmailVerificationCodes.Add(new EmailVerificationCode
+            {
+                Id = Guid.NewGuid(),
+                Email = email,
+                CodeHash = HashService.Sha256($"{email}:{code}"),
+                CreatedAt = DateTimeOffset.UtcNow,
+                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(10),
+                IsUsed = false
+            });
+
+            await db.SaveChangesAsync();
+        }
+
+        var client = _factory.CreateClient();
+        var request = new { Email = email, Code = code };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/auth/verify-code", request);
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<AuthVerifyResponse>();
+
+        Assert.NotNull(result);
+        Assert.Equal(existingUserId, result.User.Id); // ID должен совпасть с существующим
+        Assert.False(result.NeedsProfile); // У него уже есть имя и фамилия
+    }
+
     #endregion
 
     #region POST /auth/refresh
@@ -355,6 +490,54 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory<Pro
 
         // Act
         var response = await client.PostAsJsonAsync("/auth/refresh", refreshRequest);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact(DisplayName = "POST /auth/refresh - возвращает 401 Unauthorized, если токен истек")]
+    public async Task RefreshToken_Returns401_WhenTokenIsExpired()
+    {
+        // Arrange
+        Guid userId = Guid.NewGuid();
+        string expiredToken = Guid.NewGuid().ToString("N");
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            db.Users.Add(new User { Id = userId, Email = $"exp_{userId}@test.com", CreatedAt = DateTimeOffset.UtcNow });
+            db.RefreshTokens.Add(new RefreshToken
+            {
+                Id = Guid.NewGuid(),
+                Token = expiredToken,
+                UserId = userId,
+                CreatedAt = DateTime.UtcNow.AddDays(-40),
+                ExpiresAt = DateTime.UtcNow.AddDays(-10), // Срок вышел 10 дней назад
+                IsUsed = false
+            });
+            await db.SaveChangesAsync();
+        }
+
+        var client = _factory.CreateClient();
+        var request = new { RefreshToken = expiredToken };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/auth/refresh", request);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact(DisplayName = "POST /auth/refresh - возвращает 401 Unauthorized, если токен не существует")]
+    public async Task RefreshToken_Returns401_WhenTokenDoesNotExist()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var request = new { RefreshToken = "some-random-non-existent-token" };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/auth/refresh", request);
 
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);

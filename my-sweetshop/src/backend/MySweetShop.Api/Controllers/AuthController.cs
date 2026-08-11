@@ -60,7 +60,9 @@ public class AuthController(AppDbContext db, JwtService jwt) : ControllerBase
         // Временно: выводим код в консоль (потом заменим на отправку email)
         Console.WriteLine($"[AUTH CODE] {email} => {code}");
 
-        return Ok(new { cooldownSeconds = 120 });
+        // DEMO ONLY (insecure): возвращаем код прямо в ответе, чтобы ревьюер/HR
+        // мог проверить работоспособность API через Swagger без настроенной отправки email.
+        return Ok(new { cooldownSeconds = 120, code });
     }
 
     // Метод для верификации кода

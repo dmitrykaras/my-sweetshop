@@ -1,5 +1,5 @@
 # **🍬 My Sweetshop (Моя кондитерская)**
-Проект созданный на платформе **.NET MAUI**, **C# 13** и **C# 14 (preview)**. Данный проект представляет собой кроссплатформенное мобильное приложение (iOS, Android), интегрированное с полноценной серверной экосистемой включающую в себя систему скидок по QR-кодам.
+Кроссплатформенное мобильное приложение на **.NET MAUI** (Android / iOS) с собственным серверным API на **ASP.NET Core** и системой скидок по QR-кодам.
 ## **🚀 Основной функционал**
 * **Авторизация и сессии:** Безопасная аутентификация пользователей с сохранением сессий (JWT Tokens & Refresh Tokens) и интеграцией с API. 
 * **Главная страница:** QR-код системы лояльности и скидок, интерактивное местонахождение кондитерских магазинов, заказ доставки, а также карточки с быстрыми ссылками на социальные сети. 
@@ -10,6 +10,7 @@
 Для ознакомления с работой серверной части и тестирования REST API эндпоинтов развернут интерактивный Swagger UI:
 
 👉 **[Открыть Swagger UI](https://karas-sweetshopots.duckdns.org/swagger/index.html)**
+
 ## **📱 Интерфейс приложения**
 <details>
 <summary>🔐 Авторизация и вход (нажмите, чтобы развернуть)</summary>
@@ -83,40 +84,85 @@
 - **Entity Framework Core** — ORM для работы с данными.
 - **PostgreSQL** — хранение основных данных и логов/метаданных.
 - **Docker** — контейнеризация бэкенда для быстрой развертки.
+
+## **🧪 Тестирование и CI**
+
+[![CI](https://github.com/dmitrykaras/my-sweetshop/actions/workflows/ci.yml/badge.svg)](https://github.com/dmitrykaras/my-sweetshop/actions/workflows/ci.yml)
+
+Серверная часть покрыта **50 интеграционными тестами** (`MySweetShop.IntegrationTests`, .NET 9, xUnit).
+Тесты проверяют реальные HTTP-сценарии API, включая негативные кейсы (400 / 401 / 404):
+
+| Область | Что проверяется |
+|---|---|
+| **Авторизация** (`/auth`) | запрос кода, валидация email и формата кода, cooldown, лимит попыток, просроченный и уже использованный код, вход существующего и новый пользователь |
+| **Токены** | обновление пары JWT + Refresh Token, отказ при использованном, истёкшем и несуществующем токене |
+| **Каталог** (`/products`) | список товаров, удаление, загрузка / замена / удаление изображений, избранное |
+| **Профиль** (`/profile`) | данные пользователя, баллы, избранное, редактирование имени, смена email по коду |
+| **Пользователи** (`/api/users`) | получение и создание / обновление по email |
+
+Запуск локально:
+
+    dotnet test
+
+### Непрерывная интеграция
+При каждом push и pull request в `main` GitHub Actions автоматически:
+
+1. восстанавливает зависимости и собирает серверную часть (.NET 9, Release);
+2. запускает интеграционные тесты и сохраняет отчёт (`.trx`) как артефакт;
+3. проверяет, что Docker-образ API собирается без ошибок.
+
+Статус последнего прогона виден по бейджу выше.
+
+## **🔒 Безопасность авторизации**
+
+Вход выполняется по одноразовому 4-значному коду, отправляемому на email.
+Защита реализована на сервере и покрыта тестами:
+
+- **Cooldown на запрос кода:** повторный запрос для того же email раньше чем через 120 секунд отклоняется.
+- **Ограничение попыток:** после 5 неверных вводов код блокируется, нужно запросить новый.
+- **Срок жизни кода:** 10 минут, после этого код отклоняется.
+- **Одноразовость:** использованный код повторно принять нельзя.
+- **Ротация refresh-токенов:** при обновлении выдаётся новая пара токенов, а использованный, истёкший или несуществующий refresh-токен возвращает 401.
+- **Валидация входных данных:** формат email и кода проверяется до обращения к БД.
+
 ## **📂 Структура проекта (Основные модули)**
 ```bash
 my-sweetshop/
-├── docker-compose.yml              # Скрипт развертывания инфраструктуры
-│
-├── src/
-│   ├── my_sweetshop/               # КЛИЕНТСКОЕ ПРИЛОЖЕНИЕ (.NET MAUI)
-│   │   ├── my-sweetshop.csproj     # Файл конфигурации проекта MAUI
-│   │   ├── MauiProgram.cs          # Точка входа, регистрация DI-сервисов
-│   │   ├── Dtos/                   # Контракты данных API (Token, VerifyCode, UpdateProfile)
-│   │   ├── Models/                 # Локальные доменные модели (Product, UserModel)
-│   │   ├── ViewModels/             # Логика экранов (Catalog, Profile, Home)
-│   │   ├── Views/                  # XAML UI-страницы (Каталог, Авторизация, Профиль)
-│   │   ├── Services/               # Клиентские сервисы (ApiClient, AuthSession, UserService)
-│   │   ├── Platforms/              # Специфичный код платформ (Android, iOS, Windows, Tizen)
-│   │   └── Resources/              # Ресурсы приложения (Иконки, Шрифты, Стили, Splash)
-│   │
-│   └── MySweetshop.Api/            # СЕРВЕРНАЯ ЧАСТЬ (ASP.NET Core Web API)
-│       ├── my-sweetshop.api.csproj # Файл конфигурации проекта бэкенда
-│       ├── Program.cs              # Конфигурация приложения, Middleware и DI
-│       ├── Dockerfile              # Инструкции контейнеризации API
-│       ├── Contracts/              # Запросы и ответы API (Requests/Responses)
-│       ├── Controllers/            # REST-контроллеры (Auth, Products, Profile, Users)
-│       ├── Data/                   # Контекст базы данных Entity Framework (AppDbContext)
-│       ├── Entities/               # Сущности БД (User, Product, Category, RefreshToken)
-│       ├── Migrations/             # История миграций базы данных (EF Core)
-│       ├── Services/               # Серверная логика (JwtService, HashService, CodeGenerator)
-│       ├── IScript/                # Логика первичного наполнения базы данных (Seed)
-│       ├── SeedImages/             # Статические изображения сладостей для сидинга БД
-│       └── wwwroot/                # Корневая папка статических файлов (Загруженные изображения товаров)
+├── .github/workflows/ci.yml            # CI: сборка, тесты, проверка Docker-образа
+├── docker-compose.yml                  # Развёртывание БД и API
+├── screenshots/                        # Скриншоты приложения
+└── my-sweetshop/src/
+    ├── frontend/                       # КЛИЕНТ (.NET MAUI)
+    │   ├── MauiProgram.cs              # Точка входа, регистрация DI-сервисов
+    │   ├── Dtos/                       # Контракты данных API
+    │   ├── Models/                     # Локальные модели (Product, UserModel)
+    │   ├── ViewModels/                 # Логика экранов (MVVM)
+    │   ├── Views/                      # XAML-страницы (Auth, Catalog, Profile, ...)
+    │   ├── Services/                   # ApiClient, JwtAuthHandler, AuthSession, ProfileService
+    │   ├── Platforms/                  # Код под Android / iOS / Windows / ...
+    │   └── Resources/                  # Иконки, шрифты, стили, splash
+    │
+    └── backend/
+        ├── MySweetShop.Api.sln
+        ├── MySweetShop.Api/            # СЕРВЕР (ASP.NET Core Web API)
+        │   ├── Program.cs              # Конфигурация, middleware, DI
+        │   ├── Dockerfile
+        │   ├── Controllers/            # Auth, Products, Profile, Users
+        │   ├── Contracts/              # Запросы и ответы API
+        │   ├── Entities/               # User, Product, RefreshToken, коды подтверждения
+        │   ├── Data/                   # AppDbContext (EF Core)
+        │   ├── Migrations/             # Миграции БД
+        │   ├── Services/               # JwtService, HashService, CodeGenerator
+        │   ├── Options/                # Настройки JWT
+        │   ├── IScript/                # Сидинг изображений товаров
+        │   ├── SeedImages/             # Изображения для сидинга
+        │   └── wwwroot/                # Статические файлы
+        └── MySweetShop.IntegrationTests/  # Интеграционные тесты (xUnit)
 ```
 ## **🛠 Запуск проекта**
 ### 1. Требования
-- .NET 8 SDK или выше
+- .NET 9 SDK (для серверной части и тестов)
+- .NET 10 SDK и рабочая нагрузка .NET MAUI (для мобильного клиента)
 - IDE: Visual Studio 2022 / JetBrains Rider / VS Code с установленными рабочими нагрузками .NET MAUI.
 - Docker (для поднятия локальной БД и API).
 ### 2. Клонирование репозитория
@@ -131,7 +177,7 @@ docker-compose up -d
 ```
 ### 4. Применение миграций БД
 ```
-cd src/MySweetshop.Api
+cd my-sweetshop/src/backend/MySweetShop.Api
 dotnet ef database update
 ```
 ### 5. Запуск мобильного приложения

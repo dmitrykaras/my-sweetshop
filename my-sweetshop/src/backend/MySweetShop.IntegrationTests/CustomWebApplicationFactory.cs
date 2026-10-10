@@ -34,6 +34,8 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseEnvironment("IntegrationTesting");
+
         // Настройка окружения: изолируем тесты от appsettings.json
         builder.ConfigureAppConfiguration((context, config) =>
         {

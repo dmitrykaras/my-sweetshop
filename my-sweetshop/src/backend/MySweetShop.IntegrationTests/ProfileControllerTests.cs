@@ -489,7 +489,7 @@ public class ProfileControllerTests : IClassFixture<CustomWebApplicationFactory<
         Guid userId = Guid.NewGuid();
         string currentEmail = $"old_{userId}@sweetshop.test";
         string newEmail = $"new_{userId}@sweetshop.test";
-        string code = "1234";
+        string code = "123456";
         string hash = HashService.Sha256($"{userId}:{newEmail}:{code}");
 
         using (var scope = _factory.Services.CreateScope())
@@ -552,7 +552,7 @@ public class ProfileControllerTests : IClassFixture<CustomWebApplicationFactory<
         Guid userId = Guid.NewGuid();
         string currentEmail = $"user_{userId}@sweetshop.test";
         string newEmail = $"new_{userId}@sweetshop.test";
-        string correctCode = "1234";
+        string correctCode = "123456";
         string hash = HashService.Sha256($"{userId}:{newEmail}:{correctCode}");
 
         using (var scope = _factory.Services.CreateScope())
@@ -588,7 +588,7 @@ public class ProfileControllerTests : IClassFixture<CustomWebApplicationFactory<
         var verifyRequest = new
         {
             NewEmail = newEmail,
-            Code = "9999" // Неверный код
+            Code = "999999" // Неверный код
         };
 
         // Act

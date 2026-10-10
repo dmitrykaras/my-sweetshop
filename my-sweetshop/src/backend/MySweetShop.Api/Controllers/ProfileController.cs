@@ -111,7 +111,7 @@ namespace MySweetShop.Api.Controllers
                     return BadRequest($"Wait {120 - seconds} seconds");
             }
 
-            var code = CodeGenerator.Generate4Digits();
+            var code = CodeGenerator.Generate6Digits();
             var hash = HashService.Sha256($"{userId}:{newEmail}:{code}");
 
             var entity = new EmailChangeCode
@@ -148,8 +148,8 @@ namespace MySweetShop.Api.Controllers
             var newEmail = request.NewEmail.Trim().ToLower();
             var code = request.Code.Trim();
 
-            // Проверка на 4 символа и это цифры
-            if (code.Length != 4 || !code.All(char.IsDigit))
+            // Проверка на 6 символа и это цифры
+            if (code.Length != 6 || !code.All(char.IsDigit))
                 return BadRequest("Invalid code");
 
             var entity = await _db.EmailChangeCodes
@@ -169,19 +169,53 @@ namespace MySweetShop.Api.Controllers
             if (DateTimeOffset.UtcNow > entity.ExpiresAt)
                 return BadRequest("Code expired");
 
-            // Проверка, что попыток было меньше 5
-            if (entity.Attempts >= 5)
-                return BadRequest("Too many attempts");
+            const int maxAttempts = 5;
+            const int blockSeconds = 120;
 
-            entity.Attempts++;
+            // Проверка активного кулдауна
+            if (entity.BlockedUntil.HasValue && DateTimeOffset.UtcNow < entity.BlockedUntil.Value)
+            {
+                var retry = (int)Math.Ceiling((entity.BlockedUntil.Value - DateTimeOffset.UtcNow).TotalSeconds);
+                return BadRequest(new ApiErrorResponse
+                {
+                    Error = "too_many_attempts",
+                    Message = "Too many attempts. Cooldown active.",
+                    AttemptsLeft = 0,
+                    RetryAfterSeconds = retry
+                });
+            }
 
             var inputHash = HashService.Sha256($"{userId}:{newEmail}:{code}");
             if (entity.CodeHash != inputHash)
             {
+                entity.Attempts++;
+
+                if (entity.Attempts >= maxAttempts)
+                {
+                    // Сбрасываем код (делаем невалидным) и ставим кулдаун
+                    entity.IsUsed = true;
+                    entity.BlockedUntil = DateTimeOffset.UtcNow.AddSeconds(blockSeconds);
+                    await _db.SaveChangesAsync();
+
+                    return BadRequest(new ApiErrorResponse
+                    {
+                        Error = "too_many_attempts",
+                        Message = "Too many failed attempts. Code invalidated.",
+                        AttemptsLeft = 0,
+                        RetryAfterSeconds = blockSeconds
+                    });
+                }
+
                 await _db.SaveChangesAsync();
-                return BadRequest("Invalid code");
+                return BadRequest(new ApiErrorResponse
+                {
+                    Error = "invalid_code",
+                    Message = "Invalid code",
+                    AttemptsLeft = maxAttempts - entity.Attempts
+                });
             }
 
+            // Код верный
             entity.IsUsed = true;
 
             // Проверяем что email не заняли пока мы подтверждали

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using MySweetShop.Api.Contracts;
 using MySweetShop.Api.Data;
@@ -11,6 +12,7 @@ using System.Security.Claims;
 
 namespace MySweetShop.Api.Controllers;
 
+[EnableRateLimiting("auth")]
 [ApiController]
 [Route("auth")]
 public class AuthController(AppDbContext db, JwtService jwt) : ControllerBase
@@ -40,7 +42,7 @@ public class AuthController(AppDbContext db, JwtService jwt) : ControllerBase
                 return BadRequest($"Wait {120 - seconds} seconds");
         }
 
-        var code = CodeGenerator.Generate4Digits();
+        var code = CodeGenerator.Generate6Digits();
         var hash = HashService.Sha256($"{email}:{code}");
 
         var entity = new EmailVerificationCode
@@ -75,7 +77,7 @@ public class AuthController(AppDbContext db, JwtService jwt) : ControllerBase
         if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
             return BadRequest(new ApiErrorResponse { Error = "invalid_email", Message = "Invalid email" });
 
-        if (string.IsNullOrWhiteSpace(code) || code.Length != 4 || !code.All(char.IsDigit))
+        if (string.IsNullOrWhiteSpace(code) || code.Length != 6 || !code.All(char.IsDigit))
             return BadRequest(new ApiErrorResponse { Error = "invalid_code_format", Message = "Invalid code format" });
 
         var entity = await _db.EmailVerificationCodes

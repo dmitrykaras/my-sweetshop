@@ -103,7 +103,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory<Pro
     {
         // Arrange
         string email = $"verify_new_{Guid.NewGuid()}@sweetshop.test";
-        string code = "5555";
+        string code = "555555";
         string hash = HashService.Sha256($"{email}:{code}");
 
         using (var scope = _factory.Services.CreateScope())
@@ -152,12 +152,12 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory<Pro
         }
     }
 
-    [Fact(DisplayName = "POST /auth/verify-code - возвращает 400 Bad Request при неверном формате кода (не 4 цифры)")]
+    [Fact(DisplayName = "POST /auth/verify-code - возвращает 400 Bad Request при неверном формате кода (не 6 цифры)")]
     public async Task VerifyCode_Returns400BadRequest_WhenCodeFormatIsInvalid()
     {
         // Arrange
         var client = _factory.CreateClient();
-        var request = new { Email = "user@test.com", Code = "123" };
+        var request = new { Email = "user@test.com", Code = "12345" };
 
         // Act
         var response = await client.PostAsJsonAsync("/auth/verify-code", request);
@@ -171,7 +171,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory<Pro
     {
         // Arrange
         string email = $"wrong_code_{Guid.NewGuid()}@sweetshop.test";
-        string correctCode = "1234";
+        string correctCode = "123456";
         string hash = HashService.Sha256($"{email}:{correctCode}");
 
         using (var scope = _factory.Services.CreateScope())
@@ -193,7 +193,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory<Pro
         }
 
         var client = _factory.CreateClient();
-        var request = new { Email = email, Code = "9999" };
+        var request = new { Email = email, Code = "999999" };
 
         // Act
         var response = await client.PostAsJsonAsync("/auth/verify-code", request);
@@ -215,7 +215,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory<Pro
     {
         // Arrange
         string email = $"blocked_{Guid.NewGuid()}@sweetshop.test";
-        string correctCode = "1234";
+        string correctCode = "123456";
         string hash = HashService.Sha256($"{email}:{correctCode}");
 
         using (var scope = _factory.Services.CreateScope())
@@ -237,7 +237,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory<Pro
         }
 
         var client = _factory.CreateClient();
-        var request = new { Email = email, Code = "0000" };
+        var request = new { Email = email, Code = "000000" };
 
         // Act
         var response = await client.PostAsJsonAsync("/auth/verify-code", request);
@@ -260,7 +260,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory<Pro
     {
         // Arrange
         var client = _factory.CreateClient();
-        var request = new { Email = $"notfound_{Guid.NewGuid()}@sweetshop.test", Code = "1234" };
+        var request = new { Email = $"notfound_{Guid.NewGuid()}@sweetshop.test", Code = "123456" };
 
         // Act
         var response = await client.PostAsJsonAsync("/auth/verify-code", request);
@@ -276,7 +276,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory<Pro
     {
         // Arrange
         string email = $"used_code_{Guid.NewGuid()}@sweetshop.test";
-        string code = "1234";
+        string code = "123456";
 
         using (var scope = _factory.Services.CreateScope())
         {
@@ -310,7 +310,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory<Pro
     {
         // Arrange
         string email = $"expired_code_{Guid.NewGuid()}@sweetshop.test";
-        string code = "1234";
+        string code = "123456";
 
         using (var scope = _factory.Services.CreateScope())
         {
@@ -344,7 +344,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory<Pro
     {
         // Arrange
         string email = $"existing_user_{Guid.NewGuid()}@sweetshop.test";
-        string code = "1111";
+        string code = "111111";
         Guid existingUserId = Guid.NewGuid();
 
         using (var scope = _factory.Services.CreateScope())

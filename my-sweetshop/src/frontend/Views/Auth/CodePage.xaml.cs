@@ -73,6 +73,9 @@ public partial class CodePage : ContentPage
         if (sender == D1 && D1.Text?.Length == 1) D2.Focus();
         else if (sender == D2 && D2.Text?.Length == 1) D3.Focus();
         else if (sender == D3 && D3.Text?.Length == 1) D4.Focus();
+        else if (sender == D4 && D4.Text?.Length == 1) D5.Focus();
+        else if (sender == D5 && D5.Text?.Length == 1) D6.Focus();
+        else if (sender == D6 && D6.Text?.Length == 1) D5.Focus();
 
         TryVerifyIfComplete();
     }
@@ -82,8 +85,8 @@ public partial class CodePage : ContentPage
     {
         if (_verifyCooldownActive) return;
 
-        var code = $"{D1.Text}{D2.Text}{D3.Text}{D4.Text}";
-        if (code.Length != 4 || code.Any(c => !char.IsDigit(c)))
+        var code = $"{D1.Text}{D2.Text}{D3.Text}{D4.Text}{D5.Text}{D6.Text}";
+        if (code.Length != 6 || code.Any(c => !char.IsDigit(c)))
             return;
 
         SetInputsEnabled(false);
@@ -174,7 +177,7 @@ public partial class CodePage : ContentPage
     private void ClearCode()
     {
         _isClearing = true;
-        D1.Text = D2.Text = D3.Text = D4.Text = "";
+        D1.Text = D2.Text = D3.Text = D4.Text = D5.Text = D6.Text = "";
         _isClearing = false;
     }
 

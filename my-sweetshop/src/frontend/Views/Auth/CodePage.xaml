@@ -23,9 +23,10 @@
                FontSize="13"
                Margin="0,8,0,0"/>
 
+        <!-- Код -->
         <Grid Grid.Row="3"
               Margin="0,18,0,0"
-              ColumnDefinitions="*,*,*,*"
+              ColumnDefinitions="*,*,*,*,*,*"
               ColumnSpacing="12">
 
             <Entry x:Name="D1" MaxLength="1" Keyboard="Numeric" HorizontalTextAlignment="Center"
@@ -35,6 +36,10 @@
             <Entry x:Name="D3" Grid.Column="2" MaxLength="1" Keyboard="Numeric" HorizontalTextAlignment="Center"
                    FontSize="22" TextChanged="OnDigitChanged"/>
             <Entry x:Name="D4" Grid.Column="3" MaxLength="1" Keyboard="Numeric" HorizontalTextAlignment="Center"
+                   FontSize="22" TextChanged="OnDigitChanged"/>
+            <Entry x:Name="D5" Grid.Column="4" MaxLength="1" Keyboard="Numeric" HorizontalTextAlignment="Center"
+                   FontSize="22" TextChanged="OnDigitChanged"/>
+            <Entry x:Name="D6" Grid.Column="5" MaxLength="1" Keyboard="Numeric" HorizontalTextAlignment="Center"
                    FontSize="22" TextChanged="OnDigitChanged"/>
         </Grid>
 

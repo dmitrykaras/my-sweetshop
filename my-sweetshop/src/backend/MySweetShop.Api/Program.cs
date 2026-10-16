@@ -84,7 +84,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(o => o.AddPolicy("Admin", p =>
+    p.RequireAssertion(ctx => ctx.User.HasClaim(c =>
+        (c.Type == "role" || c.Type == System.Security.Claims.ClaimTypes.Role)
+        && c.Value == "Admin"))));
 
 // Конфигурация базы данных
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")

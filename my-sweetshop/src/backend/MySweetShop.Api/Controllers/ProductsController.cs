@@ -46,11 +46,18 @@ public class ProductsController(AppDbContext db, IWebHostEnvironment env) : Cont
     }
 
     // Отдаём изображения
+    [Authorize(Policy = "Admin")]
     [HttpPost("{productId:guid}/image")]
     public async Task<IActionResult> UploadImage(Guid productId, IFormFile file)
     {
         if (file == null || file.Length == 0)
             return BadRequest("Файл пустой");
+
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (!new[] { ".jpg", ".jpeg", ".png", ".webp" }.Contains(extension))
+            return BadRequest("Допустимы только jpg, jpeg, png, webp");
+        if (file.Length > 5 * 1024 * 1024)
+            return BadRequest("Файл слишком большой (максимум 5 МБ)");
 
         var product = await _db.Products.FirstOrDefaultAsync(x => x.Id == productId);
         if (product == null) return NotFound();
@@ -75,7 +82,7 @@ public class ProductsController(AppDbContext db, IWebHostEnvironment env) : Cont
         }
 
         // Генерируем уникальное имя файла, чтобы избежать проблем с кэшем
-        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        var fileName = $"{Guid.NewGuid()}{extension}";
         var absoluteFilePath = Path.Combine(absoluteFolder, fileName);
 
         // Превращаем системный путь в URL-совместимый (заменяем обратные слэши \ на прямые / для Linux/Windows)
@@ -96,6 +103,7 @@ public class ProductsController(AppDbContext db, IWebHostEnvironment env) : Cont
     }
 
     // Удаление изображения
+    [Authorize(Policy = "Admin")]
     [HttpDelete("{productId:guid}/image")]
     public async Task<IActionResult> DeleteImage(Guid productId)
     {
@@ -118,6 +126,7 @@ public class ProductsController(AppDbContext db, IWebHostEnvironment env) : Cont
     }
 
     // Удаление продукта
+    [Authorize(Policy = "Admin")]
     [HttpDelete("{productId:guid}")]
     public async Task<IActionResult> DeleteProduct(Guid productId)
     {

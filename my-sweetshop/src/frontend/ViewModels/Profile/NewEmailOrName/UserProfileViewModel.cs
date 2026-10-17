@@ -271,7 +271,7 @@ namespace my_sweetshop.ViewModels.Profile.NewEmailOrName
             }
 
             setText(string.Empty);
-            setStatus(false);
+            setStatus(true);
         }
 
         // Всплывающие уведомления

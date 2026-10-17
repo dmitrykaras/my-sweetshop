@@ -18,7 +18,7 @@ public partial class NewEmailPage : ContentPage
         InitializeComponent();
         BindingContext = vm;
 
-        _email = vm.Email;
+        _email = vm.CurrentEmail;
     }
 
     // Шаг на прошлую страницу
@@ -55,7 +55,7 @@ public partial class NewEmailPage : ContentPage
         else if (sender == D3 && D3.Text?.Length == 1) D4.Focus();
         else if (sender == D4 && D4.Text?.Length == 1) D5.Focus();
         else if (sender == D5 && D5.Text?.Length == 1) D6.Focus();
-        else if (sender == D6 && D6.Text?.Length == 1) D5.Focus();
+        else if (sender == D6 && D6.Text?.Length == 1) D6.Focus();
 
         // Попытка верификации, если код полностью введён
         var code = $"{D1.Text}{D2.Text}{D3.Text}{D4.Text}{D5.Text}{D6.Text}";

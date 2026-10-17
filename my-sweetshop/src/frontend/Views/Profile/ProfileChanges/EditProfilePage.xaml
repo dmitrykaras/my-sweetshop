@@ -36,7 +36,7 @@
                     CornerRadius="10"
                     FontAttributes="Bold"
                     Command="{Binding Profile.GoToChangeEmailCommand}">
-                    <Button.Triggers>
+                    <Button.Triggers> 
                         <DataTrigger TargetType="Button" Binding="{Binding Profile.IsEmailCooldownActive}" Value="True">
                             <Setter Property="BackgroundColor" Value="#B3D4FF" />
                             <Setter Property="TextColor" Value="#507090" />

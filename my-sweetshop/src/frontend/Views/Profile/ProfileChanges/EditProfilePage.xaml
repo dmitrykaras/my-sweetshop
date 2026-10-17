@@ -30,16 +30,16 @@
                     Keyboard="Email" />
 
                 <Button Text="Сменить почту"
-                    BackgroundColor="#B3D4FF" TextColor="#507090"
+                    BackgroundColor="#0066CC" TextColor="White"
                     HorizontalOptions="Fill"
                     HeightRequest="50"
                     CornerRadius="10"
                     FontAttributes="Bold"
                     Command="{Binding Profile.GoToChangeEmailCommand}">
-                    <Button.Triggers>
+                    <Button.Triggers> 
                         <DataTrigger TargetType="Button" Binding="{Binding Profile.IsEmailCooldownActive}" Value="True">
-                            <Setter Property="BackgroundColor" Value="#0066CC" />
-                            <Setter Property="TextColor" Value="White" />
+                            <Setter Property="BackgroundColor" Value="#B3D4FF" />
+                            <Setter Property="TextColor" Value="#507090" />
                         </DataTrigger>
                     </Button.Triggers>
                 </Button>

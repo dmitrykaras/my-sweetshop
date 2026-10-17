@@ -489,7 +489,7 @@ public class ProfileControllerTests : IClassFixture<CustomWebApplicationFactory<
         Guid userId = Guid.NewGuid();
         string currentEmail = $"old_{userId}@sweetshop.test";
         string newEmail = $"new_{userId}@sweetshop.test";
-        string code = "1234";
+        string code = "123456";
         string hash = HashService.Sha256($"{userId}:{newEmail}:{code}");
 
         using (var scope = _factory.Services.CreateScope())
@@ -552,7 +552,7 @@ public class ProfileControllerTests : IClassFixture<CustomWebApplicationFactory<
         Guid userId = Guid.NewGuid();
         string currentEmail = $"user_{userId}@sweetshop.test";
         string newEmail = $"new_{userId}@sweetshop.test";
-        string correctCode = "1234";
+        string correctCode = "123456";
         string hash = HashService.Sha256($"{userId}:{newEmail}:{correctCode}");
 
         using (var scope = _factory.Services.CreateScope())
@@ -588,7 +588,7 @@ public class ProfileControllerTests : IClassFixture<CustomWebApplicationFactory<
         var verifyRequest = new
         {
             NewEmail = newEmail,
-            Code = "9999" // Неверный код
+            Code = "999999" // Неверный код
         };
 
         // Act
@@ -596,6 +596,144 @@ public class ProfileControllerTests : IClassFixture<CustomWebApplicationFactory<
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact(DisplayName = "POST /profile/request-code-for-change-email - возвращает 400, если код запрашивали менее 2 минут назад")]
+    public async Task RequestChangeEmail_Returns400BadRequest_WhenCooldownIsActive()
+    {
+        Guid userId = Guid.NewGuid();
+        string currentEmail = $"current_{userId}@sweetshop.test";
+        string newEmail = $"new_{userId}@sweetshop.test";
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            db.Users.Add(new User { Id = userId, Email = currentEmail, CreatedAt = DateTimeOffset.UtcNow });
+            db.EmailChangeCodes.Add(new EmailChangeCode
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Email = currentEmail,
+                NewEmail = newEmail,
+                CodeHash = "hash",
+                CreatedAt = DateTimeOffset.UtcNow.AddSeconds(-30),
+                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(10),
+                Attempts = 0,
+                IsUsed = false
+            });
+            await db.SaveChangesAsync();
+        }
+
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Add("X-Test-UserId", userId.ToString());
+
+        // тот же адрес
+        var r1 = await client.PostAsJsonAsync("/profile/request-code-for-change-email",
+            new { Email = currentEmail, NewEmail = newEmail });
+        Assert.Equal(HttpStatusCode.BadRequest, r1.StatusCode);
+
+        // другой адрес — cooldown действует на пользователя
+        var r2 = await client.PostAsJsonAsync("/profile/request-code-for-change-email",
+            new { Email = currentEmail, NewEmail = $"other_{userId}@sweetshop.test" });
+        Assert.Equal(HttpStatusCode.BadRequest, r2.StatusCode);
+    }
+
+    [Fact(DisplayName = "POST /profile/request-code-for-change-email - нормализует NewEmail (регистр и пробелы)")]
+    public async Task RequestChangeEmail_StoresNormalizedNewEmail()
+    {
+        Guid userId = Guid.NewGuid();
+        string currentEmail = $"current_{userId}@sweetshop.test";
+        string newEmail = $"new_{userId}@sweetshop.test";
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            db.Users.Add(new User { Id = userId, Email = currentEmail, CreatedAt = DateTimeOffset.UtcNow });
+            await db.SaveChangesAsync();
+        }
+
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Add("X-Test-UserId", userId.ToString());
+
+        var response = await client.PostAsJsonAsync("/profile/request-code-for-change-email",
+            new { Email = currentEmail, NewEmail = $"  {newEmail.ToUpper()}  " });
+
+        response.EnsureSuccessStatusCode();
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            Assert.NotNull(await db.EmailChangeCodes.FirstOrDefaultAsync(x => x.UserId == userId && x.NewEmail == newEmail));
+        }
+    }
+
+    [Fact(DisplayName = "POST /profile/request-code-for-change-email - возвращает 400, если формат нового Email неверный")]
+    public async Task RequestChangeEmail_Returns400BadRequest_WhenNewEmailFormatIsInvalid()
+    {
+        Guid userId = Guid.NewGuid();
+        string currentEmail = $"current_{userId}@sweetshop.test";
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            db.Users.Add(new User { Id = userId, Email = currentEmail, CreatedAt = DateTimeOffset.UtcNow });
+            await db.SaveChangesAsync();
+        }
+
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Add("X-Test-UserId", userId.ToString());
+
+        var response = await client.PostAsJsonAsync("/profile/request-code-for-change-email",
+            new { Email = currentEmail, NewEmail = "not-an-email" });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact(DisplayName = "POST /profile/verify-change-email - параллельные запросы не превышают лимит попыток")]
+    public async Task VerifyChangeEmail_DoesNotExceedMaxAttempts_WhenRequestsAreParallel()
+    {
+        Guid userId = Guid.NewGuid();
+        string currentEmail = $"current_{userId}@sweetshop.test";
+        string newEmail = $"new_{userId}@sweetshop.test";
+        string correctCode = "123456";
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            db.Users.Add(new User { Id = userId, Email = currentEmail, CreatedAt = DateTimeOffset.UtcNow });
+            db.EmailChangeCodes.Add(new EmailChangeCode
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Email = currentEmail,
+                NewEmail = newEmail,
+                CodeHash = HashService.Sha256($"{userId}:{newEmail}:{correctCode}"),
+                CreatedAt = DateTimeOffset.UtcNow,
+                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(10),
+                Attempts = 0,
+                IsUsed = false
+            });
+            await db.SaveChangesAsync();
+        }
+
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Add("X-Test-UserId", userId.ToString());
+
+        // 30 параллельных неверных догадок
+        var tasks = Enumerable.Range(0, 30)
+            .Select(i => client.PostAsJsonAsync("/profile/verify-change-email",
+                new { NewEmail = newEmail, Code = (100000 + i).ToString() }))
+            .ToArray();
+        await Task.WhenAll(tasks);
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var entity = await db.EmailChangeCodes.FirstAsync(x => x.UserId == userId && x.NewEmail == newEmail);
+
+            Assert.Equal(5, entity.Attempts); // не больше лимита
+            Assert.True(entity.IsUsed); // код аннулирован
+        }
     }
 
     #endregion

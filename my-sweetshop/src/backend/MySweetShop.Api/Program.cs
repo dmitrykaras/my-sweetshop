@@ -1,4 +1,6 @@
+using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -8,7 +10,6 @@ using MySweetShop.Api.IScript;
 using MySweetShop.Api.Options;
 using MySweetShop.Api.Services;
 using System.Text;
-using DotNetEnv;
 
 var currentDir = Directory.GetCurrentDirectory();
 var envPath = File.Exists(Path.Combine(currentDir, ".env"))
@@ -23,6 +24,9 @@ if (envPath != null)
 }
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Принудительно подключаем User Secrets
+builder.Configuration.AddUserSecrets<Program>();
 
 // Загружаем переменные среды в конфигурацию .NET
 builder.Configuration.AddEnvironmentVariables();
@@ -80,7 +84,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(o => o.AddPolicy("Admin", p =>
+    p.RequireAssertion(ctx => ctx.User.HasClaim(c =>
+        (c.Type == "role" || c.Type == System.Security.Claims.ClaimTypes.Role)
+        && c.Value == "Admin"))));
 
 // Конфигурация базы данных
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -90,7 +97,24 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
+// Регистрируем сервисы лимитера только если это НЕ тесты
+if (!builder.Environment.IsEnvironment("IntegrationTesting"))
+{
+    // rate limiting
+    builder.Services.AddRateLimiter(o => o.AddFixedWindowLimiter("auth", l =>
+    { l.PermitLimit = 5; l.Window = TimeSpan.FromMinutes(1); }));
+}
+
+// Не стартовать со слабым ключом шифрования, иначе JWT будет небезопасным
+if (Encoding.UTF8.GetBytes(jwtOptions.Key).Length < 32)
+    throw new InvalidOperationException("Jwt:Key must be >= 32 bytes");
+
 var app = builder.Build();
+
+if (!app.Environment.IsEnvironment("IntegrationTesting"))
+{
+    app.UseRateLimiter();
+}
 
 // Автоматически создаем таблицы в Postgres при каждом запуске сервера
 using (var scope = app.Services.CreateScope())

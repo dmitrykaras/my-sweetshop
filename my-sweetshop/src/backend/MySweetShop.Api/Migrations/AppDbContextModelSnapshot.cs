@@ -83,6 +83,9 @@ namespace MySweetShop.Api.Migrations
                     b.Property<int>("Attempts")
                         .HasColumnType("integer");
 
+                    b.Property<DateTimeOffset?>("BlockedUntil")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("CodeHash")
                         .IsRequired()
                         .HasColumnType("text");

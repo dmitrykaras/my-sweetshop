@@ -34,17 +34,12 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        // Настройка окружения: изолируем тесты от appsettings.json
-        builder.ConfigureAppConfiguration((context, config) =>
-        {
-            config.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["Jwt:Key"] = "SUPER_SECRET_DUMMY_KEY_FOR_INTEGRATION_TESTS_ONLY!",
-                ["Jwt:Issuer"] = "MySweetShop.Api",
-                ["Jwt:Audience"] = "MySweetShop.Mobile",
-                ["Jwt:ExpiresMinutes"] = "30"
-            });
-        });
+        builder.UseEnvironment("IntegrationTesting");
+
+        builder.UseSetting("Jwt:Key", "SUPER_SECRET_DUMMY_KEY_FOR_INTEGRATION_TESTS_ONLY!");
+        builder.UseSetting("Jwt:Issuer", "MySweetShop.Api");
+        builder.UseSetting("Jwt:Audience", "MySweetShop.Mobile");
+        builder.UseSetting("Jwt:ExpiresMinutes", "30");
 
         // Настройка сервисов
         builder.ConfigureServices(services =>

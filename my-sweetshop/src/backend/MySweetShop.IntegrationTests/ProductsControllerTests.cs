@@ -13,6 +13,14 @@ public class ProductsControllerTests : IClassFixture<CustomWebApplicationFactory
         _factory = factory;
     }
 
+    private HttpClient CreateAdminClient()
+    {
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Add("X-Test-UserId", Guid.NewGuid().ToString());
+        client.DefaultRequestHeaders.Add("X-Test-Role", "Admin");
+        return client;
+    }
+
     [Fact(DisplayName = "GET /porducts - возввращает список начальных товаров после запуска")]
     public async Task GetProducts_ReturnsInitialSeededProducts()
     {
@@ -104,7 +112,7 @@ public class ProductsControllerTests : IClassFixture<CustomWebApplicationFactory
             await db.SaveChangesAsync();
         }
 
-        var client = _factory.CreateClient();
+        var client = CreateAdminClient();
 
         // Act - отправляет DELETE запрос
         var resopne = await client.DeleteAsync($"/products/{productId}");
@@ -124,7 +132,7 @@ public class ProductsControllerTests : IClassFixture<CustomWebApplicationFactory
     public async Task DeleteProduct_Return404NoFound_WhenProductDoesNotExist()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var client = CreateAdminClient();
         Guid nonExistentId = Guid.NewGuid();
 
         // Act
@@ -155,7 +163,7 @@ public class ProductsControllerTests : IClassFixture<CustomWebApplicationFactory
             await db.SaveChangesAsync();
         }
 
-        var client = _factory.CreateClient();
+        var client = CreateAdminClient();
 
         // Формируем multipart/form-data запрос с текстовым файлом в памяти
         using var content = new MultipartFormDataContent();
@@ -186,7 +194,7 @@ public class ProductsControllerTests : IClassFixture<CustomWebApplicationFactory
     {
         // Arrange
         Guid productId = Guid.NewGuid();
-        var client = _factory.CreateClient();
+        var client = CreateAdminClient();
         using var emptyContent = new MultipartFormDataContent();
 
         // Act
@@ -328,7 +336,7 @@ public class ProductsControllerTests : IClassFixture<CustomWebApplicationFactory
             await db.SaveChangesAsync();
         }
 
-        var client = _factory.CreateClient();
+        var client = CreateAdminClient();
 
         // Act
         var respone = await client.DeleteAsync($"/products/{productId}/image");
@@ -366,7 +374,7 @@ public class ProductsControllerTests : IClassFixture<CustomWebApplicationFactory
             await db.SaveChangesAsync();    
         }
 
-        var client = _factory.CreateClient();
+        var client = CreateAdminClient();
 
         // Act
         var response = await client.DeleteAsync($"/products/{productId}/image");
@@ -434,7 +442,7 @@ public class ProductsControllerTests : IClassFixture<CustomWebApplicationFactory
     public async Task UploadImage_Returns404NotFound_WhenProductDoesNotExist()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var client = CreateAdminClient();
         using var content = new MultipartFormDataContent();
         var byteContent = new ByteArrayContent(new byte[] { 0xFF, 0xD8 });
         byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
@@ -469,7 +477,7 @@ public class ProductsControllerTests : IClassFixture<CustomWebApplicationFactory
             await db.SaveChangesAsync();
         }
 
-        var client = _factory.CreateClient();
+        var client = CreateAdminClient();
         using var content = new MultipartFormDataContent();
         var byteContent = new ByteArrayContent(new byte[] { 0xFF, 0xD8 });
         byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
@@ -495,7 +503,7 @@ public class ProductsControllerTests : IClassFixture<CustomWebApplicationFactory
     public async Task DeleteImage_Returns404NotFound_WhenProductDoesNotExist()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var client = CreateAdminClient();
 
         // Act
         var response = await client.DeleteAsync($"/products/{Guid.NewGuid()}/image");
@@ -526,7 +534,7 @@ public class ProductsControllerTests : IClassFixture<CustomWebApplicationFactory
             await db.SaveChangesAsync();
         }
 
-        var client = _factory.CreateClient();
+        var client = CreateAdminClient();
 
         // Act
         var response = await client.DeleteAsync($"/products/{productId}");
@@ -620,5 +628,26 @@ public class ProductsControllerTests : IClassFixture<CustomWebApplicationFactory
 
         // Assert
         Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact(DisplayName = "DELETE /products/{id} - возвращает 401 для анонимного пользователя")]
+    public async Task DeleteProduct_Returns401Unauthorized_WhenAnonymous()
+    {
+        var client = _factory.CreateClient();
+
+        var response = await client.DeleteAsync($"/products/{Guid.NewGuid()}");
+
+        Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact(DisplayName = "DELETE /products/{id} - возвращает 403 для обычного пользователя без роли Admin")]
+    public async Task DeleteProduct_Returns403Forbidden_WhenUserIsNotAdmin()
+    {
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Add("X-Test-UserId", Guid.NewGuid().ToString());
+
+        var response = await client.DeleteAsync($"/products/{Guid.NewGuid()}");
+
+        Assert.Equal(System.Net.HttpStatusCode.Forbidden, response.StatusCode);
     }
 }

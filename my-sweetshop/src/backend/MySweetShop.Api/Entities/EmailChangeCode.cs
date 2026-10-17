@@ -20,4 +20,6 @@ public class EmailChangeCode
     public int Attempts { get; set; }
     // Был ли код уже использован
     public bool IsUsed { get; set; }
+    // Время и дата блокировки
+    public DateTimeOffset? BlockedUntil { get; set; }
 }

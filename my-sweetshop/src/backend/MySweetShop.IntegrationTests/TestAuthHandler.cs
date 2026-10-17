@@ -27,13 +27,20 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
 
         var userId = userIdHeader.ToString();
 
-        var claims = new[]
+        var claims = new List<Claim>
         {
             // Именно это значение вытягивается через User.FindFirstValue(ClaimTypes.NameIdentifier)
             new Claim("uid", userId),
             new Claim(ClaimTypes.NameIdentifier, userId),
             new Claim(ClaimTypes.Name, "TestUser")
         };
+
+        // Если передан заголовок X-Test-Role — добавляем роль (например, "Admin")
+        if (Context.Request.Headers.TryGetValue("X-Test-Role", out var roleHeader)
+            && !string.IsNullOrEmpty(roleHeader))
+        {
+            claims.Add(new Claim("role", roleHeader.ToString()));
+        }
 
         var identity = new ClaimsIdentity(claims, SchemeName);
         var principal = new ClaimsPrincipal(identity);

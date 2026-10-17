@@ -88,19 +88,27 @@ namespace MySweetShop.Api.Controllers
             if (!Guid.TryParse(userIdStr, out var userId))
                 return Unauthorized("Invalid token");
 
-            var Email = request.Email.Trim().ToLower();
+            // Нормализуем новую почту: именно её проверяем, сохраняем и ищем дальше
             var newEmail = request.NewEmail.Trim().ToLower();
 
-            if (string.IsNullOrWhiteSpace(Email) || !Email.Contains('@'))
+            if (string.IsNullOrWhiteSpace(newEmail) || !newEmail.Contains('@'))
                 return BadRequest("Invalid email");
 
-            // проверка на то, что Email уже занят 
+            // Текущую почту берём из БД, а не из тела запроса
+            var user = await _db.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == userId);
+            if (user == null)
+                return Unauthorized("Invalid token");
+
+            if (newEmail == user.Email)
+                return BadRequest("New email must differ from the current one");
+
+            // проверка на то, что Email уже занят
             if (await _db.Users.AnyAsync(x => x.Email == newEmail))
                 return BadRequest("Email already used by another account");
 
-            //cooldown (например 2 минуты на один email)
+            // cooldown 2 минуты — на пользователя (а не на конкретный адрес),
             var last = await _db.EmailChangeCodes
-                .Where(x => x.UserId == userId && x.NewEmail == Email)
+                .Where(x => x.UserId == userId)
                 .OrderByDescending(x => x.CreatedAt)
                 .FirstOrDefaultAsync();
 
@@ -111,15 +119,15 @@ namespace MySweetShop.Api.Controllers
                     return BadRequest($"Wait {120 - seconds} seconds");
             }
 
-            var code = CodeGenerator.Generate4Digits();
+            var code = CodeGenerator.Generate6Digits();
             var hash = HashService.Sha256($"{userId}:{newEmail}:{code}");
 
             var entity = new EmailChangeCode
             {
                 Id = Guid.NewGuid(),
                 UserId = userId,
-                Email = request.Email,
-                NewEmail = request.NewEmail,
+                Email = user.Email,
+                NewEmail = newEmail,
                 CodeHash = hash,
                 CreatedAt = DateTimeOffset.UtcNow,
                 ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(10),
@@ -131,7 +139,7 @@ namespace MySweetShop.Api.Controllers
             await _db.SaveChangesAsync();
 
             // временно: выводим код в консоль
-            Console.WriteLine($"[CHANGE EMAIL CODE] user={userId} => {Email} => {code}");
+            Console.WriteLine($"[CHANGE EMAIL CODE] user={userId} => {newEmail} => {code}");
 
             return Ok(new { cooldownSeconds = 120 });
         }
@@ -148,8 +156,8 @@ namespace MySweetShop.Api.Controllers
             var newEmail = request.NewEmail.Trim().ToLower();
             var code = request.Code.Trim();
 
-            // Проверка на 4 символа и это цифры
-            if (code.Length != 4 || !code.All(char.IsDigit))
+            // Ровно 6 символов и только ASCII-цифры
+            if (code.Length != 6 || !code.All(char.IsAsciiDigit))
                 return BadRequest("Invalid code");
 
             var entity = await _db.EmailChangeCodes
@@ -157,32 +165,90 @@ namespace MySweetShop.Api.Controllers
                 .OrderByDescending(x => x.CreatedAt)
                 .FirstOrDefaultAsync();
 
-            // Проверка наден ли код
             if (entity == null)
                 return BadRequest(new ApiErrorResponse { Message = "Code not found" });
 
-            // Проверка на то, что он использован уже
             if (entity.IsUsed)
                 return BadRequest("Code already used");
 
-            // Проверка на срок дейсвтия кода
             if (DateTimeOffset.UtcNow > entity.ExpiresAt)
                 return BadRequest("Code expired");
 
-            // Проверка, что попыток было меньше 5
-            if (entity.Attempts >= 5)
-                return BadRequest("Too many attempts");
+            const int maxAttempts = 5;
+            const int blockSeconds = 120;
 
-            entity.Attempts++;
+            if (entity.BlockedUntil.HasValue && DateTimeOffset.UtcNow < entity.BlockedUntil.Value)
+            {
+                var retry = (int)Math.Ceiling((entity.BlockedUntil.Value - DateTimeOffset.UtcNow).TotalSeconds);
+                return BadRequest(new ApiErrorResponse
+                {
+                    Error = "too_many_attempts",
+                    Message = "Too many attempts. Cooldown active.",
+                    AttemptsLeft = 0,
+                    RetryAfterSeconds = retry
+                });
+            }
+
+            // Атомарно "занимаем" попытку одним UPDATE прямо в БД.
+            // Параллельные запросы не смогут обойти лимит: каждый видит актуальный счётчик.
+            var reserved = await _db.EmailChangeCodes
+                .Where(x => x.Id == entity.Id && !x.IsUsed && x.Attempts < maxAttempts)
+                .ExecuteUpdateAsync(s => s.SetProperty(x => x.Attempts, x => x.Attempts + 1));
+
+            if (reserved == 0)
+            {
+                return BadRequest(new ApiErrorResponse
+                {
+                    Error = "too_many_attempts",
+                    Message = "Too many failed attempts. Code invalidated.",
+                    AttemptsLeft = 0,
+                    RetryAfterSeconds = blockSeconds
+                });
+            }
 
             var inputHash = HashService.Sha256($"{userId}:{newEmail}:{code}");
             if (entity.CodeHash != inputHash)
             {
-                await _db.SaveChangesAsync();
-                return BadRequest("Invalid code");
+                // Читаем актуальный счётчик (его могли увеличить параллельные запросы)
+                var attemptsUsed = await _db.EmailChangeCodes
+                    .AsNoTracking()
+                    .Where(x => x.Id == entity.Id)
+                    .Select(x => x.Attempts)
+                    .FirstAsync();
+
+                if (attemptsUsed >= maxAttempts)
+                {
+                    // Аннулируем код и ставим кулдаун
+                    await _db.EmailChangeCodes
+                        .Where(x => x.Id == entity.Id)
+                        .ExecuteUpdateAsync(s => s
+                            .SetProperty(x => x.IsUsed, true)
+                            .SetProperty(x => x.BlockedUntil, (DateTimeOffset?)DateTimeOffset.UtcNow.AddSeconds(blockSeconds)));
+
+                    return BadRequest(new ApiErrorResponse
+                    {
+                        Error = "too_many_attempts",
+                        Message = "Too many failed attempts. Code invalidated.",
+                        AttemptsLeft = 0,
+                        RetryAfterSeconds = blockSeconds
+                    });
+                }
+
+                return BadRequest(new ApiErrorResponse
+                {
+                    Error = "invalid_code",
+                    Message = "Invalid code",
+                    AttemptsLeft = maxAttempts - attemptsUsed
+                });
             }
 
-            entity.IsUsed = true;
+            // Код верный: атомарно гасим его (двойное использование при параллельных запросах невозможно)
+            var consumed = await _db.EmailChangeCodes
+                .Where(x => x.Id == entity.Id && !x.IsUsed)
+                .ExecuteUpdateAsync(s => s.SetProperty(x => x.IsUsed, true));
+
+            if (consumed == 0)
+                return BadRequest("Code already used");
 
             // Проверяем что email не заняли пока мы подтверждали
             var taken = await _db.Users.AnyAsync(x => x.Email == newEmail);
@@ -206,7 +272,6 @@ namespace MySweetShop.Api.Controllers
             };
 
             _db.RefreshTokens.Add(refreshTokenEntity);
-
             await _db.SaveChangesAsync();
 
             // важно: после смены email лучше выдать новый токен
@@ -226,7 +291,6 @@ namespace MySweetShop.Api.Controllers
                 }
             });
         }
-
         // Метод для просмотра текущего профиля
         [Authorize]
         [HttpGet("me")]

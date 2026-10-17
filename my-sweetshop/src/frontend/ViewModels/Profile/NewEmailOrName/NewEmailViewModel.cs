@@ -16,8 +16,11 @@ public partial class NewEmailViewModel : BaseViewModel
     private readonly AuthSession _session;
     private readonly EmailCache _emailCache;
 
-    // Почта, на которую отправлен код
-    public string Email { get; }
+    // Текущая почта из сессии
+    public string CurrentEmail => _session.Email ?? string.Empty;
+
+    // Новая почта из кеша
+    public string NewEmail => _emailCache.TempEmail ?? string.Empty;
 
     // Кулдаун на повторный ввод кода
     public bool VerifyCooldownActive { get; private set; }
@@ -31,11 +34,8 @@ public partial class NewEmailViewModel : BaseViewModel
         _authApi = authApi;
         _emailCache = emailCache;
 
-        // Берём временную почту из кеша
-        Email = _session.Email!;
-
         // Сообщение пользователю о том, что код отправлен
-        ShowToast($"На почту {Email} отправлено письмо с кодом подтверждения");
+        ShowToast($"На почту {CurrentEmail} отправлено письмо с кодом подтверждения");
     }
 
     // Логика проверки кода
@@ -75,7 +75,7 @@ public partial class NewEmailViewModel : BaseViewModel
     {
         try
         {
-            await _changeEmail.RequestCodeAsync(this.Email, _emailCache.TempEmail!);
+            await _changeEmail.RequestCodeAsync(CurrentEmail, NewEmail);
             ShowToast("Код отправлен повторно. Проверьте “Спам”.");
             return true;
         }

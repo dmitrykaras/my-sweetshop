@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MySweetshop.Api.Entities;
 using MySweetShop.Api.Entities;
 
 namespace MySweetShop.Api.Data;
@@ -8,8 +9,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<User> Users => Set<User>();
     public DbSet<EmailVerificationCode> EmailVerificationCodes => Set<EmailVerificationCode>();
     public DbSet<EmailChangeCode> EmailChangeCodes => Set<EmailChangeCode>();
-   
-    
+    public DbSet<UserQrToken> UserQrTokens => Set<UserQrToken>();
+    public DbSet<PointsTransaction> PointsTransactions => Set<PointsTransaction>();
+
+
     public DbSet<Category> Categories { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<UserFavorite> UserFavorites { get; set; }
@@ -115,8 +118,24 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         );
 
+        modelBuilder.Entity<UserQrToken>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.TokenHash).IsRequired().HasMaxLength(64);
+            e.HasIndex(x => x.TokenHash).IsUnique();
+            e.HasIndex(x => new { x.UserId, x.ExpiresAt });
+            e.HasOne<User>().WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+        });
 
-    modelBuilder.Entity<User>(e =>
+        modelBuilder.Entity<PointsTransaction>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.OrderAmount).HasPrecision(12, 2);
+            e.Property(x => x.Type).HasConversion<string>().HasMaxLength(20);
+            e.HasIndex(x => new { x.UserId, x.CreatedAt });
+        });
+
+        modelBuilder.Entity<User>(e =>
         {
             e.HasKey(x => x.Id);
             e.HasIndex(x => x.Email).IsUnique();

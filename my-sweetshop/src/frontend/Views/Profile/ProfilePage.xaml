@@ -120,6 +120,25 @@
                     </Border.Shadow>
                 </Border>
 
+                <!-- Cкрытый пункт -->
+                <Border x:Name="CashierItem" IsVisible="False"
+                    BackgroundColor="White" Stroke="Transparent" Padding="14"
+                    StrokeShape="RoundRectangle 12">
+                    <Grid ColumnDefinitions="40,*">
+                        <Image Source="calculator.png" HeightRequest="24" WidthRequest="24" VerticalOptions="Center"/>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Text="Сканировать QR" FontSize="15" FontAttributes="Bold"/>
+                            <Label Text="Начисление и списание баллов" FontSize="13" TextColor="Gray"/>
+                        </VerticalStackLayout>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCashierTapped"/>
+                        </Grid.GestureRecognizers>
+                    </Grid>
+                    <Border.Shadow>
+                        <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                    </Border.Shadow>
+                </Border>
+
                 <!-- Кнопки Помощь/Сайт -->
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="14">
                     <!-- Помощь -->

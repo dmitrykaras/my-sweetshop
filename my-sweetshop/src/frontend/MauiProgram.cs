@@ -16,6 +16,8 @@ using my_sweetshop.Views.Profile;
 using my_sweetshop.Views.Profile.Cashier;
 using my_sweetshop.Views.Profile.FavoritesProduct;
 using my_sweetshop.Views.Profile.ProfileChanges;
+using BarcodeScanning;
+using my_sweetshop.ViewModels.Profile.Cashier;
 
 namespace my_sweetshop
 {
@@ -29,6 +31,7 @@ namespace my_sweetshop
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
+                .UseBarcodeScanning()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -73,6 +76,12 @@ namespace my_sweetshop
                 return new ProfileService(httpClient);
             });
 
+            builder.Services.AddHttpClient<LoyaltyApi>(c => c.BaseAddress = new Uri(apiBaseUrl))
+                .AddHttpMessageHandler<JwtAuthHandler>();
+
+            builder.Services.AddTransient<QrCardViewModel>();
+            builder.Services.AddTransient<CashierSessionViewModel>();
+
             // Остальные API сервисы (AddHttpClient здесь работает нормально для Transient)
             builder.Services.AddHttpClient<AuthApi>(c => c.BaseAddress = new Uri(apiBaseUrl))
                 .AddHttpMessageHandler<JwtAuthHandler>();
@@ -116,6 +125,7 @@ namespace my_sweetshop
 
         private static void RegisterPages(IServiceCollection services)
         {
+            services.AddTransient<CashierSessionPage>();
             services.AddTransient<HomePage>();
             services.AddTransient<CatalogPage>();
             services.AddTransient<ProductPage>();

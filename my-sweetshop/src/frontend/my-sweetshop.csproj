@@ -27,7 +27,7 @@
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">23.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<UserSecretsId>25b47317-d33a-4ce4-9af9-a4356d940788</UserSecretsId>
@@ -126,12 +126,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="BarcodeScanning.Native.Maui" Version="3.1.0" />
 		<PackageReference Include="CommunityToolkit.Maui" Version="14.0.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="10.0.3" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.30" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+		<PackageReference Include="QRCoder" Version="1.8.1" />
 	</ItemGroup>
 
 	<ItemGroup>

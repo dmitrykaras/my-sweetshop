@@ -10,6 +10,7 @@ using MySweetShop.Api.IScript;
 using MySweetShop.Api.Options;
 using MySweetShop.Api.Services;
 using System.Text;
+using System.Threading.RateLimiting;
 
 var currentDir = Directory.GetCurrentDirectory();
 var envPath = File.Exists(Path.Combine(currentDir, ".env"))
@@ -101,8 +102,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 if (!builder.Environment.IsEnvironment("IntegrationTesting"))
 {
     // rate limiting
-    builder.Services.AddRateLimiter(o => o.AddFixedWindowLimiter("auth", l =>
-    { l.PermitLimit = 5; l.Window = TimeSpan.FromMinutes(1); }));
+    builder.Services.AddRateLimiter(o =>
+    {
+        o.AddFixedWindowLimiter("auth", l => { l.PermitLimit = 5; l.Window = TimeSpan.FromMinutes(1); });
+        o.AddPolicy("qr", ctx => RateLimitPartition.GetFixedWindowLimiter(
+            ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions { PermitLimit = 20, Window = TimeSpan.FromMinutes(1) }));
+    });
+
 }
 
 // Не стартовать со слабым ключом шифрования, иначе JWT будет небезопасным

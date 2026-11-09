@@ -311,7 +311,8 @@ namespace MySweetShop.Api.Controllers
                 user.Email,
                 user.FirstName,
                 user.LastName,
-                user.Points
+                user.Points,
+                user.IsCashier
             });
         }
 
@@ -373,6 +374,8 @@ namespace MySweetShop.Api.Controllers
                 user.Email,
                 user.FirstName,
                 user.LastName,
+                user.Points,
+                user.IsCashier,
                 nextUpdateAvailable = user.LastProfileUpdate?.AddMinutes(5)
             });
         }

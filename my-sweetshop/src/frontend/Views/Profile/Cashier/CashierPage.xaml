@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:scanner="clr-namespace:BarcodeScanning;assembly=BarcodeScanning.Native.Maui"
              x:Class="my_sweetshop.Views.Profile.Cashier.CashierPage"
-             Title="Сканирования QR-кодов">
-    <ScrollView>
-        <VerticalStackLayout Padding="16" Spacing="24">
-            
-            <!-- Заголовок -->
-            <Label Text="Сканирования QR-кодов"
-                   FontSize="22"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Start"/>
-            
-            
+             Title="Сканирование QR-кода"
+             Shell.NavBarIsVisible="True">
+    <Grid RowDefinitions="*,Auto">
+
+        <scanner:CameraView x:Name="Camera"
+                            Grid.Row="0"
+                            CameraEnabled="False"
+                            BarcodeSymbologies="QRCode"
+                            ViewfinderMode="True"
+                            OnDetectionFinished="OnDetected" />
+
+        <VerticalStackLayout Grid.Row="1" Padding="16" Spacing="8">
+            <ActivityIndicator x:Name="Busy" IsRunning="False" IsVisible="False" />
+            <Label Text="Наведите камеру на QR-код клиента"
+                   HorizontalTextAlignment="Center"
+                   FontSize="15" />
         </VerticalStackLayout>
-    </ScrollView>
+    </Grid>
 </ContentPage>

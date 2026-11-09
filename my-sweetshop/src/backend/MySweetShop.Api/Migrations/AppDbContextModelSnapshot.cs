@@ -153,6 +153,43 @@ namespace MySweetShop.Api.Migrations
                     b.ToTable("EmailVerificationCodes");
                 });
 
+            modelBuilder.Entity("MySweetShop.Api.Entities.PointsTransaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CashierId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("OrderAmount")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<int>("Points")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("QrTokenId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "CreatedAt");
+
+                    b.ToTable("PointsTransactions");
+                });
+
             modelBuilder.Entity("MySweetShop.Api.Entities.Product", b =>
                 {
                     b.Property<Guid>("Id")
@@ -587,6 +624,9 @@ namespace MySweetShop.Api.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<bool>("IsCashier")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("LastName")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
@@ -603,6 +643,51 @@ namespace MySweetShop.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("MySweetshop.Api.Entities.UserQrToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("ScannedByCashierId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("SessionExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTimeOffset?>("UsedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "ExpiresAt");
+
+                    b.ToTable("UserQrTokens");
                 });
 
             modelBuilder.Entity("UserFavorite", b =>
@@ -643,6 +728,15 @@ namespace MySweetShop.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MySweetshop.Api.Entities.UserQrToken", b =>
+                {
+                    b.HasOne("MySweetShop.Api.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("UserFavorite", b =>

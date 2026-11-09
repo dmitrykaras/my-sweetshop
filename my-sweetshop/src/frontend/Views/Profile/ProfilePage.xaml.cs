@@ -36,6 +36,8 @@ public partial class ProfilePage : ContentPage
                 await vm.Profile.LoadUserAsync();
             }
         }
+        var me = await _profileService.GetProfileAsync();
+        CashierItem.IsVisible = me?.IsCashier == true;
     }
 
     // Метод выхода из аккаунта
@@ -140,4 +142,8 @@ public partial class ProfilePage : ContentPage
     {
         await Shell.Current.GoToAsync(nameof(FavoritesPage));
     }
+
+    // Нажатие на кнопку кассира
+    private async void OnCashierTapped(object sender, EventArgs e)
+    => await Shell.Current.GoToAsync(nameof(CashierPage));
 }

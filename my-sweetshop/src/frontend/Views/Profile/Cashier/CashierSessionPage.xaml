@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:my_sweetshop.ViewModels.Profile.Cashier"
+             x:Class="my_sweetshop.Views.Profile.Cashier.CashierSessionPage"
+             x:DataType="vm:CashierSessionViewModel"
+             Shell.NavBarIsVisible="True"
+             BackgroundColor="{StaticResource PageBackgroundLight}">
+
+    <Grid>
+
+        <!-- Страница конвертации баллов -->
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="14">
+
+                <Label Text="Конвертация баллов"
+                       FontSize="22" FontAttributes="Bold" TextColor="Black"
+                       HorizontalOptions="Start" />
+
+                <Label Text="{Binding CustomerName, StringFormat='Клиент: {0}'}"
+                       FontSize="13" TextColor="Gray" />
+
+                <Label Text="Общая стоимость" TextColor="Black" />
+                <Entry Text="{Binding OrderAmountText}" Keyboard="Numeric"
+                       Placeholder="0" TextColor="Black" />
+
+                <Label Text="{Binding Points, StringFormat='Кол-во баллов клиента: {0}'}"
+                       TextColor="Black" FontAttributes="Bold" />
+
+                <Label Text="Сколько списать баллов?" TextColor="Black" />
+                <Entry Text="{Binding RedeemText}" Keyboard="Numeric"
+                       Placeholder="0" TextColor="Black" />
+
+                <Label Text="{Binding HintText}" FontSize="12" TextColor="Gray" />
+
+                <!-- Новая сумма: именно её кассир вносит в терминал -->
+                <Label Text="{Binding PayableText}"
+                       FontSize="22" FontAttributes="Bold" TextColor="#E63946" />
+
+                <Label Text="{Binding ErrorText}" TextColor="#E63946"
+                       IsVisible="{Binding HasError}" />
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,8,0,0">
+                    <Button Grid.Column="0" Text="Принять"
+                            Style="{StaticResource ActionButtonStyle}"
+                            Command="{Binding AcceptRedeemCommand}" />
+                    <Button Grid.Column="1" Text="Отменить"
+                            BackgroundColor="#E5E5E5" TextColor="Black"
+                            Command="{Binding CancelRedeemCommand}" />
+                </Grid>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Меню поверх страницы -->
+        <Grid IsVisible="{Binding IsOverlayVisible}" BackgroundColor="#99000000" Padding="24">
+            <Border BackgroundColor="White" Stroke="Transparent" Padding="20"
+                    StrokeShape="RoundRectangle 16" VerticalOptions="Center">
+                <Grid>
+
+                    <!-- Списываем или копим? -->
+                    <VerticalStackLayout IsVisible="{Binding IsChoice}" Spacing="20">
+                        <Label Text="Списываем или копим?" FontSize="20" FontAttributes="Bold"
+                               TextColor="Black" HorizontalTextAlignment="Center" />
+                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="12">
+                            <Button Text="Списываем" WidthRequest="140"
+                                    Style="{StaticResource ActionButtonStyle}"
+                                    Command="{Binding ChooseRedeemCommand}" />
+                            <Button Text="Копим" WidthRequest="140"
+                                    Style="{StaticResource ActionButtonStyle}"
+                                    Command="{Binding ChooseAccrueCommand}" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+
+                    <!-- Копим: сумма заказа -->
+                    <VerticalStackLayout IsVisible="{Binding IsAccrue}" Spacing="14">
+                        <Label Text="Общая стоимость заказа:" FontSize="18" FontAttributes="Bold"
+                               TextColor="Black" />
+                        <Entry Text="{Binding AccrueAmountText}" Keyboard="Numeric"
+                               Placeholder="0" TextColor="Black" />
+                        <Label Text="{Binding ErrorText}" TextColor="#E63946"
+                               IsVisible="{Binding HasError}" />
+                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="12">
+                            <Button Text="Начислить" WidthRequest="140"
+                                    Style="{StaticResource ActionButtonStyle}"
+                                    Command="{Binding SubmitAccrueCommand}" />
+                            <Button Text="Назад" WidthRequest="140"
+                                    BackgroundColor="#E5E5E5" TextColor="Black"
+                                    Command="{Binding BackToChoiceCommand}" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+
+                    <!-- Завершить расчёт скидки? -->
+                    <VerticalStackLayout IsVisible="{Binding IsConfirm}" Spacing="20">
+                        <Label Text="Завершить расчёт скидки?" FontSize="20" FontAttributes="Bold"
+                               TextColor="Black" HorizontalTextAlignment="Center" />
+                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="12">
+                            <Button Text="Да" WidthRequest="140"
+                                    Style="{StaticResource ActionButtonStyle}"
+                                    Command="{Binding ConfirmFinishCommand}" />
+                            <Button Text="Нет" WidthRequest="140"
+                                    BackgroundColor="#E5E5E5" TextColor="Black"
+                                    Command="{Binding DeclineFinishCommand}" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+
+                    <!-- Итог: крупная сумма для терминала / начисленные баллы -->
+                    <VerticalStackLayout IsVisible="{Binding IsResult}" Spacing="12">
+                        <Label Text="{Binding ResultTitle}" FontSize="18" FontAttributes="Bold"
+                               TextColor="Black" HorizontalTextAlignment="Center" />
+                        <Label Text="{Binding ResultBig}" FontSize="40" FontAttributes="Bold"
+                               TextColor="#E63946" HorizontalTextAlignment="Center" />
+                        <Label Text="{Binding ResultSub}" FontSize="13" TextColor="Gray"
+                               HorizontalTextAlignment="Center" />
+                        <Button Text="Готово" HorizontalOptions="Center" WidthRequest="140"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Command="{Binding DoneCommand}" />
+                    </VerticalStackLayout>
+
+                </Grid>
+            </Border>
+        </Grid>
+
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                           HorizontalOptions="Center" VerticalOptions="Center" />
+    </Grid>
+</ContentPage>
